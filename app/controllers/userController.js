@@ -4,22 +4,25 @@ import generateToken from "../utils/generateToken.js";
 
 
 const createUser = async (req,res) => {
-  const {username, email, password,name,phone, image} = req.body;
+  const {username, email, password,firstName, lastName,phone, image} = req.body;
   try {
-    const userExist = await User.findOne({email});
+    const userExist = await User.findOne({ $or: [{ email }, { username }] });
     if(userExist){
       res.status(400)
-      throw new Error("User already exists!")
+      throw new Error("User already exists! Try different username or email.")
     }
     
 
-    const newUser = await User.create({name,username,email,phone,password,image})
+    const newUser = await User.create({firstName, lastName, username,email,phone,password,image})
     
     if(newUser){
       newUser.password = undefined;
       res.status(201).json({
-        msg:"User created!",
-        user:newUser
+        message:"User created!",
+        user:{
+          username:newUser.username,
+          email:newUser.email
+        }
       })
     }else{
       res.status(400)
@@ -27,7 +30,7 @@ const createUser = async (req,res) => {
     }
   } catch (error) {
     console.log(error.message)
-    res.status(401).json({msg:error.message})
+    res.status(401).json({message:error.message})
   }
 }
 
