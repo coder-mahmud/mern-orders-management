@@ -14,7 +14,8 @@ const Layout = () => {
   const [appLoading, setAppLoading] = useState(false)
 
 
-  const userEmail = useSelector(state => state.auth.userInfo.email)
+  const userEmail = useSelector(state => state.auth?.userInfo?.email)
+  console.log("userEmail", userEmail)
   const [verify,{isLoading, isError, error}] = useVerifyMutation();
   const navigate = useNavigate();
 
@@ -24,9 +25,9 @@ const Layout = () => {
       setAppLoading(true)
       try {
         const apiRes =  await verify({email:userEmail}).unwrap();
-        //console.log("apiRes",apiRes)
+        console.log("apiRes",apiRes)
       } catch (error) {
-        //console.log(error.data.message)
+        console.log(error.data.message)
         navigate('/login')
       }finally{
         setAppLoading(false)

@@ -30,6 +30,14 @@ export const userApiSlice = apiSlice.injectEndpoints({
       })
     }),
 
+    logout:builder.mutation({
+      query:(data) => ({
+        url:`${USERS_URL}/logout`,
+        method: "POST",
+        body:data
+      })
+    }),
+
     getUsers:builder.query({
       query:() => ({
         url:`${USERS_URL}/admin/users`,
@@ -131,4 +139,5 @@ export const userApiSlice = apiSlice.injectEndpoints({
 })
 
 
-export const { useRegisterMutation,useLoginMutation, useVerifyMutation,  useGetUsersQuery, useGetUserByIdQuery, useEditUserMutation, useLazyGetUserByIdQuery, useGetUserByEmailMutation, useEditUserAdminMutation, useSetUserPassMutation, useAddFiletoUserMutation, useRemoveFileFromUserMutation, useQueryUserByEmailQuery, useReqPassChangeMutation, useSetNewPassMutation } = userApiSlice;
+export const { useRegisterMutation,useLoginMutation, useVerifyMutation,useLogoutMutation,
+    useGetUsersQuery, useGetUserByIdQuery, useEditUserMutation, useLazyGetUserByIdQuery, useGetUserByEmailMutation, useEditUserAdminMutation, useSetUserPassMutation, useAddFiletoUserMutation, useRemoveFileFromUserMutation, useQueryUserByEmailQuery, useReqPassChangeMutation, useSetNewPassMutation } = userApiSlice;

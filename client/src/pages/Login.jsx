@@ -5,11 +5,13 @@ import { toast } from 'react-toastify'
 import { Link, useNavigate } from 'react-router-dom'
 import Loader from '../components/shared/Loader'
 import { setCredentials } from '../slices/authSlice'
+import Logo from '../assets/images/PremiumLogo.svg'
+
 
 
 const Login = () => {
 
-  const userEmail = useSelector(state => state.auth.userInfo.email);
+  const userEmail = useSelector(state => state.auth?.userInfo?.email);
   
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -18,13 +20,13 @@ const Login = () => {
   const dispatch = useDispatch();
   const [login,{isLoading, isError, error}] = useLoginMutation()
   
-  if(userEmail){
-    navigate('/')
-  }
+  
   
   useEffect(() => {
-
-  },[])
+    if(userEmail){
+      navigate('/')
+    }
+  },[userEmail])
 
   if(isLoading){
     return <Loader/>
@@ -65,6 +67,7 @@ const Login = () => {
     <div className='bg-gray-800 flex items-center justify-center text-white h-screen w-screen'>
       <div className="auth_inner max-w-[90%] lg:max-w-lg mx-auto border border-gray-500 rounded-lg p-6 w-full">
         
+        <img src={Logo} className='w-24 block mx-auto mb-6' alt="" />
         <h1 className='text-center text-2xl'>Welcome champ!</h1>
         <p className="text-center mt-2 mb-4">Please enter your details to login!</p>
         
