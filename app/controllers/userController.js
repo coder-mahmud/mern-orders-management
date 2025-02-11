@@ -44,7 +44,11 @@ const userLogin = async (req,res) => {
     const user = await User.findOne({username});
     if(user && await user.matchPassword(password)){
       generateToken(res, user._id)
-      res.status(200).json({username:user.username, email: user.email})
+      res.status(200).json({
+        username:user.username,
+        email: user.email,
+        role:user.role,
+      })
       // res.status(200).json({
       //   ...user.toObject(), // Convert user to a plain object
       //   password: undefined,

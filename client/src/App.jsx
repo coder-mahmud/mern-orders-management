@@ -12,6 +12,7 @@ import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Profile from './pages/Profile'
+import Hubs from './pages/Hubs'
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="contact" element={<Contact />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="hubs" element={<Hubs />} />
           </Route>
 
           <Route path="/login" element={<Login />} />

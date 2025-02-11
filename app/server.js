@@ -5,6 +5,12 @@ import connect from "./config/db.js";
 import cookieParser from 'cookie-parser';
 
 import userRoutes from './routes/userRoutes.js';
+import hubRoutes from './routes/hubRoutes.js';
+import productRoutes from './routes/productRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+
+
+
 
 dotenv.config();
 
@@ -35,6 +41,9 @@ app.use(cookieParser())
 app.get('/',(req,res) => res.status(200).json({message:"App is running"}))
 
 app.use('/user', userRoutes);
+app.use('/hub', hubRoutes);
+app.use('/product', productRoutes);
+app.use('/order', orderRoutes);
 
 
 app.listen(5000, () => {console.log("server running")} )
