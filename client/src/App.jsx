@@ -13,6 +13,8 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Profile from './pages/Profile'
 import Hubs from './pages/Hubs'
+import Forgot from './pages/Forgot'
+import ResetPass from './pages/ResetPass'
 
 function App() {
 
@@ -32,6 +34,8 @@ function App() {
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot" element={<Forgot />} />
+          <Route path="/reset-password/:token" element={<ResetPass />} />
 
           
 

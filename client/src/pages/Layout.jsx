@@ -1,5 +1,5 @@
 import React,{useEffect, useState} from 'react'
-import { Outlet, Link,useNavigate } from "react-router-dom";
+import { Outlet, Link,useNavigate,useSearchParams } from "react-router-dom";
 import Header from '../components/shared/Header';
 import Footer from '../components/shared/Footer';
 import { useSelector } from 'react-redux';
@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 const Layout = () => {
 
   const [appLoading, setAppLoading] = useState(false)
-
+  const [searchParams] = useSearchParams();
 
   const userEmail = useSelector(state => state.auth?.userInfo?.email)
   // console.log("userEmail", userEmail)
@@ -20,7 +20,17 @@ const Layout = () => {
   const navigate = useNavigate();
 
 
+
   useEffect(() => {
+    
+    if(searchParams.get("resetpass")){
+      let token = searchParams.get("resetpass");
+      navigate(`/reset-password/${token}`);
+      return;
+    }
+
+
+
     const verifyUser = async () => {
       setAppLoading(true)
       try {

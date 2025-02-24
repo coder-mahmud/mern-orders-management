@@ -88,6 +88,10 @@ const Login = () => {
 
 
         </form>
+
+        <div className="forget_pass text-center text-xs mt-6">
+          Forgot Password? Click <Link className='text-blue-400' to="/forgot">here</Link>  to reset.
+        </div>
       </div>
     </div>
   )
