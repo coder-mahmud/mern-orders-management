@@ -48,11 +48,7 @@ const Header = () => {
         <Link to="/"><img className='w-12' src={Logo} alt="" /></Link>
         <ul className='flex gap-2 font-semibold items-center'>
           <li><Link to="/">Home</Link></li>
-          <li><Link to="/contact">Contact</Link></li>
-          {/* <li><Link to="/login">Login</Link></li> */}
-          
-          {/* <li><Link to="/register">Register</Link></li> */}
-          
+          <li><Link to="/products">Products</Link></li>
           <li><Link to="/hubs">Hubs</Link></li>
           <li  ref={dropdownRef} className='relative'>
             <a onClick={showUserOptionsHandler} className='cursor-pointer' ><img className='w-8' src={UserImage} alt="" /></a>

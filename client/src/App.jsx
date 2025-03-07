@@ -15,6 +15,8 @@ import Profile from './pages/Profile'
 import Hubs from './pages/Hubs'
 import Forgot from './pages/Forgot'
 import ResetPass from './pages/ResetPass'
+import Products from './pages/Products'
+import SingleHubDetails from './components/hubs/SingleHubDetails'
 
 function App() {
 
@@ -30,6 +32,8 @@ function App() {
             <Route path="contact" element={<Contact />} />
             <Route path="profile" element={<Profile />} />
             <Route path="hubs" element={<Hubs />} />
+            <Route path="hubs/:id" element={<SingleHubDetails />} />
+            <Route path="products" element={<Products />} />
           </Route>
 
           <Route path="/login" element={<Login />} />

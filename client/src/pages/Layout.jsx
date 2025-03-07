@@ -2,11 +2,12 @@ import React,{useEffect, useState} from 'react'
 import { Outlet, Link,useNavigate,useSearchParams } from "react-router-dom";
 import Header from '../components/shared/Header';
 import Footer from '../components/shared/Footer';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import verifyUser from '../utils/verifyUser';
 import { useVerifyMutation } from "../slices/userApiSlice";
 import Loader from '../components/shared/Loader';
 import { toast } from 'react-toastify';
+import { clearCredential } from '../slices/authSlice';
 
 
 const Layout = () => {
@@ -18,6 +19,7 @@ const Layout = () => {
   // console.log("userEmail", userEmail)
   const [verify,{isLoading, isError, error}] = useVerifyMutation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
 
 
@@ -38,6 +40,7 @@ const Layout = () => {
         // console.log("apiRes",apiRes)
       } catch (error) {
         console.log(error.data.message)
+        dispatch(clearCredential())
         navigate('/login')
       }finally{
         setAppLoading(false)

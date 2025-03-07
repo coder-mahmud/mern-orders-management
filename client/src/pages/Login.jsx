@@ -34,7 +34,8 @@ const Login = () => {
 
   if(isError){
     console.log("Error", error)
-    return 'Something went wrong!'
+    //return 'Something went wrong!'
+    
   }
 
 
