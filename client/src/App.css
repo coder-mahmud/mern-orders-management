@@ -40,3 +40,21 @@ h1,h2,h3,h4,h5,h6{
   padding-right:20px;
   margin:0 auto;
 }
+
+select {
+  
+}
+
+select option {
+  background-color: white;
+  color: black;
+  padding: 8px;
+}
+
+select option:hover {
+  background-color: #f3f4f6;
+}
+
+select option:checked {
+  background-color: #e5e7eb;
+}

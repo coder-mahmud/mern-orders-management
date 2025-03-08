@@ -2,7 +2,7 @@ import apiSlice from "./apiSlice";
 
 const HUB_URL = '/hub'
 
-export const userApiSlice = apiSlice.injectEndpoints({
+export const hubApiSlice = apiSlice.injectEndpoints({
   
   endpoints:(builder) =>({
 
@@ -33,6 +33,26 @@ export const userApiSlice = apiSlice.injectEndpoints({
       // invalidatesTags: ['Product'],
     }),
 
+    addProductToHub: builder.mutation({
+      query : (data) =>({
+        url:`${HUB_URL}/${data.id}/addproduct`,
+        method: "POST",
+        body:data
+      }),
+      invalidatesTags: ['Hub'],
+    }),
+
+    editHub: builder.mutation({
+      query : (data) =>({
+        url:`${HUB_URL}/edit`,
+        method: "POST",
+        body:data
+      }),
+      invalidatesTags: ['Hub'],
+    }),
+
+     
+
 
 
 
@@ -41,4 +61,4 @@ export const userApiSlice = apiSlice.injectEndpoints({
 })
 
 
-export const { useCreateHubMutation, useGetAllHubQuery, useGetHubByIdQuery } = userApiSlice;
+export const { useCreateHubMutation, useGetAllHubQuery, useGetHubByIdQuery, useAddProductToHubMutation, useEditHubMutation } = hubApiSlice;
