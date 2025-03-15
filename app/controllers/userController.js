@@ -55,9 +55,11 @@ const userLogin = async (req,res) => {
     if(user && await user.matchPassword(password)){
       generateToken(res, user._id)
       res.status(200).json({
+        name: user.firstName + ' ' + user.lastName,
         username:user.username,
         email: user.email,
         role:user.role,
+        id:user._id
       })
       // res.status(200).json({
       //   ...user.toObject(), // Convert user to a plain object
@@ -226,5 +228,20 @@ const resetPassword = async (req,res) => {
 
 }
 
+const getAllUser = async (req,res) => {
 
-export {createUser,userLogin,userLogOut, userProfile, userEdit, verifyUser, resetPasswordRequest, resetPassword}
+
+  try {
+    const users = await User.find();
+
+    if (!users) return res.status(400).json({ message: 'No user found!' });
+    res.status(200).json({ users });
+  } catch (error) {
+    res.status(500).json({ message: 'Error getting users.', error });
+  }
+
+
+}
+
+
+export {createUser,userLogin,userLogOut, userProfile, userEdit, verifyUser, resetPasswordRequest, resetPassword, getAllUser}

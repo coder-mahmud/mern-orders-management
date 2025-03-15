@@ -10,9 +10,13 @@ const orderSchema = new mongoose.Schema(
       ref: "User", // Reference to the User model
       required: true,
     },
+    editor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     orderItems: [
       {
-        product: {
+        productId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
           required: true,
@@ -20,22 +24,26 @@ const orderSchema = new mongoose.Schema(
         name: { type: String, required: true },
         quantity: { type: Number, required: true, default: 1 },
         price: { type: Number, required: true },
+        totalPrice: { type: Number, required: true },
       },
     ],
-    shippingAddress: {
-      fullName: { type: String, required: true },
-      address: { type: String, required: true },
-      phone: { type: String, required: true },
-      note: { type: String, required: true },
-      hub: { type: mongoose.Schema.Types.ObjectId, ref: "Hub", required:true },
-    },
-    // hub: { type: mongoose.Schema.Types.ObjectId, ref: "Hub", required:true },
+    // shippingAddress: {
+    //   fullName: { type: String, required: true },
+    //   address: { type: String, required: true },
+    //   phone: { type: String, required: true },
+    //   note: { type: String, required: true },
+    //   hub: { type: mongoose.Schema.Types.ObjectId, ref: "Hub", required:true },
+    // },
+    hub: { type: mongoose.Schema.Types.ObjectId, ref: "Hub", required:true },
+
+    customerDetails: { type: String, required:true },
     orderSource: { type: String, enum: ["Facebook", "Website"] },
+    orderStatus: { type: String, enum: ["Pending", "Delivered", "Cancelled"], default: "Pending"  },
     websiteOrderId: { type: Number, },
     discount: { type: Number },
-    itemsPrice: { type: Number, required: true },
-    shippingPrice: { type: Number, required: true },
-    totalPrice: { type: Number, required: true },
+    orderPrice: { type: Number, required: true },
+    deliveryCharge: { type: Number, required: true },
+    finalPrice: { type: Number, required: true },
     isDelivered: { type: Boolean, default: false },
     deliveryDate: { type: Date },
     deliveredAt: { type: Date },

@@ -58,3 +58,38 @@ select option:hover {
 select option:checked {
   background-color: #e5e7eb;
 }
+
+.react-datepicker-wrapper{
+    display: block;
+    overflow: hidden;
+    height: 44px;
+    width: 235px;
+}
+
+.date_input:focus-visible{
+  outline:none !important;
+}
+
+.react-datepicker-popper{
+  /* margin-bottom: 16px; */
+  
+}
+
+.react-datepicker-popper svg{
+  
+}
+
+/* Target the entire scrollbar */
+::-webkit-scrollbar {
+  width: 5px; /* Set the width of the vertical scrollbar */
+  height: 8px; /* Set the height of the horizontal scrollbar */
+}
+::-webkit-scrollbar-thumb {
+  background-color: #888; /* Customize thumb color */
+  border-radius: 4px; /* Add rounded corners */
+}
+
+/* Target the scrollbar track (the background) */
+::-webkit-scrollbar-track {
+  background: #1B1B1F; /* Customize track color */
+}

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import Loader from '../components/shared/Loader'
 import { setCredentials } from '../slices/authSlice'
 import Logo from '../assets/images/PremiumLogo.svg'
+import { Link } from 'react-router-dom'
 
 
 const Register = () => {
@@ -100,6 +101,10 @@ const Register = () => {
 
 
           </form>
+
+          <div className="text-center text-base mt-6">
+            <Link className='text-blue-400' to="/login">Back to Login</Link>
+          </div>
 
 
         </div>

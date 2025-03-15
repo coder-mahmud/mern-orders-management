@@ -90,6 +90,9 @@ const Login = () => {
 
         </form>
 
+        <div className="forget_pass text-center text-base mt-6">
+          Don't have an account? Click <Link className='text-blue-400' to="/register">here</Link>  to register.
+        </div>
         <div className="forget_pass text-center text-xs mt-6">
           Forgot Password? Click <Link className='text-blue-400' to="/forgot">here</Link>  to reset.
         </div>

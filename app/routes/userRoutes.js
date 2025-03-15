@@ -1,5 +1,5 @@
 import express from 'express'
-import { createUser,userLogin,userLogOut, userProfile, userEdit, verifyUser, resetPasswordRequest, resetPassword } from '../controllers/userController.js'
+import { createUser,userLogin,userLogOut, userProfile, userEdit, verifyUser, resetPasswordRequest, resetPassword, getAllUser } from '../controllers/userController.js'
 import protect from '../middlewares/authMiddleware.js'
 
 const userRoutes = express();
@@ -12,6 +12,7 @@ userRoutes.post("/", createUser)
 userRoutes.post("/login", userLogin)
 userRoutes.post("/logout", userLogOut)
 userRoutes.get("/profile",protect, userProfile)
+userRoutes.get("/getall",protect, getAllUser)
 userRoutes.post("/edit",protect, userEdit)
 userRoutes.post("/verify",protect, verifyUser)
 userRoutes.post("/reqpass", resetPasswordRequest)
