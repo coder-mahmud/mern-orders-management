@@ -17,6 +17,12 @@ import Forgot from './pages/Forgot'
 import ResetPass from './pages/ResetPass'
 import Products from './pages/Products'
 import SingleHubDetails from './components/hubs/SingleHubDetails'
+import OrderDetails from './components/orders/OrderDetails'
+import EditOrder from './components/orders/EditOrder'
+
+
+
+
 
 function App() {
 
@@ -34,6 +40,8 @@ function App() {
             <Route path="hubs" element={<Hubs />} />
             <Route path="hubs/:id" element={<SingleHubDetails />} />
             <Route path="products" element={<Products />} />
+            <Route path="order/:id" element={<OrderDetails />} />
+            <Route path="order/edit/:id" element={<EditOrder />} />
           </Route>
 
           <Route path="/login" element={<Login />} />

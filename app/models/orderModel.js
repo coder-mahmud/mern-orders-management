@@ -37,6 +37,7 @@ const orderSchema = new mongoose.Schema(
     hub: { type: mongoose.Schema.Types.ObjectId, ref: "Hub", required:true },
 
     customerDetails: { type: String, required:true },
+    orderType: { type: String, enum: ["Offline", "PandGo"] },
     orderSource: { type: String, enum: ["Facebook", "Website"] },
     orderStatus: { type: String, enum: ["Pending", "Delivered", "Cancelled"], default: "Pending"  },
     websiteOrderId: { type: Number, },

@@ -5,6 +5,21 @@ import mongoose from "mongoose";
 const getOrders = async (req, res) => {
   res.status(200).json({message:"Get all Orders route"})
 }
+const getOrderById = async (req, res) => {
+  const {id} = req.params;
+  // console.log("Order Id:", id)
+
+  try {
+
+    const order = await Order.findById(id);
+    res.status(200).json({message:"success", order})
+  } catch (error) {
+    res.status(200).json({message:"failed", error})
+  }
+
+
+  
+}
 
 const getHubOrder = async (req, res) => {
   const { id, date } = req.params;
@@ -40,12 +55,54 @@ const createOrder = async (req, res) => {
   
 }
 
+const changeOrderStatus = async (req, res) => {
+  const {orderId, status} = req.body
+  // console.log("Status", status)
+
+  try {
+    const order = await Order.findById(orderId);
+    order.orderStatus = status;
+    await order.save();
+    res.status(200).json({message:"Success!", order})
+  } catch (error) {
+    res.status(200).json({message:"Failed!", error})
+  }
+
+
+
+
+  
+}
+
+
 const editOrder = async (req, res) => {
-  res.status(200).json({message:"Edit Order route"})
+  console.log("editOrder route!")
+  const {orderId,orderItems,finalPrice,discount  } = req.body;
+  console.log("Body data:", orderId,orderItems,finalPrice,discount)
+
+  try {
+    const order = await Order.findById(orderId);
+    if(!order){
+      throw new Error("Order not found!")
+    }
+
+    order.orderItems = orderItems || order.orderItems
+    order.finalPrice = finalPrice || order.finalPrice
+    order.discount = discount || order.discount
+
+    const updatedOrder = await order.save();
+
+    res.status(200).json({success:true, order: updatedOrder})
+  } catch (error) {
+    res.status(500).json({success:false, error: error.message})
+  }
+
+
+  
 }
 
 const deleteOrder = async (req, res) => {
   res.status(200).json({message:"Delete Order route"})
 }
 
-export { getOrders, createOrder, editOrder, deleteOrder, getHubOrder }
+export { getOrders, createOrder, editOrder, deleteOrder, getHubOrder,getOrderById, changeOrderStatus }

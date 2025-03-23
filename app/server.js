@@ -18,7 +18,8 @@ dotenv.config();
 const app = express();
 connect();
 
-const whitelist = ['http://localhost:3000', 'https://auth.mahmud1.xyz', 'https://datu.mahmud1.xyz', 'http://datu.mahmud1.xyz/'];
+const whitelist = ['http://localhost:3000', 'https://portal.foodulogybd.com', 'https://portal.foodulogybd.com/', 'http://datu.mahmud1.xyz/'];
+
 const corsOptions = {
   credentials: true,
   origin: (origin, callback) => {

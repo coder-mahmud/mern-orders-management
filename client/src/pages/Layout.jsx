@@ -8,6 +8,7 @@ import { useVerifyMutation } from "../slices/userApiSlice";
 import Loader from '../components/shared/Loader';
 import { toast } from 'react-toastify';
 import { clearCredential } from '../slices/authSlice';
+import { Navigate } from 'react-router-dom';
 
 
 const Layout = () => {
@@ -17,6 +18,11 @@ const Layout = () => {
 
   const userEmail = useSelector(state => state.auth?.userInfo?.email)
   // console.log("userEmail", userEmail)
+
+  if(!userEmail){
+    console.log("No user found, returning to login")
+    return <Navigate to="/login" replace />;
+  }
   const [verify,{isLoading, isError, error}] = useVerifyMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -24,6 +30,7 @@ const Layout = () => {
 
 
   useEffect(() => {
+    console.log("Layout use effect running!")
     
     if(searchParams.get("resetpass")){
       let token = searchParams.get("resetpass");
@@ -48,7 +55,7 @@ const Layout = () => {
       
     }
 
-    verifyUser();
+    //verifyUser();
     
 
   },[])

@@ -93,3 +93,11 @@ select option:checked {
 ::-webkit-scrollbar-track {
   background: #1B1B1F; /* Customize track color */
 }
+.action_links_wrap li:last-child, .action_links_wrap a:last-child{
+  border-bottom:0px solid;
+}
+
+.single_prodcut_select{
+  min-width:300px;
+
+}

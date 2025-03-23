@@ -1,10 +1,13 @@
 import jwt from 'jsonwebtoken'
 import User from '../models/userModels.js';
 import asyncHandler from 'express-async-handler'
+import dotenv from 'dotenv';
+dotenv.config();
 
 const protect = asyncHandler( async (req,res,next) => {
   let token;
   token = req?.cookies?.jwt;
+  // console.log("Token", token)
   if(token){
     try{
       console.log("Token found")
@@ -17,9 +20,7 @@ const protect = asyncHandler( async (req,res,next) => {
       //throw new Error("Invalid Token!")
     }
   }else{
-    res.status(401).json({message:"No Token, User not authorized to see this resource!"})
-    //throw new Error("No Token, User not authorized to see this resource!")
-    
+    res.status(401).json({message:"No Token, User not authorized to see this resource!!", token})    
   }
 })
 

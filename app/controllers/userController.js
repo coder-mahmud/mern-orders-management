@@ -75,6 +75,7 @@ const userLogin = async (req,res) => {
 }
 
 const userLogOut = async (req,res) => {
+  
   res.cookie('jwt','',{
     httpOnly:true,
     expires: new Date(0)

@@ -10,7 +10,7 @@ import Button from '../components/Button';
 import { useSelector } from 'react-redux';
 import { useCreateOrderMutation } from '../slices/orderApiSclice';
 import {toast} from 'react-toastify'
-
+import { Navigate } from 'react-router-dom';
 
 
 
@@ -18,8 +18,14 @@ import {toast} from 'react-toastify'
 
 const Home = () => {
 
-  const userName = useSelector(state =>  state.auth.userInfo.name);
-  const userId = useSelector(state =>  state.auth.userInfo.id);
+  //const userName = useSelector(state =>  state.auth.userInfo.name);
+  const userId = useSelector(state =>  state?.auth?.userInfo?.id);
+  console.log("userId",userId)
+
+  if(!userId){
+    console.log("No user found, returning to login")
+    return <Navigate to="/login" replace />;
+  }
 
   const getTomorrow = () => {
     const tomorrow = new Date();
@@ -48,6 +54,8 @@ const Home = () => {
   const [createOrder,{isLoading:isOrderLoading, isError}] = useCreateOrderMutation()
 
   useEffect(() => {
+
+    console.log("Home use Effect running!")
 
     setOrderPrice(selectedProducts.reduce((prev, cur) => prev + cur.totalPrice, 0));
     setFinalPrice(orderPrice - discount +deliveryCharge)
@@ -105,12 +113,12 @@ const Home = () => {
 
   const confirmOrderHandler = async () => {
     setShowLoader(true)
-    console.log("Confirm clicked!")
-    console.log("Products", selectedProducts)
-    console.log("orderPrice", orderPrice)
-    console.log("finalPrice", finalPrice)
-    console.log("discount", discount)
-    console.log("deliveryDate", deliveryDate)
+    // console.log("Confirm clicked!")
+    // console.log("Products", selectedProducts)
+    // console.log("orderPrice", orderPrice)
+    // console.log("finalPrice", finalPrice)
+    // console.log("discount", discount)
+    // console.log("deliveryDate", deliveryDate)
 
     const data = {
       orderItems:selectedProducts,
@@ -203,9 +211,9 @@ const Home = () => {
 
             <div className="form_row flex flex-col gap-2 mb-6 mt-6">
               <label htmlFor="">Products:</label>
-              <div className="products_wrap flex flex-col sm:flex-row gap-4">
+              <div className="products_wrap flex flex-col sm:flex-row gap-4 flex-wrap">
                 
-                {data.products.map(product => <div className='flex gap-1' key={product._id}>
+                {data.products.map(product => <div className='single_prodcut_select flex gap-1' key={product._id}>
                   <input  type="checkbox" value={product._id} id={product.name} checked={selectedProducts.some(item => item.productId === product._id)} onChange={(e) => handleCheckboxChange(e,product.name, product.price)} /> 
                   <label htmlFor={product.name}>{product.name}</label>
                 </div> )}
@@ -264,6 +272,8 @@ const Home = () => {
                             +
                           </button>
                         </div>
+
+                        
                       </div>
                       
 
