@@ -105,4 +105,26 @@ const deleteOrder = async (req, res) => {
   res.status(200).json({message:"Delete Order route"})
 }
 
-export { getOrders, createOrder, editOrder, deleteOrder, getHubOrder,getOrderById, changeOrderStatus }
+
+const getOrderByDate = async (req, res) => {
+  const {date} =  req.params;
+  // console.log("date",date)
+  const targetDate = new Date(date);
+
+  try {
+    const datedOrders = await Order.find({
+      deliveryDate: {
+        $gte: new Date(targetDate.setHours(0, 0, 0, 0)),
+        $lt: new Date(targetDate.setHours(23, 59, 59, 999)),
+      },
+
+    })
+    res.status(200).json({success:true, orders:datedOrders})
+  } catch (error) {
+    res.status(200).json({success:false, error:error.message})
+  }
+
+  
+}
+
+export { getOrders, createOrder, editOrder, deleteOrder, getHubOrder,getOrderById, changeOrderStatus, getOrderByDate }

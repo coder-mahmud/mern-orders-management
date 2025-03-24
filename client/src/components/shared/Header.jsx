@@ -50,6 +50,7 @@ const Header = () => {
           <li><Link to="/">Home</Link></li>
           <li><Link to="/products">Products</Link></li>
           <li><Link to="/hubs">Hubs</Link></li>
+          <li><Link to="/orders">Orders</Link></li>
           <li  ref={dropdownRef} className='relative'>
             <a onClick={showUserOptionsHandler} className='cursor-pointer' ><img className='w-8' src={UserImage} alt="" /></a>
             {showUserOptions && (

@@ -117,18 +117,18 @@ const HubOrderItem = ({order, users, index}) => {
 
 
   return (
-    <div className='flex justify-between gap-4 py-4 border-b border-gray-500'>
+    <div className='flex flex-col md:flex-row justify-between gap-4 py-4 border-b border-gray-500'>
       {showLoader && <Loader />}
       <p className='w-[50px]'>{index+1}.</p>
-      <p className='flex-2'><span className="hidden">Customer Details:</span> {order.customerDetails}</p>
-      <p className='flex-[.75]'><span className="hidden">Total Bill:</span> {order.finalPrice}</p>
-      <p className='flex-[.75]'><span className="hidden">Status:</span> {order.orderStatus}</p>
-      <p className='flex-1 flex justify-start'><span className="hidden">Created By:</span> {orderUser[0].firstName}</p>
-      <div ref={dialogRef} className='flex-[.75] flex justify-end relative'>
-        <span className="hidden">Action:</span>
+      <p className='flex-2'><span className="inline-block md:hidden">Customer Details:</span> {order.customerDetails}</p>
+      <p className='flex-[.75]'><span className="inline-block md:hidden">Total Bill:</span> {order.finalPrice}</p>
+      <p className='flex-[.75]'><span className="inline-block md:hidden">Status:</span> {order.orderStatus}</p>
+      <p className='flex-1 flex justify-start'><span className="inline-block md:hidden">Created By:</span> {orderUser[0].firstName}</p>
+      <div ref={dialogRef} className='flex-[.75] flex justify-start md:justify-end relative items-center'>
+        <span className="inline-block md:hidden">Action:</span>
         <img className='cursor-pointer' onClick={() => setShowActions(!showActions)} src={VerDots} alt="" />
         {showActions && (
-          <div  className="action_links_wrap z-30 absolute right-10 top-0 w-[200px] rounded bg-gray-500 py-4">
+          <div  className="action_links_wrap z-30 absolute right-20 md:right-10 -top-24 md:top-0  w-[200px] rounded bg-gray-500 py-4">
             <ul>
               <Link to={`/order/${order._id}`} className='border-b border-gray-700 py-2 px-4 text-center block'>Vied Details</Link>
               

@@ -50,8 +50,8 @@ const Register = () => {
       const apiRes = await register(data).unwrap();
       console.log("apiRes:", apiRes)
       toast.success("Registration successful!")
-      dispatch(setCredentials(apiRes.user))
-      navigate('/');
+      // dispatch(setCredentials(apiRes.user))
+      navigate('/login');
     } catch (error) {
       console.log(error);
       toast.error(error.data.message)
