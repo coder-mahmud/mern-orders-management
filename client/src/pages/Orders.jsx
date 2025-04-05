@@ -18,7 +18,7 @@ const Orders = () => {
     console.log("error:", error)
   }
 
-  console.log("data",data)
+  // console.log("data",data)
 
   const orders = data.orders;
 

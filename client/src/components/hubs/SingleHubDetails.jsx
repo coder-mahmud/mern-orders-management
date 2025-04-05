@@ -12,6 +12,14 @@ import { useGetAllUsersQuery } from '../../slices/userApiSlice';
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import Button from '../Button';
+import { jsPDF } from 'jspdf';
+// import '../../components/NotoSansBengali-Regular'
+// import NotoSansBengali from '../../components/NotoSansBengali-VariableFont'
+import Kalpurush from '../../components/kalpurush-normal'
+// import Rupali from '../../components/SiyamRupaliRegular.js'
+
+
+
 
 const SingleHubDetails = () => {
   const {id} = useParams('id');
@@ -54,7 +62,7 @@ const SingleHubDetails = () => {
   // console.log("data", data)
   // console.log("productData", productData)
   // console.log("deliveryDate",deliveryDate)
-  console.log("hubOrder", hubOrder)
+  console.log("hubOrders", hubOrder)
   // console.log("usersData", usersData)
   // console.log("Hub Products", hubProducts)
   //console.log("customerDetails", hubOrder.orders[1].customerDetails)
@@ -272,6 +280,90 @@ const SingleHubDetails = () => {
   };  
 
 
+    const generatePDFold = () => {
+      const doc = new jsPDF();
+      const itemsPerPage = 15;
+      let y = 10;
+  
+      hubOrder.orders.forEach((order, index) => {
+        if (index > 0 && index % itemsPerPage === 0) {
+          doc.addPage();
+          y = 10;
+        }
+  
+        const lines = doc.splitTextToSize(`${index + 1}. ${order.customerDetails}`, 180);
+        doc.text(lines, 10, y);
+        y += lines.length * 10 + 5; // adjust spacing
+      });
+  
+      doc.save('customer-details.pdf');
+    };
+
+    const test = 'test'
+
+
+/*
+    const generatePDF = () => {
+      const doc = new jsPDF();
+      const itemsPerPage = 15;
+      let y = 10;
+    
+      hubOrder.orders.forEach((order, index) => {
+        if (index > 0 && index % itemsPerPage === 0) {
+          doc.addPage();
+          y = 10;
+        }
+    
+        // Clean line breaks and trim extra spaces
+        const cleanedText = `${index + 1}. ${order.customerDetails.replace(/\n+/g, ' ').trim()}`;
+    
+        const lines = doc.splitTextToSize(cleanedText, 180);
+        doc.text(lines, 10, y);
+        y += lines.length * 10 + 3;
+      });
+    
+      doc.save('customer-details.pdf');
+    };
+  */
+
+    
+
+    const generatePDF = () => {
+      const doc = new jsPDF();
+    
+      // Add the custom Bangla font
+      // doc.setFont('NotoSansBengali-Regular');
+
+      doc.addFileToVFS("Kalpurush.ttf", Kalpurush);
+      doc.addFont("Kalpurush.ttf", "Kalpurush", "normal");
+      doc.setFont("Kalpurush");
+
+      // doc.addFileToVFS("Rupali.ttf", Rupali);
+      // doc.addFont("Rupali.ttf", "Rupali", "normal");
+      // doc.setFont("Rupali");
+
+    
+      let y = 10;
+      const margin = 10;
+      const maxY = 280;
+    
+      hubOrder.orders.forEach((order, index) => {
+        const cleanedText = `${index + 1}. ${order.customerDetails.replace(/\n+/g, ' ').trim()}`;
+        const lines = doc.splitTextToSize(cleanedText, 180);
+        const blockHeight = lines.length * 7 + 3;
+    
+        if (y + blockHeight > maxY) {
+          doc.addPage();
+          y = margin;
+        }
+    
+        doc.text(lines, margin, y);
+        y += blockHeight;
+      });
+    
+      doc.save('customer-details.pdf');
+    };
+  
 
 
 
@@ -289,10 +381,12 @@ const SingleHubDetails = () => {
           </div>
 
           
+          {hubOrder.orders.length > 0 ? (
+            <button className='border rounded border-gray-500 p-4 cursor-pointer ' onClick={() => generatePDF()}>Download Report</button>
+          ) : ""}
+          
 
-          {/* <button onClick={() => exportCSV(hubOrder.orders)}>Generate CSV</button> */}
-
-          { hubOrder.orders.length == 0 ? "No order for selected day yet!" : (<>
+          { hubOrder.orders.length == 0 ? "No order for selected day yet!" : (<div className="mb-20">
             
             <div className="hubOrderInfo my-4 text-lg">
               <p className="section_title text-lg font-semibold">Hub Orders Summary:</p>
@@ -304,22 +398,22 @@ const SingleHubDetails = () => {
               <p className="t">Total Cancelled: {cancelledOrders.length}</p>
               
               <p className="section_title text-lg font-semibold mt-6">Orders Items:</p>
-              {totalChickenBallQuantity > 0 ? <p class="mb-1">Chicken Ball: {totalChickenBallQuantity}</p> : ""}
-              {totalChickenNuggetsQuantity > 0 ? <p class="mb-1">Chicken Nuggets: {totalChickenNuggetsQuantity}</p> : ""}
-              {totalChickenSausageQuantity > 0 ? <p class="mb-1">Chicken Sausage: {totalChickenSausageQuantity}</p> : ""}
-              {totalChickenParotaQuantity > 0 ? <p class="mb-1">Chicken Parota: {totalChickenParotaQuantity}</p> : ""}
-              {totalSupremeMayonnaiseQuantity > 0 ? <p class="mb-1">Supreme Mayonnaise: {totalSupremeMayonnaiseQuantity}</p> : ""}
-              {totalSalamiQuantity > 0 ? <p class="mb-1">Salami: {totalSalamiQuantity}</p> : ""}
-              {totalSamuchaQuantity > 0 ? <p class="mb-1">Samucha: {totalSamuchaQuantity}</p> : ""}
-              {totalChickenMerinationQuantity > 0 ? <p class="mb-1">Chicken Merination: {totalChickenMerinationQuantity}</p> : ""}
-              {totalBurgerPettyQuantity > 0 ? <p class="mb-1">Burger Petty: {totalBurgerPettyQuantity}</p> : ""}
-              {totalSpringRollQuantity > 0 ? <p class="mb-1">Spring Roll: {totalSpringRollQuantity}</p> : ""}
-              {totalChickenChaapQuantity > 0 ? <p class="mb-1">Chicken Chaap: {totalChickenChaapQuantity}</p> : ""}
-              {totalFriedChickenQuantity > 0 ? <p class="mb-1">Fried Chicken: {totalFriedChickenQuantity}</p> : ""}
-              {totalMomoQuantity > 0 ? <p class="mb-1">Momo: {totalMomoQuantity}</p> : ""}
-              {totalKaragiChickenQuantity > 0 ? <p class="mb-1">Karagi Chicken: {totalKaragiChickenQuantity}</p> : ""}
-              {totalBotiKababQuantity > 0 ? <p class="mb-1">Boti Kabab: {totalBotiKababQuantity}</p> : ""}
-              {totalMojorellaCheeseQuantity > 0 ? <p class="mb-1">Mojorella Cheese: {totalMojorellaCheeseQuantity}</p> : ""}
+              {totalChickenBallQuantity > 0 ? <p className="mb-1">Chicken Ball: {totalChickenBallQuantity}</p> : ""}
+              {totalChickenNuggetsQuantity > 0 ? <p className="mb-1">Chicken Nuggets: {totalChickenNuggetsQuantity}</p> : ""}
+              {totalChickenSausageQuantity > 0 ? <p className="mb-1">Chicken Sausage: {totalChickenSausageQuantity}</p> : ""}
+              {totalChickenParotaQuantity > 0 ? <p className="mb-1">Chicken Parota: {totalChickenParotaQuantity}</p> : ""}
+              {totalSupremeMayonnaiseQuantity > 0 ? <p className="mb-1">Supreme Mayonnaise: {totalSupremeMayonnaiseQuantity}</p> : ""}
+              {totalSalamiQuantity > 0 ? <p className="mb-1">Salami: {totalSalamiQuantity}</p> : ""}
+              {totalSamuchaQuantity > 0 ? <p className="mb-1">Samucha: {totalSamuchaQuantity}</p> : ""}
+              {totalChickenMerinationQuantity > 0 ? <p className="mb-1">Chicken Merination: {totalChickenMerinationQuantity}</p> : ""}
+              {totalBurgerPettyQuantity > 0 ? <p className="mb-1">Burger Petty: {totalBurgerPettyQuantity}</p> : ""}
+              {totalSpringRollQuantity > 0 ? <p className="mb-1">Spring Roll: {totalSpringRollQuantity}</p> : ""}
+              {totalChickenChaapQuantity > 0 ? <p className="mb-1">Chicken Chaap: {totalChickenChaapQuantity}</p> : ""}
+              {totalFriedChickenQuantity > 0 ? <p className="mb-1">Fried Chicken: {totalFriedChickenQuantity}</p> : ""}
+              {totalMomoQuantity > 0 ? <p className="mb-1">Momo: {totalMomoQuantity}</p> : ""}
+              {totalKaragiChickenQuantity > 0 ? <p className="mb-1">Karagi Chicken: {totalKaragiChickenQuantity}</p> : ""}
+              {totalBotiKababQuantity > 0 ? <p className="mb-1">Boti Kabab: {totalBotiKababQuantity}</p> : ""}
+              {totalMojorellaCheeseQuantity > 0 ? <p className="mb-1">Mojorella Cheese: {totalMojorellaCheeseQuantity}</p> : ""}
 
             </div>
 
@@ -327,7 +421,7 @@ const SingleHubDetails = () => {
 
             <p className="text-xl font-semibold mt-10 border-b border-gray-500">Orders:</p>
             <div className='hidden md:flex justify-between gap-4 py-4 border-b border-gray-500'>
-              <p className='w-[50px]'>SL no.</p>
+              <p className='w-[50px]'>SL No.</p>
               <p className='flex-2'>Customer Details</p>
               <p className='flex-[.75]'>Bill</p>
               <p className='flex-[.75]'>Status</p>
@@ -336,7 +430,7 @@ const SingleHubDetails = () => {
 
             </div>
             {hubOrder.orders.map((order,index) => <HubOrderItem index={index} key={order._id} order={order} users={usersData.users} />)}
-          </>) }
+          </div>) }
           
 
           {showHubEdit && (<>

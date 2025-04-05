@@ -51,6 +51,15 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ['Order'],
     }),
 
+    deleteOrder: builder.mutation({
+      query : (data) =>({
+        url:`${ORDER_URL}/delete/`,
+        method: "POST",
+        body:data
+      }),
+      invalidatesTags: ['Order'],
+    }),
+
     
     getAllOrdersByDate: builder.query({
       query : (data) =>({
@@ -70,4 +79,4 @@ export const orderApiSlice = apiSlice.injectEndpoints({
 })
 
 
-export const { useCreateOrderMutation, useGetHubOrderQuery, useGetOrderByIdQuery, useOrderStatusMutation, useEditOrderMutation, useGetAllOrdersByDateQuery  } = orderApiSlice;
+export const { useCreateOrderMutation, useGetHubOrderQuery, useGetOrderByIdQuery, useOrderStatusMutation, useEditOrderMutation, useGetAllOrdersByDateQuery, useDeleteOrderMutation  } = orderApiSlice;

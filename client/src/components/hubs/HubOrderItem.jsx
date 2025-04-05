@@ -2,7 +2,7 @@ import React, { useState,useEffect,useRef } from 'react'
 import Loader from '../shared/Loader';
 import VerDots from '../../assets/images/ver-dots.svg'
 import { Link } from 'react-router-dom';
-import { useOrderStatusMutation } from '../../slices/orderApiSclice';
+import { useOrderStatusMutation, useDeleteOrderMutation } from '../../slices/orderApiSclice';
 import { toast } from 'react-toastify';
 import Close from '../../assets/images/Close.svg'
 
@@ -17,6 +17,7 @@ const HubOrderItem = ({order, users, index}) => {
   const [showLoader, setShowLoader] = useState(false)
   const [showDelivered, setShowDelivered] = useState(false)
   const [showCancelled, setShowCancelled] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
 
 
 
@@ -26,6 +27,7 @@ const HubOrderItem = ({order, users, index}) => {
   const orderUser = users.filter(user => user._id == order.user )
   // console.log("orderUser", orderUser)
   const [orderStatus, {isLoading} ] = useOrderStatusMutation()
+  const [deleteOrder, {isLoading:deleteLoading}] = useDeleteOrderMutation()
 
 
 
@@ -54,16 +56,23 @@ const HubOrderItem = ({order, users, index}) => {
     setShowActions(false)
     setShowDelivered(true)
   } 
+
   const showCancelledHandler = () => {
     document.body.style.overflow = 'hidden'
     setShowActions(false)
     setShowCancelled(true)
+  }
+  const showDeleteHandler = () => {
+    document.body.style.overflow = 'hidden'
+    setShowActions(false)
+    setShowDelete(true)
   }
 
   const modalCloseHandler = () => {
     document.body.style.overflow = 'auto'
     setShowDelivered(false)
     setShowCancelled(false)
+    setShowDelete(false)
   }
 
 
@@ -115,9 +124,32 @@ const HubOrderItem = ({order, users, index}) => {
   }
 
 
+  const deleteHandler = async () => {
+    setShowLoader(true)
+    const data = {
+      orderId:order._id
+    }
+    // console.log("data",data)
+    try {
+      const apiRes = await deleteOrder(data).unwrap();
+      console.log("Delete apiRes", apiRes)
+      toast.success("Order DELETED successfully!")
+    } catch (error) {
+      console.log("Error", error)
+      toast.error("Something went wrong!")
+    } finally {
+      document.body.style.overflow = 'auto'
+      setShowDelivered(false)
+      setShowCancelled(false)
+      setShowDelete(false)
+      setShowLoader(false)
+    }
+  }
+
+
 
   return (
-    <div className='flex flex-col md:flex-row justify-between gap-4 py-4 border-b border-gray-500'>
+    <div className='flex flex-col md:flex-row justify-between gap-4 py-4 border-b border-gray-500 lg:items-center '>
       {showLoader && <Loader />}
       <p className='w-[50px]'>{index+1}.</p>
       <p className='flex-2'><span className="inline-block md:hidden">Customer Details:</span> {order.customerDetails}</p>
@@ -130,13 +162,14 @@ const HubOrderItem = ({order, users, index}) => {
         {showActions && (
           <div  className="action_links_wrap z-30 absolute right-20 md:right-10 -top-24 md:top-0  w-[200px] rounded bg-gray-500 py-4">
             <ul>
-              <Link to={`/order/${order._id}`} className='border-b border-gray-700 py-2 px-4 text-center block'>Vied Details</Link>
+              <Link to={`/order/${order._id}`} className='border-b border-gray-700 py-2 px-4 text-center block'>View Details</Link>
               
 
               {order.orderStatus == 'Pending' ? <>
                 <Link to={`/order/edit/${order._id}`} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Edit Order</Link>
                 <li onClick={showDeliveredHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Delivered</li>
                 <li onClick={showCancelledHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Cancelled</li>
+                <li onClick={showDeleteHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Delete Order</li>
               </> : ""}
               
             </ul>
@@ -168,11 +201,31 @@ const HubOrderItem = ({order, users, index}) => {
       { showCancelled && (
         <div className="modal fixed top-0 left-0 w-screen h-screen z-20  backdrop-blur-xs block pt-20 lg:pt-[150px] pb-24 overflow-auto">
           <div className="flex justify-center items-center">
-            <div className="modal_inner w-3xl max-w-[90%] bg-red-600  text-white relative p-10 rounded">
+            <div className="modal_inner w-3xl max-w-[90%] bg-yellow-600  text-white relative p-10 rounded">
               <img onClick={modalCloseHandler}  className='absolute w-12 cursor-pointer -top-14 right-0' src={Close} alt="" />
               <h2 className='text-green text-xl'>Do you want to make this order as "Cancelled"? Be careful, you can't undo this action.</h2>
               <div className="cta_wrap flex gap-6 my-6">
                 <button onClick={cancelledHandler} className='cursor-pointer  bg-black p-4 rounded '>Yes, mark as Cancelled</button>
+                <button onClick={modalCloseHandler} className='cursor-pointer  bg-black p-4 rounded '>Cancel</button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+
+      )}
+
+
+      { showDelete && (
+        <div className="modal fixed top-0 left-0 w-screen h-screen z-20  backdrop-blur-xs block pt-20 lg:pt-[150px] pb-24 overflow-auto">
+          <div className="flex justify-center items-center">
+            <div className="modal_inner w-3xl max-w-[90%] bg-red-600  text-white relative p-10 rounded">
+              <img onClick={modalCloseHandler}  className='absolute w-12 cursor-pointer -top-14 right-0' src={Close} alt="" />
+              <h2 className='text-green text-xl'>Do you want to DELETE this order? Be careful, you can't undo this action.</h2>
+              <div className="cta_wrap flex gap-6 my-6">
+                <button onClick={deleteHandler} className='cursor-pointer  bg-black p-4 rounded '>Yes, DELETE</button>
                 <button onClick={modalCloseHandler} className='cursor-pointer  bg-black p-4 rounded '>Cancel</button>
               </div>
 

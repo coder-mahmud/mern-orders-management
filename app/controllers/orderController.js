@@ -77,7 +77,7 @@ const changeOrderStatus = async (req, res) => {
 
 const editOrder = async (req, res) => {
   console.log("editOrder route!")
-  const {orderId,orderItems,finalPrice,discount  } = req.body;
+  const {orderId,orderItems,finalPrice,discount, customerDetails  } = req.body;
   console.log("Body data:", orderId,orderItems,finalPrice,discount)
 
   try {
@@ -89,6 +89,7 @@ const editOrder = async (req, res) => {
     order.orderItems = orderItems || order.orderItems
     order.finalPrice = finalPrice || order.finalPrice
     order.discount = discount || order.discount
+    order.customerDetails = customerDetails || order.customerDetails
 
     const updatedOrder = await order.save();
 
@@ -102,7 +103,28 @@ const editOrder = async (req, res) => {
 }
 
 const deleteOrder = async (req, res) => {
-  res.status(200).json({message:"Delete Order route"})
+  const {orderId} = req.body
+  console.log("To delete order Id:", orderId );
+  try {
+    const deletedOrder = await Order.findByIdAndDelete(orderId);
+    
+    if (!deletedOrder) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Order deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error
+    });
+  }
 }
 
 

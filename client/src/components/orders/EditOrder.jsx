@@ -13,6 +13,7 @@ const EditOrder = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [totalBill, setTotalBill] = useState(0);
   const [discount, setDiscount] = useState(0);
+  const [customerDetails, setCustomerDetails] = useState(0);
 
   const { data, isLoading } = useGetOrderByIdQuery(orderId);
   const [editOrder, { isLoading: isEditOrderLoading }] = useEditOrderMutation();
@@ -24,6 +25,7 @@ const EditOrder = () => {
       setSelectedProducts(data.order.orderItems);
       setTotalBill(data.order.finalPrice);
       setDiscount(data.order.discount)
+      setCustomerDetails(data.order.customerDetails)
     }
   }, [data]);
 
@@ -60,6 +62,7 @@ const EditOrder = () => {
       orderItems: selectedProducts,
       finalPrice:totalBill,
       discount,
+      customerDetails
 
     };
     // console.log("Updated Order Data:", data);
@@ -85,10 +88,12 @@ const EditOrder = () => {
       {isEditOrderLoading && <Loader />}
 
       <div className="container">
-        <p><b>Customer Details: </b>{data.order.customerDetails}</p>
-        <p><b>Bill: </b>{totalBill}</p>
+        <p className='mb-4'><label className='mb-1 block'>Customer Details: </label>
+        <textarea className='w-full border border-gray-500 rounded p-4 min-h-32' name="" id="" value={customerDetails} onChange={(e) => setCustomerDetails(e.target.value)} ></textarea>
+        </p>
+        <p className='mb-2'><b>Bill: </b>{totalBill}</p>
 
-        <div className="single_input flex flex-col gap-2">
+        <div className="single_input flex flex-col gap-2 mb-2">
           <label htmlFor="deliveryCharge">Delivery Charge:</label>
           <select
             name="deliveryCharge"
@@ -101,26 +106,26 @@ const EditOrder = () => {
             <option value="120">120tk</option>
           </select>
         </div>
-        <div className="single_input flex flex-col gap-2">
+        <div className="single_input flex flex-col gap-2 mb-2">
           <label htmlFor="deliveryCharge">Discount:</label>
-          <input type="text" value={discount} onChange={(e) => setDiscount( e.target.value)} />
+          <input className='border border-gray-500 rounded p-4' type="text" value={discount} onChange={(e) => setDiscount( e.target.value)} />
         </div>
 
         {selectedProducts.length > 0 ? (
           <>
-            <p className="my-2">Products:</p>
+            <p className="mb-2 mt-6 ">Products:</p>
             <ul>
               {selectedProducts.map((item, index) => (
                 <li key={item._id} className='flex flex-col md:flex-row gap-3 items-center py-4 border-b border-gray-500 '>
-                  <div><span class="inline-block md:hidden">SL No. </span> {index + 1}</div>
-                  <div><span class="inline-block md:hidden">Name: </span> {item.name}</div>
+                  <div><span className="inline-block md:hidden">SL No. </span> {index + 1}</div>
+                  <div><span className="inline-block md:hidden">Name: </span> {item.name}</div>
                   <div className='flex gap-1'>
                     <button onClick={() => handleQuantityChange(item._id, Math.max(0.5, item.quantity - 0.5))} className="px-2 py-1 bg-gray-300 rounded text-black">-</button>
                     <span className='w-14 text-center'>{item.quantity.toFixed(1)}</span>
                     <button onClick={() => handleQuantityChange(item._id, item.quantity + 0.5)} className="px-2 py-1 bg-gray-300 rounded text-black">+</button>
                   </div>
-                  <div><span class="inline-block md:hidden">Unit Price: </span>  {item.price}</div>
-                  <div><span class="inline-block md:hidden">Total: </span>  {item.totalPrice}</div>
+                  <div><span className="inline-block md:hidden">Unit Price: </span>  {item.price}</div>
+                  <div><span className="inline-block md:hidden">Total: </span>  {item.totalPrice}</div>
                   <div onClick={() => removeItemHandler(item._id)}><Button text="Remove" /></div>
                 </li>
               ))}
