@@ -9,6 +9,7 @@ import hubRoutes from './routes/hubRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import hubStockRoutes from './routes/hubStockRoutes.js';
+import stockHistoryRoutes from './routes/stockHistoryRoutes.js';
 
 
 
@@ -42,11 +43,15 @@ app.use(cookieParser())
 
 app.get('/',(req,res) => res.status(200).json({message:"App is running"}))
 
+import "./cron/recordStockHistory.js";
+
+
 app.use('/user', userRoutes);
 app.use('/hub', hubRoutes);
 app.use('/product', productRoutes);
 app.use('/order', orderRoutes);
 app.use('/hubstock', hubStockRoutes);
+app.use('/stockhistory', stockHistoryRoutes);
 
 
 app.listen(5000, () => {console.log("server running")} )

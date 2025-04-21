@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 
 const hubHistorySchema = new mongoose.Schema(
@@ -11,4 +11,5 @@ const hubHistorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("HubHistory", hubHistorySchema);
+const StockHistory = mongoose.model("HubStockHistory", hubHistorySchema);
+export default StockHistory;

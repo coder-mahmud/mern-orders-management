@@ -158,4 +158,5 @@ const deductStockitem = async (req, res) => {
 
 
 
+
 export {createHubStock,editHubStock,getHubStock, createStockforHub, deductStockitem}

@@ -17,6 +17,7 @@ const HubOrderItem = ({order, users, index}) => {
   const [showLoader, setShowLoader] = useState(false)
   const [showDelivered, setShowDelivered] = useState(false)
   const [showCancelled, setShowCancelled] = useState(false)
+  const [showOffline, setShowOffline] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
 
 
@@ -63,6 +64,15 @@ const HubOrderItem = ({order, users, index}) => {
     setShowActions(false)
     setShowCancelled(true)
   }
+
+
+  const showOfflineHandler = () => {
+    document.body.style.overflow = 'hidden'
+    setShowActions(false)
+    setShowOffline(true)
+  }
+
+
   const showDeleteHandler = () => {
     document.body.style.overflow = 'hidden'
     setShowActions(false)
@@ -124,6 +134,28 @@ const HubOrderItem = ({order, users, index}) => {
     }
   }
 
+  const offlineHandler = async () => {
+    setShowLoader(true)
+    const data = {
+      status:"Offline Delivery",
+      orderId:order._id
+    }
+    // console.log("data",data)
+    try {
+      const apiRes = await orderStatus(data).unwrap();
+      console.log("apiRes", apiRes)
+      toast.success("Order marked as Offline Delivery!")
+    } catch (error) {
+      console.log("Error", error)
+      toast.error("Something went wrong!")
+    } finally {
+      document.body.style.overflow = 'auto'
+      setShowDelivered(false)
+      setShowOffline(false)
+      setShowLoader(false)
+    }
+  }
+
 
   const deleteHandler = async () => {
     setShowLoader(true)
@@ -166,6 +198,7 @@ const HubOrderItem = ({order, users, index}) => {
               <Link to={`/order/${order._id}`} className='border-b border-gray-700 py-2 px-4 text-center block'>View Details</Link>
               <Link to={`/order/edit/${order._id}`} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Edit Order</Link>
               <li onClick={showDeliveredHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Delivered</li>
+              <li onClick={showOfflineHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Offline Delivery</li>
               <li onClick={showCancelledHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Cancelled</li>
               <li onClick={showDeleteHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Delete Order</li>              
 
@@ -210,6 +243,25 @@ const HubOrderItem = ({order, users, index}) => {
               <h2 className='text-green text-xl'>Do you want to make this order as "Cancelled"? Be careful, you can't undo this action.</h2>
               <div className="cta_wrap flex gap-6 my-6">
                 <button onClick={cancelledHandler} className='cursor-pointer  bg-black p-4 rounded '>Yes, mark as Cancelled</button>
+                <button onClick={modalCloseHandler} className='cursor-pointer  bg-black p-4 rounded '>Cancel</button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+
+      )}
+
+      { showOffline && (
+        <div className="modal fixed top-0 left-0 w-screen h-screen z-20  backdrop-blur-xs block pt-20 lg:pt-[150px] pb-24 overflow-auto">
+          <div className="flex justify-center items-center">
+            <div className="modal_inner w-3xl max-w-[90%] bg-yellow-600  text-white relative p-10 rounded">
+              <img onClick={modalCloseHandler}  className='absolute w-12 cursor-pointer -top-14 right-0' src={Close} alt="" />
+              <h2 className='text-green text-xl'>Do you want to make this order as "Offline Delivery"?</h2>
+              <div className="cta_wrap flex gap-6 my-6">
+                <button onClick={offlineHandler} className='cursor-pointer  bg-black p-4 rounded '>Yes, mark as Offline Delivery</button>
                 <button onClick={modalCloseHandler} className='cursor-pointer  bg-black p-4 rounded '>Cancel</button>
               </div>
 

@@ -26,7 +26,7 @@ const SingleHubDetails = () => {
   const {id} = useParams('id');
   
   // console.log("hubId",id)
-  const [hubProducts, setHubProducts] = useState([]);
+  // const [hubProducts, setHubProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [showHubEdit, setShowHubEdit] = useState(false)
   const [deliveryDate, setDeliveryDate] = useState(new Date());
@@ -50,9 +50,9 @@ const SingleHubDetails = () => {
 
   useEffect(() => {
 
-    if(!isLoading){
-      setHubProducts(data.hub.stock.map((s) => s.productId));
-    }
+    // if(!isLoading){
+    //   setHubProducts(data.hub.stock.map((s) => s.productId));
+    // }
 
   },[isLoading, deliveryDate])
 
@@ -213,9 +213,9 @@ const SingleHubDetails = () => {
 
   // console.log("totalChickenBallQuantity",totalChickenBallQuantity)
 
-  const toAddProducts =  productData.products.filter(product => 
-    !hubProducts.some(hubProduct => hubProduct === product._id)
-  );
+  // const toAddProducts =  productData.products.filter(product => 
+  //   !hubProducts.some(hubProduct => hubProduct === product._id)
+  // );
 
 
 
@@ -418,7 +418,7 @@ const SingleHubDetails = () => {
         
         <div className="container">
 
-          <h1 className="text-xl font-semibold mb-6">{data.hub.name}</h1>
+          <h1 className="text-xl font-semibold mb-6">{data?.hub?.name}</h1>
           
           <div className="hub_header flex gap-8 items-center mb-6">
             
@@ -542,7 +542,7 @@ const SingleHubDetails = () => {
           </div>) }
           
 
-          {showHubEdit && (<>
+          {/* {showHubEdit && (<>
             <p className="mb-4">Current Product Stock:</p>
             {data.hub.stock.map(stock => <HubProductStockItem key={stock._id} products={productData.products} stock={stock} hubId={data.hub._id} />)}
 
@@ -578,7 +578,7 @@ const SingleHubDetails = () => {
             ) : ""}
           
           
-          </>)}
+          </>)} */}
           
         </div>
 

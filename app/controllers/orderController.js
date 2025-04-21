@@ -63,7 +63,7 @@ const changeOrderStatus = async (req, res) => {
   try {
     const order = await Order.findById(orderId);
     order.orderStatus = status;
-    if(status == 'Delivered'){
+    if(status == 'Delivered' || status == "Offline Delivery"){
 
       const hubId = order.hub;
       const updates = order.orderItems.map((item) => ({

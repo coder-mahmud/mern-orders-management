@@ -39,7 +39,7 @@ const orderSchema = new mongoose.Schema(
     customerDetails: { type: String, required:true },
     orderType: { type: String, enum: ["Offline", "PandGo"] },
     orderSource: { type: String, enum: ["Facebook", "Website"] },
-    orderStatus: { type: String, enum: ["Pending", "Delivered", "Cancelled"], default: "Pending"  },
+    orderStatus: { type: String, enum: ["Pending", "Delivered", "Cancelled","Offline Delivery"], default: "Pending"  },
     websiteOrderId: { type: Number, },
     discount: { type: Number },
     orderPrice: { type: Number, required: true },
