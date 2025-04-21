@@ -1,5 +1,6 @@
 import Order from "../models/orderModel.js";
 import mongoose from "mongoose";
+import HubStock from "../models/hubStockModel.js";
 
 
 const getOrders = async (req, res) => {
@@ -57,11 +58,28 @@ const createOrder = async (req, res) => {
 
 const changeOrderStatus = async (req, res) => {
   const {orderId, status} = req.body
-  // console.log("Status", status)
+  console.log("Status", status)
 
   try {
     const order = await Order.findById(orderId);
     order.orderStatus = status;
+    if(status == 'Delivered'){
+
+      const hubId = order.hub;
+      const updates = order.orderItems.map((item) => ({
+        updateOne: {
+          filter: { hubId, productId: item.productId },
+          update: { $inc: { quantity: -item.quantity } },
+        },
+      }));
+  
+      await HubStock.bulkWrite(updates);
+
+
+
+    }
+
+
     await order.save();
     res.status(200).json({message:"Success!", order})
   } catch (error) {

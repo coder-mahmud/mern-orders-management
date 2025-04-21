@@ -74,6 +74,8 @@ const Home = () => {
   // console.log('Data', data)
   // console.log('hubData', hubData)
 
+  const refinedProducts = data.products.filter(product => product.name !=='Atar Ruti 20 piece')
+  console.log("refinedProducts",refinedProducts)
   
 
   const handleCheckboxChange = (e,productName,price) => {
@@ -213,7 +215,7 @@ const Home = () => {
               <label htmlFor="">Products:</label>
               <div className="products_wrap flex flex-col sm:flex-row gap-4 flex-wrap">
                 
-                {data.products.map(product => <div className='single_prodcut_select flex gap-1' key={product._id}>
+                {refinedProducts.map(product => <div className='single_prodcut_select flex gap-1' key={product._id}>
                   <input  type="checkbox" value={product._id} id={product.name} checked={selectedProducts.some(item => item.productId === product._id)} onChange={(e) => handleCheckboxChange(e,product.name, product.price)} /> 
                   <label htmlFor={product.name}>{product.name}</label>
                 </div> )}

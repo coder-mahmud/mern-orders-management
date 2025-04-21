@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGetOrderByIdQuery, useEditOrderMutation } from '../../slices/orderApiSclice';
+import { useGetAllProductQuery } from '../../slices/productApiSlice';
 import Loader from '../shared/Loader';
 import Button from '../Button';
 import {toast} from 'react-toastify'
@@ -17,6 +18,7 @@ const EditOrder = () => {
 
   const { data, isLoading } = useGetOrderByIdQuery(orderId);
   const [editOrder, { isLoading: isEditOrderLoading }] = useEditOrderMutation();
+  const {data:productsData, isLoading:isProductLoading} = useGetAllProductQuery()
 
   // Fetch order details & set initial state
   useEffect(() => {
@@ -51,9 +53,17 @@ const EditOrder = () => {
     setSelectedProducts(prevItems => prevItems.filter(item => item._id !== itemId));
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading || isProductLoading) return <Loader />;
 
-  console.log("data",data)
+  // console.log("Orders data",data)
+  // console.log("productsData",productsData)
+  const allProducts = productsData.products;
+  const orderProducts = data.order.orderItems.map(item => item.name);
+  console.log("orderProducts",orderProducts)
+  console.log("allProducts",allProducts)
+  //const toAddProducts = allProducts.filter(product => product.name !=="")
+  // const toAddProducts = allProducts.filter(item => !orderProducts.includes(item.name));
+  // console.log("toAddProducts",toAddProducts)
 
   const updateOrderHandler = async () => {
     
@@ -82,6 +92,17 @@ const EditOrder = () => {
 
 
   };
+
+  const handleCheckboxChange = (e,productName,price) => {
+    const { value, checked } = e.target;
+    
+    if (checked) {
+      setSelectedProducts([...selectedProducts, {name:productName, productId:value, quantity:1, price, totalPrice:(1 * price)}])
+    } else {
+      setSelectedProducts(selectedProducts.filter(item => item.productId !== value ));
+    }
+  };
+
 
   return (
     <div className='bg-gray-800 text-white min-h-[95vh] py-14'>
@@ -132,6 +153,18 @@ const EditOrder = () => {
             </ul>
           </>
         ) : "No product found for this order!"}
+
+            <div className="form_row flex flex-col gap-2 mb-6 mt-6">
+              <label htmlFor="">Add Products:</label>
+              <div className="products_wrap flex flex-col sm:flex-row gap-4 flex-wrap">
+                
+                {allProducts.map(product => <div className='single_prodcut_select flex gap-1' key={product._id}>
+                  <input  type="checkbox" value={product._id} id={product.name} checked={selectedProducts.some(item => item.productId === product._id)} onChange={(e) => handleCheckboxChange(e,product.name, product.price)} /> 
+                  <label htmlFor={product.name}>{product.name}</label>
+                </div> )}
+                
+              </div>
+            </div> 
 
         <div onClick={updateOrderHandler} className='my-10 max-w-[250px] mx-auto md:mr-auto'><Button classNames="text-center" text="Update Order" /></div>
       </div>

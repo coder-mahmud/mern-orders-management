@@ -17,6 +17,7 @@ import { jsPDF } from 'jspdf';
 // import NotoSansBengali from '../../components/NotoSansBengali-VariableFont'
 import Kalpurush from '../../components/kalpurush-normal'
 // import Rupali from '../../components/SiyamRupaliRegular.js'
+import { Link } from 'react-router-dom';
 
 
 
@@ -160,7 +161,51 @@ const SingleHubDetails = () => {
     return total + (chickenBallItem ? chickenBallItem.quantity : 0);
   }, 0);
 
+  const orderQuantityCount = (orderData,itemName) => {
+    return orderData.reduce((total, order) => {
+      const chickenBallItem = order.orderItems.find(item => item.name === itemName);
+      return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+    }, 0);
+  }
 
+
+
+  //Delivered items count: deliveredOrders
+
+  const deliveredBall = orderQuantityCount(deliveredOrders, 'Chicken Ball');
+  const deliveredNuggets = orderQuantityCount(deliveredOrders, 'Chicken Nuggets');
+  const deliveredSausage = orderQuantityCount(deliveredOrders, 'Chicken Sausage');
+  const deliveredPorota = orderQuantityCount(deliveredOrders, 'Chicken Porota');
+  const deliveredMayonnaise = orderQuantityCount(deliveredOrders, 'Supreme Mayonnaise');
+  const deliveredSalami = orderQuantityCount(deliveredOrders, 'Salami');
+  const deliveredSamucha = orderQuantityCount(deliveredOrders, 'Samucha');
+  const deliveredMerination = orderQuantityCount(deliveredOrders, 'Chicken Merination');
+  const deliveredPetty = orderQuantityCount(deliveredOrders, 'Burger Petty');
+  const deliveredRoll = orderQuantityCount(deliveredOrders, 'Spring Roll');
+  const deliveredChaap = orderQuantityCount(deliveredOrders, 'Chicken Chaap');
+  const deliveredFriedChicken = orderQuantityCount(deliveredOrders, 'Fried Chicken');
+  const deliveredMomo = orderQuantityCount(deliveredOrders, 'Momo');
+  const deliveredKaragiChicken = orderQuantityCount(deliveredOrders, 'Karagi Chicken');
+  const deliveredBotiKabab = orderQuantityCount(deliveredOrders, 'Boti Kabab');
+  const deliveredMojorellaCheese = orderQuantityCount(deliveredOrders, 'Mojorella Cheese');
+
+  //Pending items cound
+  const pendingBall = orderQuantityCount(pendingOrders, 'Chicken Ball');
+  const pendingNuggets = orderQuantityCount(pendingOrders, 'Chicken Nuggets');
+  const pendingSausage = orderQuantityCount(pendingOrders, 'Chicken Sausage');
+  const pendingPorota = orderQuantityCount(pendingOrders, 'Chicken Porota');
+  const pendingMayonnaise = orderQuantityCount(pendingOrders, 'Supreme Mayonnaise');
+  const pendingSalami = orderQuantityCount(pendingOrders, 'Salami');
+  const pendingSamucha = orderQuantityCount(pendingOrders, 'Samucha');
+  const pendingMerination = orderQuantityCount(pendingOrders, 'Chicken Merination');
+  const pendingPetty = orderQuantityCount(pendingOrders, 'Burger Petty');
+  const pendingRoll = orderQuantityCount(pendingOrders, 'Spring Roll');
+  const pendingChaap = orderQuantityCount(pendingOrders, 'Chicken Chaap');
+  const pendingFriedChicken = orderQuantityCount(pendingOrders, 'Fried Chicken');
+  const pendingMomo = orderQuantityCount(pendingOrders, 'Momo');
+  const pendingKaragiChicken = orderQuantityCount(pendingOrders, 'Karagi Chicken');
+  const pendingBotiKabab = orderQuantityCount(pendingOrders, 'Boti Kabab');
+  const pendingMojorellaCheese = orderQuantityCount(pendingOrders, 'Mojorella Cheese');
 
 
 
@@ -375,12 +420,18 @@ const SingleHubDetails = () => {
 
           <h1 className="text-xl font-semibold mb-6">{data.hub.name}</h1>
           
-          <div className="flex gap-2 items-center mb-6">
-            <p className='mb-2'>Date:</p>
-            <DatePicker className='date_input mb-6 h-11 flex items-center border border-gray-500 rounded px-4' selected={deliveryDate} onChange={(date) => setDeliveryDate(date)} dateFormat="dd/MM/yyyy" />
-          </div>
+          <div className="hub_header flex gap-8 items-center mb-6">
+            
+            <div className="flex gap-2 items-center ">
+              <p className='mb-2'>Date:</p>
+              <DatePicker className='date_input mb-6 h-11 flex items-center border border-gray-500 rounded px-4' selected={deliveryDate} onChange={(date) => setDeliveryDate(date)} dateFormat="dd/MM/yyyy" />
+            </div>
 
-          
+            <Link className='rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold' to={`/hubs/${id}/stock`}>Hub Stock</Link>
+
+            
+
+          </div>
           {hubOrder.orders.length > 0 ? (
             <button className='border rounded border-gray-500 p-4 cursor-pointer ' onClick={() => generatePDF()}>Download Report</button>
           ) : ""}
@@ -397,23 +448,81 @@ const SingleHubDetails = () => {
               <p className="t">Total Delivered: {deliveredOrders.length}</p>
               <p className="t">Total Cancelled: {cancelledOrders.length}</p>
               
-              <p className="section_title text-lg font-semibold mt-6">Orders Items:</p>
-              {totalChickenBallQuantity > 0 ? <p className="mb-1">Chicken Ball: {totalChickenBallQuantity}</p> : ""}
-              {totalChickenNuggetsQuantity > 0 ? <p className="mb-1">Chicken Nuggets: {totalChickenNuggetsQuantity}</p> : ""}
-              {totalChickenSausageQuantity > 0 ? <p className="mb-1">Chicken Sausage: {totalChickenSausageQuantity}</p> : ""}
-              {totalChickenParotaQuantity > 0 ? <p className="mb-1">Chicken Parota: {totalChickenParotaQuantity}</p> : ""}
-              {totalSupremeMayonnaiseQuantity > 0 ? <p className="mb-1">Supreme Mayonnaise: {totalSupremeMayonnaiseQuantity}</p> : ""}
-              {totalSalamiQuantity > 0 ? <p className="mb-1">Salami: {totalSalamiQuantity}</p> : ""}
-              {totalSamuchaQuantity > 0 ? <p className="mb-1">Samucha: {totalSamuchaQuantity}</p> : ""}
-              {totalChickenMerinationQuantity > 0 ? <p className="mb-1">Chicken Merination: {totalChickenMerinationQuantity}</p> : ""}
-              {totalBurgerPettyQuantity > 0 ? <p className="mb-1">Burger Petty: {totalBurgerPettyQuantity}</p> : ""}
-              {totalSpringRollQuantity > 0 ? <p className="mb-1">Spring Roll: {totalSpringRollQuantity}</p> : ""}
-              {totalChickenChaapQuantity > 0 ? <p className="mb-1">Chicken Chaap: {totalChickenChaapQuantity}</p> : ""}
-              {totalFriedChickenQuantity > 0 ? <p className="mb-1">Fried Chicken: {totalFriedChickenQuantity}</p> : ""}
-              {totalMomoQuantity > 0 ? <p className="mb-1">Momo: {totalMomoQuantity}</p> : ""}
-              {totalKaragiChickenQuantity > 0 ? <p className="mb-1">Karagi Chicken: {totalKaragiChickenQuantity}</p> : ""}
-              {totalBotiKababQuantity > 0 ? <p className="mb-1">Boti Kabab: {totalBotiKababQuantity}</p> : ""}
-              {totalMojorellaCheeseQuantity > 0 ? <p className="mb-1">Mojorella Cheese: {totalMojorellaCheeseQuantity}</p> : ""}
+              <div className="products_count_wrap">
+
+                <div className="product_count ">
+                  <p className="section_title text-lg font-semibold mt-6">Orders Items:</p>
+                  {totalChickenBallQuantity > 0 ? <p className="mb-1">Chicken Ball: {totalChickenBallQuantity}</p> : ""}
+                  {totalChickenNuggetsQuantity > 0 ? <p className="mb-1">Chicken Nuggets: {totalChickenNuggetsQuantity}</p> : ""}
+                  {totalChickenSausageQuantity > 0 ? <p className="mb-1">Chicken Sausage: {totalChickenSausageQuantity}</p> : ""}
+                  {totalChickenParotaQuantity > 0 ? <p className="mb-1">Chicken Parota: {totalChickenParotaQuantity}</p> : ""}
+                  {totalSupremeMayonnaiseQuantity > 0 ? <p className="mb-1">Supreme Mayonnaise: {totalSupremeMayonnaiseQuantity}</p> : ""}
+                  {totalSalamiQuantity > 0 ? <p className="mb-1">Salami: {totalSalamiQuantity}</p> : ""}
+                  {totalSamuchaQuantity > 0 ? <p className="mb-1">Samucha: {totalSamuchaQuantity}</p> : ""}
+                  {totalChickenMerinationQuantity > 0 ? <p className="mb-1">Chicken Merination: {totalChickenMerinationQuantity}</p> : ""}
+                  {totalBurgerPettyQuantity > 0 ? <p className="mb-1">Burger Petty: {totalBurgerPettyQuantity}</p> : ""}
+                  {totalSpringRollQuantity > 0 ? <p className="mb-1">Spring Roll: {totalSpringRollQuantity}</p> : ""}
+                  {totalChickenChaapQuantity > 0 ? <p className="mb-1">Chicken Chaap: {totalChickenChaapQuantity}</p> : ""}
+                  {totalFriedChickenQuantity > 0 ? <p className="mb-1">Fried Chicken: {totalFriedChickenQuantity}</p> : ""}
+                  {totalMomoQuantity > 0 ? <p className="mb-1">Momo: {totalMomoQuantity}</p> : ""}
+                  {totalKaragiChickenQuantity > 0 ? <p className="mb-1">Karagi Chicken: {totalKaragiChickenQuantity}</p> : ""}
+                  {totalBotiKababQuantity > 0 ? <p className="mb-1">Boti Kabab: {totalBotiKababQuantity}</p> : ""}
+                  {totalMojorellaCheeseQuantity > 0 ? <p className="mb-1">Mojorella Cheese: {totalMojorellaCheeseQuantity}</p> : ""}
+                </div>
+
+                <div className="product_count ">
+                  <p className="section_title text-lg font-semibold mt-6">Delivered Items:</p>
+                  {deliveredOrders.length > 0 ? <>
+                    {deliveredBall > 0 ? <p className="mb-1">Chicken Ball: {deliveredBall}</p> : ""}
+                  {deliveredNuggets > 0 ? <p className="mb-1">Chicken Nuggets: {deliveredNuggets}</p> : ""}
+                  {deliveredSausage > 0 ? <p className="mb-1">Chicken Sausage: {deliveredSausage}</p> : ""}
+                  {deliveredPorota > 0 ? <p className="mb-1">Chicken Parota: {deliveredPorota}</p> : ""}
+                  {deliveredMayonnaise > 0 ? <p className="mb-1">Supreme Mayonnaise: {deliveredMayonnaise}</p> : ""}
+                  {deliveredSalami > 0 ? <p className="mb-1">Salami: {deliveredSalami}</p> : ""}
+                  {deliveredSamucha > 0 ? <p className="mb-1">Samucha: {deliveredSamucha}</p> : ""}
+                  {deliveredMerination > 0 ? <p className="mb-1">Chicken Merination: {deliveredMerination}</p> : ""}
+                  {deliveredPetty > 0 ? <p className="mb-1">Burger Petty: {deliveredPetty}</p> : ""}
+                  {deliveredRoll > 0 ? <p className="mb-1">Spring Roll: {deliveredRoll}</p> : ""}
+                  {deliveredChaap > 0 ? <p className="mb-1">Chicken Chaap: {deliveredChaap}</p> : ""}
+                  {deliveredFriedChicken > 0 ? <p className="mb-1">Fried Chicken: {deliveredFriedChicken}</p> : ""}
+                  {deliveredMomo > 0 ? <p className="mb-1">Momo: {deliveredMomo}</p> : ""}
+                  {deliveredKaragiChicken > 0 ? <p className="mb-1">Karagi Chicken: {deliveredKaragiChicken}</p> : ""}
+                  {deliveredBotiKabab > 0 ? <p className="mb-1">Boti Kabab: {deliveredBotiKabab}</p> : ""}
+                  {deliveredMojorellaCheese > 0 ? <p className="mb-1">Mojorella Cheese: {deliveredMojorellaCheese}</p> : ""}                  
+                  </> : 'No delivered product found.'}
+
+
+                </div>
+
+
+                <div className="product_count ">
+                  <p className="section_title text-lg font-semibold mt-6">Pending Items:</p>
+                  {pendingOrders.length > 0 ? <>
+                    {pendingBall > 0 ? <p className="mb-1">Chicken Ball: {pendingBall}</p> : ""}
+                  {pendingNuggets > 0 ? <p className="mb-1">Chicken Nuggets: {pendingNuggets}</p> : ""}
+                  {pendingSausage > 0 ? <p className="mb-1">Chicken Sausage: {pendingSausage}</p> : ""}
+                  {pendingPorota > 0 ? <p className="mb-1">Chicken Parota: {pendingPorota}</p> : ""}
+                  {pendingMayonnaise > 0 ? <p className="mb-1">Supreme Mayonnaise: {pendingMayonnaise}</p> : ""}
+                  {pendingSalami > 0 ? <p className="mb-1">Salami: {pendingSalami}</p> : ""}
+                  {pendingSamucha > 0 ? <p className="mb-1">Samucha: {pendingSamucha}</p> : ""}
+                  {pendingMerination > 0 ? <p className="mb-1">Chicken Merination: {pendingMerination}</p> : ""}
+                  {pendingPetty > 0 ? <p className="mb-1">Burger Petty: {pendingPetty}</p> : ""}
+                  {pendingRoll > 0 ? <p className="mb-1">Spring Roll: {pendingRoll}</p> : ""}
+                  {pendingChaap > 0 ? <p className="mb-1">Chicken Chaap: {pendingChaap}</p> : ""}
+                  {pendingFriedChicken > 0 ? <p className="mb-1">Fried Chicken: {pendingFriedChicken}</p> : ""}
+                  {pendingMomo > 0 ? <p className="mb-1">Momo: {pendingMomo}</p> : ""}
+                  {pendingKaragiChicken > 0 ? <p className="mb-1">Karagi Chicken: {pendingKaragiChicken}</p> : ""}
+                  {pendingBotiKabab > 0 ? <p className="mb-1">Boti Kabab: {pendingBotiKabab}</p> : ""}
+                  {pendingMojorellaCheese > 0 ? <p className="mb-1">Mojorella Cheese: {pendingMojorellaCheese}</p> : ""}                  
+                  </> : 'No pending product found.'}
+
+
+                </div>
+
+
+
+
+              </div>
 
             </div>
 

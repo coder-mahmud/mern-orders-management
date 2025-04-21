@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 import Hub from "./hubModel.js";
 import Product from "./productModel.js";
 
@@ -12,4 +12,5 @@ const hubStockSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("HubStock", hubStockSchema);
+const HubStock = mongoose.model("HubStock", hubStockSchema);
+export default HubStock;

@@ -115,11 +115,20 @@ const Orders = () => {
     return total + (chickenBallItem ? chickenBallItem.quantity : 0);
   }, 0);
 
+  const totalAtarRuti20piece = orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Atar Ruti 20 piece");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
 
+  const totalAtarruti = orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Atar ruti");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
 
-
-
-
+  const totalFrenchFry = orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "French fry");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
 
 
 
@@ -161,7 +170,14 @@ const Orders = () => {
               {totalMomoQuantity > 0 ? <p class="mb-1">Momo: {totalMomoQuantity}</p> : ""}
               {totalKaragiChickenQuantity > 0 ? <p class="mb-1">Karagi Chicken: {totalKaragiChickenQuantity}</p> : ""}
               {totalBotiKababQuantity > 0 ? <p class="mb-1">Boti Kabab: {totalBotiKababQuantity}</p> : ""}
+              
               {totalMojorellaCheeseQuantity > 0 ? <p class="mb-1">Mojorella Cheese: {totalMojorellaCheeseQuantity}</p> : ""}
+
+              {totalAtarRuti20piece > 0 ? <p class="mb-1">Atar Ruti 20 piece: {totalAtarRuti20piece}</p> : ""}
+
+              {totalAtarruti > 0 ? <p class="mb-1">Atar ruti: {totalAtarruti}</p> : ""}
+
+              {totalFrenchFry > 0 ? <p class="mb-1">French Fry: {totalFrenchFry}</p> : ""}
 
             </div>
 

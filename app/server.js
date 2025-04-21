@@ -8,6 +8,7 @@ import userRoutes from './routes/userRoutes.js';
 import hubRoutes from './routes/hubRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import hubStockRoutes from './routes/hubStockRoutes.js';
 
 
 
@@ -45,6 +46,7 @@ app.use('/user', userRoutes);
 app.use('/hub', hubRoutes);
 app.use('/product', productRoutes);
 app.use('/order', orderRoutes);
+app.use('/hubstock', hubStockRoutes);
 
 
 app.listen(5000, () => {console.log("server running")} )
