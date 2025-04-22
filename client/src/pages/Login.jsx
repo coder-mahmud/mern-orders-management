@@ -53,9 +53,15 @@ const Login = () => {
     try {
       const apiRes = await login(data).unwrap();
       console.log("apiRes:", apiRes)
-      toast.success("Login successful!")
-      dispatch(setCredentials(apiRes))
-      navigate('/');
+      if(apiRes.status == 'active'){
+        toast.success("Login successful!")
+        dispatch(setCredentials(apiRes))
+        navigate('/');
+        
+      }else{
+        toast.error("Your account is not approved yet! Please contact admins.")
+      }
+      
     } catch (error) {
       console.log(error);
       toast.error(error.data.message)

@@ -69,7 +69,10 @@ const changeOrderStatus = async (req, res) => {
       const updates = order.orderItems.map((item) => ({
         updateOne: {
           filter: { hubId, productId: item.productId },
-          update: { $inc: { quantity: -item.quantity } },
+          update: { 
+            $inc: { quantity: -item.quantity },
+            $max: { quantity: 0 }
+          },
         },
       }));
   
@@ -95,8 +98,8 @@ const changeOrderStatus = async (req, res) => {
 
 const editOrder = async (req, res) => {
   console.log("editOrder route!")
-  const {orderId,orderItems,finalPrice,discount, customerDetails  } = req.body;
-  console.log("Body data:", orderId,orderItems,finalPrice,discount)
+  const {orderId,orderItems,finalPrice,discount, customerDetails,deliveryDate  } = req.body;
+  // console.log("Body data:", orderId,orderItems,finalPrice,discount)
 
   try {
     const order = await Order.findById(orderId);
@@ -108,6 +111,7 @@ const editOrder = async (req, res) => {
     order.finalPrice = finalPrice || order.finalPrice
     order.discount = discount || order.discount
     order.customerDetails = customerDetails || order.customerDetails
+    order.deliveryDate = deliveryDate || order.deliveryDate
 
     const updatedOrder = await order.save();
 

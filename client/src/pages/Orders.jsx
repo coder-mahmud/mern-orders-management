@@ -18,13 +18,14 @@ const Orders = () => {
     console.log("error:", error)
   }
 
-  // console.log("data",data)
+  console.log("data",data)
 
   const orders = data.orders;
 
   const pendingOrders = orders.filter(order => order.orderStatus == 'Pending')
   const deliveredOrders = orders.filter(order => order.orderStatus == 'Delivered')
   const cancelledOrders = orders.filter(order => order.orderStatus == 'Cancelled')
+  const offlineOrders = orders.filter(order => order.orderStatus == 'Offline Delivery')
   // const totalBallRequired = orders.reduce((prev,cur) => prev.)
 
   const totalChickenBallQuantity = orders.reduce((total, order) => {
@@ -152,6 +153,7 @@ const Orders = () => {
               
               <p className="t">Total Pending: {pendingOrders.length}</p>
               <p className="t">Total Delivered: {deliveredOrders.length}</p>
+              <p className="t">Offline Delivery: {offlineOrders.length}</p>
               <p className="t">Total Cancelled: {cancelledOrders.length}</p>
               
               <p className="section_title text-lg font-semibold mt-6">Orders Items:</p>

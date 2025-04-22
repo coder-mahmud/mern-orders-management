@@ -20,11 +20,17 @@ const Home = () => {
 
   //const userName = useSelector(state =>  state.auth.userInfo.name);
   const userId = useSelector(state =>  state?.auth?.userInfo?.id);
-  console.log("userId",userId)
+  // console.log("userId",userId)
 
   if(!userId){
     console.log("No user found, returning to login")
     return <Navigate to="/login" replace />;
+  }
+
+  const userRole =  useSelector(state =>  state?.auth?.userInfo?.role);
+  // console.log("Role", userRole)
+  if(userRole == 'user'){
+    return <Navigate to="/hubs" replace />;
   }
 
   const getTomorrow = () => {

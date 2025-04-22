@@ -4,7 +4,7 @@ import { useLogoutMutation  } from '../../slices/userApiSlice'
 import { toast } from 'react-toastify'
 import Loader from './Loader'
 import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { clearCredential } from '../../slices/authSlice'
 import Logo from '../../assets/images/PremiumLogo.svg'
 import UserImage from '../../assets/images/User.svg'
@@ -17,6 +17,8 @@ const Header = () => {
   const [logout,{isLoading}] = useLogoutMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const userRole =  useSelector(state =>  state?.auth?.userInfo?.role);
 
   const logoutHandler = async () => {
     try {
@@ -47,10 +49,11 @@ const Header = () => {
       <div className="container flex justify-between items-center py-3">
         <Link to="/"><img className='w-12' src={Logo} alt="" /></Link>
         <ul className='flex gap-2 font-semibold items-center'>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/products">Products</Link></li>
+          {userRole !=='user' ? <li><Link to="/">Home</Link></li> : '' }
+          {userRole !=='user' ? <li><Link to="/products">Products</Link></li> : '' }
           <li><Link to="/hubs">Hubs</Link></li>
-          <li><Link to="/orders">Orders</Link></li>
+          {userRole !=='user' ? <li><Link to="/orders">Orders</Link></li> : '' }
+          
           <li  ref={dropdownRef} className='relative'>
             <a onClick={showUserOptionsHandler} className='cursor-pointer' ><img className='w-8' src={UserImage} alt="" /></a>
             {showUserOptions && (

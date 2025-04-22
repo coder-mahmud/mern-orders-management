@@ -59,7 +59,8 @@ const userLogin = async (req,res) => {
         username:user.username,
         email: user.email,
         role:user.role,
-        id:user._id
+        id:user._id,
+        status:user.status
       })
       // res.status(200).json({
       //   ...user.toObject(), // Convert user to a plain object
@@ -243,6 +244,8 @@ const getAllUser = async (req,res) => {
 
 
 }
+
+
 
 
 export {createUser,userLogin,userLogOut, userProfile, userEdit, verifyUser, resetPasswordRequest, resetPassword, getAllUser}

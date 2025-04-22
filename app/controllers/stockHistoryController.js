@@ -38,7 +38,7 @@ const getServerTime = async (req, res) => {
   const now = new Date();
   console.log("🕒 Server time:", now.toString());
   
-  res.status(200).json({message:"success"})
+  res.status(200).json({message:"success", time: now.toString()})
   
   
 }

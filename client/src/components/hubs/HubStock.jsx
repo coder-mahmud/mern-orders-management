@@ -11,7 +11,7 @@ const HubStock = () => {
   // console.log("Hub Id:", id)
   const [stocks, setStocks] = useState([]);
   const today = dayjs(new Date()).format('YYYY-MM-DD');
-  // console.log("today",today)
+  console.log("today",today)
 
   const {data:historyData, isLoading:historyLoading } = useGetHubStockHistoryQuery({hubId:id, date:today })
 
@@ -35,7 +35,7 @@ const HubStock = () => {
 
 
   // console.log("data",data)
-  // console.log("historyData",historyData)
+  console.log("historyData",historyData)
   
   // console.log("Name", stocks[0]?.hubId?.name)
 

@@ -5,7 +5,7 @@ import Loader from "../shared/Loader";
 import {toast} from 'react-toastify'
 
 const HubStockItem = ({ item }) => {
-  console.log("Item from single stock item", item)
+  // console.log("Item from single stock item", item)
   const [showUpdate, setShowUpdate] = useState(false);
   const [stockItem,setStockItem] = useState(item)
   const [showLoader,setShowLoader] = useState(false)
@@ -16,7 +16,7 @@ const HubStockItem = ({ item }) => {
   const handleChange = (e) => {
     console.log("Changing data:", e.target.value)
     
-    let updated = {...stockItem, quantity:parseInt(e.target.value, 10) || 0};
+    let updated = {...stockItem, quantity:parseFloat(e.target.value, 10) || 0};
     setStockItem(updated);
   };
 

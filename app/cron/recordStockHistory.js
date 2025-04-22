@@ -3,7 +3,7 @@ import HubStock from "../models/hubStockModel.js";
 import StockHistory from "../models/stockHistoryModel.js";
 
 // Run every day at 11:59 PM
-cron.schedule("58 17 * * *", async () => {
+cron.schedule("27 9 * * *", async () => {
   console.log("⏰ Running daily stock snapshot...");
 
   try {

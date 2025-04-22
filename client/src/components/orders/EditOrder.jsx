@@ -5,6 +5,8 @@ import { useGetAllProductQuery } from '../../slices/productApiSlice';
 import Loader from '../shared/Loader';
 import Button from '../Button';
 import {toast} from 'react-toastify'
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const EditOrder = () => {
   const params = useParams();
@@ -15,6 +17,7 @@ const EditOrder = () => {
   const [totalBill, setTotalBill] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [customerDetails, setCustomerDetails] = useState(0);
+  const [deliveryDate, setDeliveryDate] = useState();
 
   const { data, isLoading } = useGetOrderByIdQuery(orderId);
   const [editOrder, { isLoading: isEditOrderLoading }] = useEditOrderMutation();
@@ -28,6 +31,7 @@ const EditOrder = () => {
       setTotalBill(data.order.finalPrice);
       setDiscount(data.order.discount)
       setCustomerDetails(data.order.customerDetails)
+      setDeliveryDate(data.order.deliveryDate)
     }
   }, [data]);
 
@@ -55,12 +59,12 @@ const EditOrder = () => {
 
   if (isLoading || isProductLoading) return <Loader />;
 
-  // console.log("Orders data",data)
+  console.log("Orders data",data)
   // console.log("productsData",productsData)
   const allProducts = productsData.products;
   const orderProducts = data.order.orderItems.map(item => item.name);
-  console.log("orderProducts",orderProducts)
-  console.log("allProducts",allProducts)
+  // console.log("orderProducts",orderProducts)
+  // console.log("allProducts",allProducts)
   //const toAddProducts = allProducts.filter(product => product.name !=="")
   // const toAddProducts = allProducts.filter(item => !orderProducts.includes(item.name));
   // console.log("toAddProducts",toAddProducts)
@@ -72,7 +76,8 @@ const EditOrder = () => {
       orderItems: selectedProducts,
       finalPrice:totalBill,
       discount,
-      customerDetails
+      customerDetails,
+      deliveryDate
 
     };
     // console.log("Updated Order Data:", data);
@@ -130,6 +135,11 @@ const EditOrder = () => {
         <div className="single_input flex flex-col gap-2 mb-2">
           <label htmlFor="deliveryCharge">Discount:</label>
           <input className='border border-gray-500 rounded p-4' type="text" value={discount} onChange={(e) => setDiscount( e.target.value)} />
+        </div>
+
+        <div className="single_input flex flex-col gap-2 mb-2">
+          <label htmlFor="deliveryCharge">Delivery Date:</label>
+          <DatePicker className='date_input mb-6 h-11 flex items-center border border-gray-500 rounded px-4' selected={deliveryDate} onChange={(date) => setDeliveryDate(date)} dateFormat="dd/MM/yyyy" />
         </div>
 
         {selectedProducts.length > 0 ? (

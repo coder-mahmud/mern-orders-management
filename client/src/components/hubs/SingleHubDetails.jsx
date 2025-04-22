@@ -18,12 +18,14 @@ import { jsPDF } from 'jspdf';
 import Kalpurush from '../../components/kalpurush-normal'
 // import Rupali from '../../components/SiyamRupaliRegular.js'
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 
 
 
 const SingleHubDetails = () => {
   const {id} = useParams('id');
+  const userRole =  useSelector(state =>  state?.auth?.userInfo?.role);
   
   // console.log("hubId",id)
   // const [hubProducts, setHubProducts] = useState([]);
@@ -71,6 +73,7 @@ const SingleHubDetails = () => {
   const pendingOrders = hubOrder.orders.filter(order => order.orderStatus == 'Pending')
   const deliveredOrders = hubOrder.orders.filter(order => order.orderStatus == 'Delivered')
   const cancelledOrders = hubOrder.orders.filter(order => order.orderStatus == 'Cancelled')
+  const offlineOrders = hubOrder.orders.filter(order => order.orderStatus == 'Offline Delivery')
   // const totalBallRequired = hubOrder.orders.reduce((prev,cur) => prev.)
 
   const totalChickenBallQuantity = hubOrder.orders.reduce((total, order) => {
@@ -420,13 +423,14 @@ const SingleHubDetails = () => {
 
           <h1 className="text-xl font-semibold mb-6">{data?.hub?.name}</h1>
           
-          <div className="hub_header flex gap-8 items-center mb-6">
+          <div className="hub_header flex flex-col md:flex-row gap-8 items-start md:items-center mb-6">
             
             <div className="flex gap-2 items-center ">
               <p className='mb-2'>Date:</p>
               <DatePicker className='date_input mb-6 h-11 flex items-center border border-gray-500 rounded px-4' selected={deliveryDate} onChange={(date) => setDeliveryDate(date)} dateFormat="dd/MM/yyyy" />
             </div>
 
+            { (userRole ==='admin' || userRole ==='controller' || userRole ==='superAdmin') ? '' : ''}
             <Link className='rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold' to={`/hubs/${id}/stock`}>Hub Stock</Link>
 
             
@@ -446,6 +450,7 @@ const SingleHubDetails = () => {
               
               <p className="t">Total Pending: {pendingOrders.length}</p>
               <p className="t">Total Delivered: {deliveredOrders.length}</p>
+              <p className="t">Offline Delivery: {offlineOrders.length}</p>
               <p className="t">Total Cancelled: {cancelledOrders.length}</p>
               
               <div className="products_count_wrap">
