@@ -164,6 +164,13 @@ const SingleHubDetails = () => {
     return total + (chickenBallItem ? chickenBallItem.quantity : 0);
   }, 0);
 
+  const totalRutiQuantity = hubOrder.orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Atar ruti");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
+
+
+
   const orderQuantityCount = (orderData,itemName) => {
     return orderData.reduce((total, order) => {
       const chickenBallItem = order.orderItems.find(item => item.name === itemName);
@@ -191,6 +198,7 @@ const SingleHubDetails = () => {
   const deliveredKaragiChicken = orderQuantityCount(deliveredOrders, 'Karagi Chicken');
   const deliveredBotiKabab = orderQuantityCount(deliveredOrders, 'Boti Kabab');
   const deliveredMojorellaCheese = orderQuantityCount(deliveredOrders, 'Mojorella Cheese');
+  const deliveredRuti = orderQuantityCount(deliveredOrders, 'Atar ruti');
 
   //Pending items cound
   const pendingBall = orderQuantityCount(pendingOrders, 'Chicken Ball');
@@ -209,6 +217,7 @@ const SingleHubDetails = () => {
   const pendingKaragiChicken = orderQuantityCount(pendingOrders, 'Karagi Chicken');
   const pendingBotiKabab = orderQuantityCount(pendingOrders, 'Boti Kabab');
   const pendingMojorellaCheese = orderQuantityCount(pendingOrders, 'Mojorella Cheese');
+  const pendingRuti = orderQuantityCount(pendingOrders, 'Atar ruti');
 
 
 
@@ -431,6 +440,7 @@ const SingleHubDetails = () => {
             </div>
 
             { (userRole ==='admin' || userRole ==='controller' || userRole ==='superAdmin') ? '' : ''}
+            
             <Link className='rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold' to={`/hubs/${id}/stock`}>Hub Stock</Link>
 
             
@@ -473,6 +483,7 @@ const SingleHubDetails = () => {
                   {totalKaragiChickenQuantity > 0 ? <p className="mb-1">Karagi Chicken: {totalKaragiChickenQuantity}</p> : ""}
                   {totalBotiKababQuantity > 0 ? <p className="mb-1">Boti Kabab: {totalBotiKababQuantity}</p> : ""}
                   {totalMojorellaCheeseQuantity > 0 ? <p className="mb-1">Mojorella Cheese: {totalMojorellaCheeseQuantity}</p> : ""}
+                  {totalRutiQuantity > 0 ? <p className="mb-1">Atar Ruti: {totalRutiQuantity}</p> : ""}
                 </div>
 
                 <div className="product_count ">
@@ -493,7 +504,8 @@ const SingleHubDetails = () => {
                   {deliveredMomo > 0 ? <p className="mb-1">Momo: {deliveredMomo}</p> : ""}
                   {deliveredKaragiChicken > 0 ? <p className="mb-1">Karagi Chicken: {deliveredKaragiChicken}</p> : ""}
                   {deliveredBotiKabab > 0 ? <p className="mb-1">Boti Kabab: {deliveredBotiKabab}</p> : ""}
-                  {deliveredMojorellaCheese > 0 ? <p className="mb-1">Mojorella Cheese: {deliveredMojorellaCheese}</p> : ""}                  
+                  {deliveredMojorellaCheese > 0 ? <p className="mb-1">Mojorella Cheese: {deliveredMojorellaCheese}</p> : ""}                 
+                  {deliveredRuti > 0 ? <p className="mb-1">Atar Ruti: {deliveredRuti}</p> : ""}                 
                   </> : 'No delivered product found.'}
 
 
@@ -518,7 +530,11 @@ const SingleHubDetails = () => {
                   {pendingMomo > 0 ? <p className="mb-1">Momo: {pendingMomo}</p> : ""}
                   {pendingKaragiChicken > 0 ? <p className="mb-1">Karagi Chicken: {pendingKaragiChicken}</p> : ""}
                   {pendingBotiKabab > 0 ? <p className="mb-1">Boti Kabab: {pendingBotiKabab}</p> : ""}
-                  {pendingMojorellaCheese > 0 ? <p className="mb-1">Mojorella Cheese: {pendingMojorellaCheese}</p> : ""}                  
+                  {pendingMojorellaCheese > 0 ? <p className="mb-1">Mojorella Cheese: {pendingMojorellaCheese}</p> : ""}
+                  {pendingRuti > 0 ? <p className="mb-1">Atar Ruti: {pendingRuti}</p> : ""}
+
+
+
                   </> : 'No pending product found.'}
 
 
