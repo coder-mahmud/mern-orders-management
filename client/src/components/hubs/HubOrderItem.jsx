@@ -28,7 +28,7 @@ const HubOrderItem = ({order, users, index}) => {
   const dialogRef = useRef(null)
 
   const orderUser = users.filter(user => user._id == order.user )
-  console.log("orderUser", orderUser)
+  // console.log("orderUser", orderUser)
   const [orderStatus, {isLoading} ] = useOrderStatusMutation()
   const [deleteOrder, {isLoading:deleteLoading}] = useDeleteOrderMutation()
 
@@ -187,12 +187,14 @@ const HubOrderItem = ({order, users, index}) => {
     <div className='flex flex-col md:flex-row justify-between gap-4 py-4 border-b border-gray-500 lg:items-center '>
       {showLoader && <Loader />}
       <p className='w-[50px]'>{index+1}.</p>
-      <p className='flex-2'><span className="inline-block md:hidden">Customer Details:</span> {order.customerDetails}</p>
-      <p className='flex-[.75]'><span className="inline-block md:hidden">Total Bill:</span> {order.finalPrice}</p>
-      <p className='flex-[.75]'><span className="inline-block md:hidden">Status:</span> {order.orderStatus}</p>
-      <p className='flex-1 flex justify-start'><span className="inline-block md:hidden">Created By:</span> {orderUser[0]?.firstName}</p>
+      <p className='flex-2'><span className="inline-block md:hidden">Customer Details :</span> {order.customerDetails}</p>
+      <p className='flex-[.75]'><span className="inline-block md:hidden">Total Bill :</span> {order.finalPrice}</p>
+      <p className='flex-[.75]'><span className="inline-block md:hidden">Type : </span> {order.orderType}</p>
+      <p className='flex-[.75]'><span className="inline-block md:hidden">Status :</span> {order.orderStatus}</p>
+      <p className='flex-1 flex justify-start'>
+        <span className="inline-block md:hidden">Created By  :</span> &nbsp; {orderUser[0]?.firstName}</p>
       <div ref={dialogRef} className='flex-[.75] flex justify-start md:justify-end relative items-center'>
-        <span className="inline-block md:hidden">Action:</span>
+        <span className="inline-block md:hidden">Actions:  </span>
         <img className='cursor-pointer' onClick={() => setShowActions(!showActions)} src={VerDots} alt="" />
         {showActions && (
           <div  className="action_links_wrap z-30 absolute right-20 md:right-10 -top-24 md:top-0  w-[200px] rounded bg-gray-500 py-4">

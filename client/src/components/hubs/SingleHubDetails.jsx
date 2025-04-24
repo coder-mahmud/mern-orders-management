@@ -32,6 +32,8 @@ const SingleHubDetails = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [showHubEdit, setShowHubEdit] = useState(false)
   const [deliveryDate, setDeliveryDate] = useState(new Date());
+  const [showingOrders, setShowingOrders] = useState();
+  const [showType, setShowType] = useState('All')
 
 
   const {data, isLoading, isError, error} = useGetHubByIdQuery(id)
@@ -52,11 +54,12 @@ const SingleHubDetails = () => {
 
   useEffect(() => {
 
-    // if(!isLoading){
-    //   setHubProducts(data.hub.stock.map((s) => s.productId));
-    // }
+    if(hubOrder){
+      setShowingOrders(hubOrder.orders)
+    }
+    
 
-  },[isLoading, deliveryDate])
+  },[isHubOrderLoading, hubOrder])
 
   if(isLoading || isProductLoading || isHubOrderLoading || isUsersLoading ){
     return <Loader />
@@ -65,7 +68,7 @@ const SingleHubDetails = () => {
   // console.log("data", data)
   // console.log("productData", productData)
   // console.log("deliveryDate",deliveryDate)
-  console.log("hubOrders", hubOrder)
+  // console.log("hubOrders", hubOrder)
   // console.log("usersData", usersData)
   // console.log("Hub Products", hubProducts)
   //console.log("customerDetails", hubOrder.orders[1].customerDetails)
@@ -356,7 +359,6 @@ const SingleHubDetails = () => {
       doc.save('customer-details.pdf');
     };
 
-    const test = 'test'
 
 
 /*
@@ -420,6 +422,30 @@ const SingleHubDetails = () => {
     
       doc.save('customer-details.pdf');
     };
+
+
+    const setOrderTypeHandler = (type) => {
+      switch (type) {
+        case "All":
+          setShowType('All')
+          setShowingOrders(hubOrder.orders)
+          break;
+        case "New":
+          setShowType('New')
+          setShowingOrders(hubOrder.orders.filter(order => order.orderType == 'New'))
+          break;
+
+        case "Pending":
+          setShowType('Pending')
+          setShowingOrders(hubOrder.orders.filter(order => order.orderType == 'Pending'))
+          break;
+      
+        default:
+          setShowType('All')
+          setShowingOrders(hubOrder.orders)
+          break;
+      }
+    }
   
 
 
@@ -549,17 +575,31 @@ const SingleHubDetails = () => {
 
 
 
-            <p className="text-xl font-semibold mt-10 border-b border-gray-500">Orders:</p>
+            <p className="text-xl font-semibold mt-10 border-b border-gray-500 mb-4">Orders:</p>
+            
+
+
+            <div className="types_wrap flex gap-5">
+              <button onClick={() => setOrderTypeHandler('All')} className={`rounded px-6 py-2  hover:bg-amber-800 cursor-pointer font-semibold ${showType == 'All' ? 'bg-amber-700' : 'bg-gray-700'}`}>All</button>
+              <button onClick={() => setOrderTypeHandler('New')} className={`rounded px-6 py-2  hover:bg-amber-800 cursor-pointer font-semibold ${showType == 'New' ? 'bg-amber-700' : 'bg-gray-700'}`}>New</button>
+              <button onClick={() => setOrderTypeHandler('Pending')} className={`rounded px-6 py-2  hover:bg-amber-800 cursor-pointer font-semibold ${showType == 'Pending' ? 'bg-amber-700' : 'bg-gray-700'}`}>Pending</button>
+            </div>
+
+            <div className="order_count mt-4">
+                <p className="text-lg font-medium">Count: {showingOrders?.length} </p>
+            </div>
+
             <div className='hidden md:flex justify-between gap-4 py-4 border-b border-gray-500'>
               <p className='w-[50px]'>SL No.</p>
               <p className='flex-2'>Customer Details</p>
               <p className='flex-[.75]'>Bill</p>
+              <p className='flex-[.75]'>Type</p>
               <p className='flex-[.75]'>Status</p>
               <p className='flex-1 flex justify-start'>Created By</p>
               <p className='flex-[.75] flex justify-end'>Action </p>
 
             </div>
-            {hubOrder.orders.map((order,index) => <HubOrderItem index={index} key={order._id} order={order} users={usersData.users} />)}
+            {showingOrders?.map((order,index) => <HubOrderItem index={index} key={order._id} order={order} users={usersData.users} />)}
           </div>) }
           
 

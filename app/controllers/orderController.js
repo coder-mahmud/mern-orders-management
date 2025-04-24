@@ -45,10 +45,10 @@ const getHubOrder = async (req, res) => {
 }
 
 const createOrder = async (req, res) => {
-  const {hub, orderItems, customerDetails,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user} = req.body
+  const {hub, orderItems, customerDetails,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user, orderType} = req.body
   // console.log("data",orderItems, customerDetails,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user )
   try {
-    const newOrder = await Order.create({hub, orderItems, customerDetails,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user})
+    const newOrder = await Order.create({hub, orderItems, customerDetails,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user,orderType})
     res.status(201).json({message:"Order creates successfully!", order:newOrder})
   } catch (error) {
     res.status(404).json({message:"Failed", error})
@@ -98,7 +98,7 @@ const changeOrderStatus = async (req, res) => {
 
 const editOrder = async (req, res) => {
   console.log("editOrder route!")
-  const {orderId,orderItems,finalPrice,discount, customerDetails,deliveryDate  } = req.body;
+  const {orderId,orderItems,finalPrice,discount, customerDetails,deliveryDate,orderType  } = req.body;
   // console.log("Body data:", orderId,orderItems,finalPrice,discount)
 
   try {
@@ -112,6 +112,7 @@ const editOrder = async (req, res) => {
     order.discount = discount || order.discount
     order.customerDetails = customerDetails || order.customerDetails
     order.deliveryDate = deliveryDate || order.deliveryDate
+    order.orderType = orderType || order.orderType
 
     const updatedOrder = await order.save();
 

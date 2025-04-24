@@ -18,6 +18,7 @@ const EditOrder = () => {
   const [discount, setDiscount] = useState(0);
   const [customerDetails, setCustomerDetails] = useState(0);
   const [deliveryDate, setDeliveryDate] = useState();
+  const [orderType, setOrderType] = useState();
 
   const { data, isLoading } = useGetOrderByIdQuery(orderId);
   const [editOrder, { isLoading: isEditOrderLoading }] = useEditOrderMutation();
@@ -32,6 +33,7 @@ const EditOrder = () => {
       setDiscount(data.order.discount)
       setCustomerDetails(data.order.customerDetails)
       setDeliveryDate(data.order.deliveryDate)
+      setOrderType(data.order.orderType)
     }
   }, [data]);
 
@@ -77,7 +79,8 @@ const EditOrder = () => {
       finalPrice:totalBill,
       discount,
       customerDetails,
-      deliveryDate
+      deliveryDate,
+      orderType
 
     };
     // console.log("Updated Order Data:", data);
@@ -140,6 +143,20 @@ const EditOrder = () => {
         <div className="single_input flex flex-col gap-2 mb-2">
           <label htmlFor="deliveryCharge">Delivery Date:</label>
           <DatePicker className='date_input mb-6 h-11 flex items-center border border-gray-500 rounded px-4' selected={deliveryDate} onChange={(date) => setDeliveryDate(date)} dateFormat="dd/MM/yyyy" />
+        </div>
+
+        <div className="single_input flex flex-col gap-2 mb-2">
+          <label htmlFor="deliveryCharge">Order Type:</label>
+          <select
+            name="orderType"
+            id="orderType"
+            value={orderType}
+            onChange={(e) => setOrderType(e.target.value)}
+            className="border rounded border-gray-500 h-11 px-4"
+          >
+            <option value="New">New</option>
+            <option value="Pending">Pending</option>
+          </select>
         </div>
 
         {selectedProducts.length > 0 ? (

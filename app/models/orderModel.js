@@ -48,6 +48,7 @@ const orderSchema = new mongoose.Schema(
     isDelivered: { type: Boolean, default: false },
     deliveryDate: { type: Date },
     deliveredAt: { type: Date },
+    orderType:{ type: String, enum: ["Pending","New"], default: "New"  },
   },
   { timestamps: true }
 );
