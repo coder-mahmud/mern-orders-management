@@ -3,14 +3,19 @@ import DatePicker from "react-datepicker";
 import { useGetAllOrdersByDateQuery } from '../slices/orderApiSclice';
 import Loader from '../components/shared/Loader';
 import dayjs from 'dayjs';
+import { useGetAllProductQuery } from '../slices/productApiSlice';
+import { useSelector } from 'react-redux';
 
 
 const Orders = () => {
   const [deliveryDate, setDeliveryDate] = useState(new Date());
+  const userRole =  useSelector(state =>  state?.auth?.userInfo?.role);
+
 
   const {data, isLoading, isError, error} = useGetAllOrdersByDateQuery(dayjs(deliveryDate).format('YYYY-MM-DD'))
+  const {data:productData, isLoading:isProductLoading} = useGetAllProductQuery()
 
-  if(isLoading){
+  if(isLoading || isProductLoading){
     return <Loader />
   }
 
@@ -27,6 +32,39 @@ const Orders = () => {
   const cancelledOrders = orders.filter(order => order.orderStatus == 'Cancelled')
   const offlineOrders = orders.filter(order => order.orderStatus == 'Offline Delivery')
   // const totalBallRequired = orders.reduce((prev,cur) => prev.)
+
+  const getItemPrice = (itemName) => {
+    const prodItem =  productData.products.filter(product => product.name == itemName  )[0];
+    if(prodItem) return prodItem.price;
+    return 0;
+ }
+
+ let ballPrice = getItemPrice('Chicken Ball');
+ let nuggetsPrice = getItemPrice('Chicken Nuggets');
+ let sausagePrice = getItemPrice('Chicken Sausage');
+ let porotaPrice = getItemPrice('Chicken Porota');
+ let mayonnaisePrice = getItemPrice('Supreme Mayonnaise');
+ let salamiPrice = getItemPrice('Salami');
+ let samuchaPrice = getItemPrice('Samucha');
+ let merinationPrice = getItemPrice('Chicken Merination');
+ let burgerPettyPrice = getItemPrice('Burger Petty');
+ let springRollPrice = getItemPrice('Spring Roll');
+ let chickenChaapPrice = getItemPrice('Chicken Chaap');
+ let friedChickenPrice = getItemPrice('Fried Chicken');
+ let momoPrice = getItemPrice('Momo');
+ let karagiChickenPrice = getItemPrice('Karagi Chicken');
+ let botiKababPrice = getItemPrice('Boti Kabab');
+ let mojorellaCheesePrice = getItemPrice('Mojorella Cheese');
+ let rutiPrice = getItemPrice('Atar ruti');
+ let frenchFryPrice = getItemPrice('French fry');
+ let pizzaSaucePrice = getItemPrice('Pizza Sauce');
+
+
+
+
+
+
+
 
   const totalChickenBallQuantity = orders.reduce((total, order) => {
     const chickenBallItem = order.orderItems.find(item => item.name === "Chicken Ball");
@@ -131,8 +169,22 @@ const Orders = () => {
     return total + (chickenBallItem ? chickenBallItem.quantity : 0);
   }, 0);
 
+  const totalPizzaSauce = orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Pizza Sauce");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
 
 
+
+  const totalOrderedItems = totalChickenBallQuantity + totalChickenNuggetsQuantity + totalChickenSausageQuantity + totalChickenParotaQuantity + totalSupremeMayonnaiseQuantity + totalSalamiQuantity + totalSamuchaQuantity + totalChickenMerinationQuantity + totalBurgerPettyQuantity + totalSpringRollQuantity +  totalChickenChaapQuantity + totalFriedChickenQuantity + totalMomoQuantity + totalKaragiChickenQuantity +  totalBotiKababQuantity + totalMojorellaCheeseQuantity + totalAtarruti + totalFrenchFry + totalPizzaSauce; 
+
+  const totalOrderedPrice = totalChickenBallQuantity * ballPrice  + totalChickenNuggetsQuantity *  nuggetsPrice + totalChickenSausageQuantity * sausagePrice  + totalChickenParotaQuantity * porotaPrice  + totalSupremeMayonnaiseQuantity * mayonnaisePrice  + totalSalamiQuantity * salamiPrice  + totalSamuchaQuantity * samuchaPrice  + totalChickenMerinationQuantity * merinationPrice + totalBurgerPettyQuantity * burgerPettyPrice  + totalSpringRollQuantity * springRollPrice  +  totalChickenChaapQuantity * chickenChaapPrice  + totalFriedChickenQuantity * friedChickenPrice  + totalMomoQuantity * momoPrice  + totalKaragiChickenQuantity * karagiChickenPrice +  totalBotiKababQuantity * botiKababPrice + totalMojorellaCheeseQuantity * mojorellaCheesePrice + totalAtarruti * rutiPrice + totalFrenchFry * frenchFryPrice + totalPizzaSauce * pizzaSaucePrice ;
+
+  const getDeliveryCharge = (orders) => {
+    return orders.reduce((prev, cur) => prev + cur.deliveryCharge ,0)
+  };
+
+  const totalOrderDeliveryCharge = getDeliveryCharge(orders);
 
 
   return (
@@ -180,6 +232,15 @@ const Orders = () => {
               {totalAtarruti > 0 ? <p class="mb-1">Atar ruti: {totalAtarruti}</p> : ""}
 
               {totalFrenchFry > 0 ? <p class="mb-1">French Fry: {totalFrenchFry}</p> : ""}
+              {totalPizzaSauce > 0 ? <p class="mb-1">Pizza Sauce: {totalPizzaSauce}</p> : ""}
+
+              <div className='mt-4 '>
+                {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Ordered Items: {totalOrderedItems} kg</p> : ""}
+                {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Ordered Price: {totalOrderedPrice}</p> : ""}
+                {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Delivery Charge: {totalOrderDeliveryCharge}</p> : ""}
+              </div>
+
+
 
             </div>
 

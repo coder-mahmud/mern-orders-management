@@ -3,13 +3,16 @@ import Pencil from "../../assets/images/Pencil.svg";
 import { useEditHubStockMutation } from "../../slices/hubStockApiSlice";
 import Loader from "../shared/Loader";
 import {toast} from 'react-toastify'
+import { useSelector } from "react-redux";
 
 const HubStockItem = ({ item }) => {
-  // console.log("Item from single stock item", item)
+  console.log("Item from single stock item", item)
   const [showUpdate, setShowUpdate] = useState(false);
   const [stockItem,setStockItem] = useState(item)
   const [showLoader,setShowLoader] = useState(false)
 
+  const userRole =  useSelector(state =>  state?.auth?.userInfo?.role);
+  // console.log("userRole",userRole)
 
   const [editHubStock, {isLoading}] = useEditHubStockMutation();
 
@@ -49,17 +52,18 @@ const HubStockItem = ({ item }) => {
 
   return (
     <div className="py-5 border-b border-gray-500 single_stock w-full sm:w-[45%] md:w-[30%] lg:w-[22%]">
-      <p className="mb-2 text-xl font-semibold">Item: {item.productId.name}</p>
+      <p className="mb-2 text-xl font-semibold">Item: {item?.productId?.name}</p>
       {showLoader && <Loader />}
       {!showUpdate && (
 
         <div className="stock_wrapper">
           <div className="">
             <p className="mb-4 text-xl">Quantity: {item.quantity}</p>
-            <div className="rounded px-6 py-2 bg-amber-600 hover:bg-amber-800 cursor-pointer font-semibold inline-flex items-center gap-2" onClick={() => setShowUpdate(true)} >
+            {userRole == 'admin' || userRole == 'superAdmin' ? <div className="rounded px-6 py-2 bg-amber-600 hover:bg-amber-800 cursor-pointer font-semibold inline-flex items-center gap-2" onClick={() => setShowUpdate(true)} >
               <img className="h-4" src={Pencil} />
               Edit Stock
-            </div>
+            </div>: ''}
+            
           </div>
         </div>
       )}

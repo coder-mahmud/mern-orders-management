@@ -66,18 +66,56 @@ const SingleHubDetails = () => {
   }
 
   // console.log("data", data)
-  // console.log("productData", productData)
+  console.log("productData", productData)
   // console.log("deliveryDate",deliveryDate)
-  // console.log("hubOrders", hubOrder)
+  console.log("hubOrders", hubOrder)
   // console.log("usersData", usersData)
   // console.log("Hub Products", hubProducts)
   //console.log("customerDetails", hubOrder.orders[1].customerDetails)
+
+  const getItemPrice = (itemName) => {
+     const prodItem =  productData.products.filter(product => product.name == itemName  )[0];
+     if(prodItem) return prodItem.price;
+     return 0;
+  }
+
+  let ballPrice = getItemPrice('Chicken Ball');
+  let nuggetsPrice = getItemPrice('Chicken Nuggets');
+  let sausagePrice = getItemPrice('Chicken Sausage');
+  let porotaPrice = getItemPrice('Chicken Porota');
+  let mayonnaisePrice = getItemPrice('Supreme Mayonnaise');
+  let salamiPrice = getItemPrice('Salami');
+  let samuchaPrice = getItemPrice('Samucha');
+  let merinationPrice = getItemPrice('Chicken Merination');
+  let burgerPettyPrice = getItemPrice('Burger Petty');
+  let springRollPrice = getItemPrice('Spring Roll');
+  let chickenChaapPrice = getItemPrice('Chicken Chaap');
+  let friedChickenPrice = getItemPrice('Fried Chicken');
+  let momoPrice = getItemPrice('Momo');
+  let karagiChickenPrice = getItemPrice('Karagi Chicken');
+  let botiKababPrice = getItemPrice('Boti Kabab');
+  let mojorellaCheesePrice = getItemPrice('Mojorella Cheese');
+  let rutiPrice = getItemPrice('Atar ruti');
+  let frenchFryPrice = getItemPrice('French fry');
+  let pizzaSaucePrice = getItemPrice('Pizza Sauce');
+  
 
   const pendingOrders = hubOrder.orders.filter(order => order.orderStatus == 'Pending')
   const deliveredOrders = hubOrder.orders.filter(order => order.orderStatus == 'Delivered')
   const cancelledOrders = hubOrder.orders.filter(order => order.orderStatus == 'Cancelled')
   const offlineOrders = hubOrder.orders.filter(order => order.orderStatus == 'Offline Delivery')
   // const totalBallRequired = hubOrder.orders.reduce((prev,cur) => prev.)
+
+  const getDeliveryCharge = (orders) => {
+    return orders.reduce((prev, cur) => prev + cur.deliveryCharge ,0)
+  };
+
+  const totalOrderDeliveryCharge = getDeliveryCharge(hubOrder.orders);
+  const totalDeliveredDeliveryCharge = getDeliveryCharge(deliveredOrders);
+  const totalPendingDeliveryCharge = getDeliveryCharge(pendingOrders);
+
+  
+
 
   const totalChickenBallQuantity = hubOrder.orders.reduce((total, order) => {
     const chickenBallItem = order.orderItems.find(item => item.name === "Chicken Ball");
@@ -161,7 +199,6 @@ const SingleHubDetails = () => {
   }, 0);
 
 
-
   const totalMojorellaCheeseQuantity = hubOrder.orders.reduce((total, order) => {
     const chickenBallItem = order.orderItems.find(item => item.name === "Mojorella Cheese");
     return total + (chickenBallItem ? chickenBallItem.quantity : 0);
@@ -171,6 +208,22 @@ const SingleHubDetails = () => {
     const chickenBallItem = order.orderItems.find(item => item.name === "Atar ruti");
     return total + (chickenBallItem ? chickenBallItem.quantity : 0);
   }, 0);
+
+  const totalFrenchFry = hubOrder.orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "French fry");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
+
+  const totalPizzaSauce = hubOrder.orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Pizza Sauce");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
+
+
+
+  const totalOrderedItems = totalChickenBallQuantity + totalChickenNuggetsQuantity + totalChickenSausageQuantity + totalChickenParotaQuantity + totalSupremeMayonnaiseQuantity + totalSalamiQuantity + totalSamuchaQuantity + totalChickenMerinationQuantity + totalBurgerPettyQuantity + totalSpringRollQuantity +  totalChickenChaapQuantity + totalFriedChickenQuantity + totalMomoQuantity + totalKaragiChickenQuantity +  totalBotiKababQuantity + totalMojorellaCheeseQuantity + totalRutiQuantity + totalFrenchFry + totalPizzaSauce; 
+
+  const totalOrderedPrice = totalChickenBallQuantity * ballPrice  + totalChickenNuggetsQuantity *  nuggetsPrice + totalChickenSausageQuantity * sausagePrice  + totalChickenParotaQuantity * porotaPrice  + totalSupremeMayonnaiseQuantity * mayonnaisePrice  + totalSalamiQuantity * salamiPrice  + totalSamuchaQuantity * samuchaPrice  + totalChickenMerinationQuantity * merinationPrice + totalBurgerPettyQuantity * burgerPettyPrice  + totalSpringRollQuantity * springRollPrice  +  totalChickenChaapQuantity * chickenChaapPrice  + totalFriedChickenQuantity * friedChickenPrice  + totalMomoQuantity * momoPrice  + totalKaragiChickenQuantity * karagiChickenPrice +  totalBotiKababQuantity * botiKababPrice + totalMojorellaCheeseQuantity * mojorellaCheesePrice + totalRutiQuantity * rutiPrice + totalFrenchFry * frenchFryPrice + totalPizzaSauce * pizzaSaucePrice ; 
 
 
 
@@ -202,6 +255,14 @@ const SingleHubDetails = () => {
   const deliveredBotiKabab = orderQuantityCount(deliveredOrders, 'Boti Kabab');
   const deliveredMojorellaCheese = orderQuantityCount(deliveredOrders, 'Mojorella Cheese');
   const deliveredRuti = orderQuantityCount(deliveredOrders, 'Atar ruti');
+  const deliveredFrenchFry = orderQuantityCount(deliveredOrders, 'French fry');
+  const deliveredPizzaSauce = orderQuantityCount(deliveredOrders, 'Pizza Sauce');
+
+  const totalDeliveredItems = deliveredBall + deliveredNuggets + deliveredSausage + deliveredPorota + deliveredMayonnaise + deliveredSalami + deliveredSamucha + deliveredMerination + deliveredPetty + deliveredRoll + deliveredChaap + deliveredFriedChicken + deliveredMomo + deliveredKaragiChicken + deliveredBotiKabab + deliveredMojorellaCheese + deliveredRuti + deliveredFrenchFry + deliveredPizzaSauce;
+
+  const totalDeliveredPrice = deliveredBall * ballPrice  + deliveredNuggets * nuggetsPrice  + deliveredSausage * sausagePrice + deliveredPorota * porotaPrice + deliveredMayonnaise * mayonnaisePrice  + deliveredSalami * salamiPrice  + deliveredSamucha * samuchaPrice  + deliveredMerination * merinationPrice + deliveredPetty * burgerPettyPrice + deliveredRoll * springRollPrice + deliveredChaap * chickenChaapPrice + deliveredFriedChicken * friedChickenPrice + deliveredMomo * momoPrice + deliveredKaragiChicken * karagiChickenPrice + deliveredBotiKabab * botiKababPrice + deliveredMojorellaCheese * mojorellaCheesePrice + deliveredRuti * rutiPrice + deliveredFrenchFry * frenchFryPrice + deliveredPizzaSauce * pizzaSaucePrice ;
+
+
 
   //Pending items cound
   const pendingBall = orderQuantityCount(pendingOrders, 'Chicken Ball');
@@ -221,8 +282,13 @@ const SingleHubDetails = () => {
   const pendingBotiKabab = orderQuantityCount(pendingOrders, 'Boti Kabab');
   const pendingMojorellaCheese = orderQuantityCount(pendingOrders, 'Mojorella Cheese');
   const pendingRuti = orderQuantityCount(pendingOrders, 'Atar ruti');
+  const pendingFrenchFry = orderQuantityCount(pendingOrders, 'French fry');
+  const pendingPizzaSauce = orderQuantityCount(pendingOrders, 'Pizza Sauce');
 
 
+  const totalPendingItems = pendingBall + pendingNuggets + pendingSausage + pendingPorota + pendingMayonnaise + pendingSalami + pendingSamucha + pendingMerination + pendingPetty + pendingRoll + pendingChaap + pendingFriedChicken + pendingMomo + pendingKaragiChicken + pendingBotiKabab + pendingMojorellaCheese + pendingRuti + pendingFrenchFry + pendingPizzaSauce;
+
+  const totalPendingPrice = pendingBall * ballPrice  + pendingNuggets * nuggetsPrice  + pendingSausage * sausagePrice + pendingPorota * porotaPrice + pendingMayonnaise * mayonnaisePrice  + pendingSalami * salamiPrice  + pendingSamucha * samuchaPrice  + pendingMerination * merinationPrice + pendingPetty * burgerPettyPrice + pendingRoll * springRollPrice + pendingChaap * chickenChaapPrice + pendingFriedChicken * friedChickenPrice + pendingMomo * momoPrice + pendingKaragiChicken * karagiChickenPrice + pendingBotiKabab * botiKababPrice + pendingMojorellaCheese * mojorellaCheesePrice + pendingRuti * rutiPrice + pendingFrenchFry * frenchFryPrice + pendingPizzaSauce * pizzaSaucePrice;
 
 
 
@@ -447,6 +513,13 @@ const SingleHubDetails = () => {
       }
     }
   
+    const searchHandler = (e) => {
+      console.log("Search value", e.target.value)
+      const newOrders = hubOrder.orders.filter(order => 
+        order.customerDetails.toLowerCase().includes(e.target.value.toLowerCase())
+      )
+      setShowingOrders(newOrders)
+    }
 
 
 
@@ -510,6 +583,14 @@ const SingleHubDetails = () => {
                   {totalBotiKababQuantity > 0 ? <p className="mb-1">Boti Kabab: {totalBotiKababQuantity}</p> : ""}
                   {totalMojorellaCheeseQuantity > 0 ? <p className="mb-1">Mojorella Cheese: {totalMojorellaCheeseQuantity}</p> : ""}
                   {totalRutiQuantity > 0 ? <p className="mb-1">Atar Ruti: {totalRutiQuantity}</p> : ""}
+                  {totalFrenchFry > 0 ? <p className="mb-1">French Fry: {totalFrenchFry}</p> : ""}
+                  {totalPizzaSauce > 0 ? <p className="mb-1">Pizza Sauce: {totalPizzaSauce}</p> : ""}
+
+                  {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Ordered Items: {totalOrderedItems} kg</p> : ""}
+                  {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Ordered Price: {totalOrderedPrice}</p> : ""}
+                  {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Delivery Charge: {totalOrderDeliveryCharge}</p> : ""}
+                  
+                  
                 </div>
 
                 <div className="product_count ">
@@ -531,13 +612,23 @@ const SingleHubDetails = () => {
                   {deliveredKaragiChicken > 0 ? <p className="mb-1">Karagi Chicken: {deliveredKaragiChicken}</p> : ""}
                   {deliveredBotiKabab > 0 ? <p className="mb-1">Boti Kabab: {deliveredBotiKabab}</p> : ""}
                   {deliveredMojorellaCheese > 0 ? <p className="mb-1">Mojorella Cheese: {deliveredMojorellaCheese}</p> : ""}                 
-                  {deliveredRuti > 0 ? <p className="mb-1">Atar Ruti: {deliveredRuti}</p> : ""}                 
+                  {deliveredRuti > 0 ? <p className="mb-1">Atar Ruti: {deliveredRuti}</p> : ""}          
+                  {deliveredFrenchFry > 0 ? <p className="mb-1">French Fry: {deliveredFrenchFry}</p> : ""}
+                  {deliveredPizzaSauce > 0 ? <p className="mb-1">Pizza Sauce: {deliveredPizzaSauce}</p> : ""}
+
+
+                  {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Delivered Items: {totalDeliveredItems} kg</p> : ""}
+                  {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Delivered Price: {totalDeliveredPrice}</p> : ""}
+                  {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Delivered Delivery Charge: {totalDeliveredDeliveryCharge}</p> : ""}
+                  
+
+        
                   </> : 'No delivered product found.'}
 
 
                 </div>
 
-
+                  
                 <div className="product_count ">
                   <p className="section_title text-lg font-semibold mt-6">Pending Items:</p>
                   {pendingOrders.length > 0 ? <>
@@ -558,8 +649,13 @@ const SingleHubDetails = () => {
                   {pendingBotiKabab > 0 ? <p className="mb-1">Boti Kabab: {pendingBotiKabab}</p> : ""}
                   {pendingMojorellaCheese > 0 ? <p className="mb-1">Mojorella Cheese: {pendingMojorellaCheese}</p> : ""}
                   {pendingRuti > 0 ? <p className="mb-1">Atar Ruti: {pendingRuti}</p> : ""}
+                  {pendingFrenchFry > 0 ? <p className="mb-1">French Fry: {pendingFrenchFry}</p> : ""}
+                  {pendingPizzaSauce > 0 ? <p className="mb-1">Pizza Sauce: {pendingPizzaSauce}</p> : ""}
 
-
+                  {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Pending Items: {totalPendingItems} kg</p> : ""}
+                  {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Pending Price: {totalPendingPrice}</p> : ""}
+                  {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Pending Delivery Charge: {totalPendingDeliveryCharge}</p> : ""}
+                  
 
                   </> : 'No pending product found.'}
 
@@ -588,6 +684,12 @@ const SingleHubDetails = () => {
             <div className="order_count mt-4">
                 <p className="text-lg font-medium">Count: {showingOrders?.length} </p>
             </div>
+
+            <div className="search my-4">
+              <input onChange={searchHandler} type="text" className='py-2 px-4 border border-gray-500' placeholder='Search' />
+            </div>
+
+
 
             <div className='hidden md:flex justify-between gap-4 py-4 border-b border-gray-500'>
               <p className='w-[50px]'>SL No.</p>

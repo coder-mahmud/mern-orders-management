@@ -58,20 +58,26 @@ const createOrder = async (req, res) => {
 
 const changeOrderStatus = async (req, res) => {
   const {orderId, status} = req.body
-  console.log("Status", status)
+  // console.log("New Status", status)
 
   try {
     const order = await Order.findById(orderId);
+    // console.log("order",order)
+    const oldStatus = order.orderStatus;
     order.orderStatus = status;
-    if(status == 'Delivered' || status == "Offline Delivery"){
+    // console.log("Old Status", oldStatus)
 
+
+    
+    if (oldStatus !== 'Delivered' && oldStatus !== 'Offline Delivery'){
+      console.log("Decrementing first!")
       const hubId = order.hub;
       const updates = order.orderItems.map((item) => ({
         updateOne: {
           filter: { hubId, productId: item.productId },
           update: { 
             $inc: { quantity: -item.quantity },
-            $max: { quantity: 0 }
+            // $max: { quantity: 0 }
           },
         },
       }));
@@ -81,11 +87,38 @@ const changeOrderStatus = async (req, res) => {
 
 
     }
+    
 
+    if ((oldStatus === 'Delivered' || oldStatus === 'Offline Delivery') && status === 'Cancelled') {
+      // console.log("Delivery to cancelled!");
+    
+      const hubId = order.hub;
+
+    
+      const updates = order.orderItems.map((item) => ({
+        updateOne: {
+          filter: {
+            hubId,
+            productId:new mongoose.Types.ObjectId(item.productId)
+          },
+          update: {
+            $inc: { quantity: item.quantity }
+          },
+        },
+      }));
+    
+      const result = await HubStock.bulkWrite(updates);
+      // console.log('Stock rollback result:', result);
+
+    }
+    
+
+    // console.log("Saving order!")
 
     await order.save();
     res.status(200).json({message:"Success!", order})
   } catch (error) {
+    console.log("Error",error)
     res.status(200).json({message:"Failed!", error})
   }
 

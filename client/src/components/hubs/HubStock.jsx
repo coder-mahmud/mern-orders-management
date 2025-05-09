@@ -52,7 +52,7 @@ const HubStock = () => {
           <h2 className="text-2xl font-medium mb-4">Day Starting Stock:</h2>
           <div className="stocks_wrapper flex gap-6 flex-wrap">
             {historyData.stock.map(stock => <div className='flex gap-2'>
-                <p className="text-lg">{stock.productId.name} - </p>
+                <p className="text-lg">{stock.productId.name} : </p>
                 <p className="text-lg">{stock.closingStock}</p>
 
             </div>)}

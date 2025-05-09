@@ -200,10 +200,13 @@ const HubOrderItem = ({order, users, index}) => {
           <div  className="action_links_wrap z-30 absolute right-20 md:right-10 -top-24 md:top-0  w-[200px] rounded bg-gray-500 py-4">
             <ul>
               <Link to={`/order/${order._id}`} className='border-b border-gray-700 py-2 px-4 text-center block'>View Details</Link>
-              {userRole !=='user' &&  <Link to={`/order/edit/${order._id}`} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Edit Order</Link> }
+              {userRole !=='user' &&  <Link to={`/order/edit/${order._id}`} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer '>Edit Order</Link> }
               
-              <li onClick={showDeliveredHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Delivered</li>
-              <li onClick={showOfflineHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Offline Delivery</li>
+              {order.orderStatus == 'Delivered' ? <li className='block border-b border-gray-700 py-2 px-4 text-center cursor-not-allowed'>Already Delivered</li> : <li onClick={showDeliveredHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Delivered</li>}
+
+              {order.orderStatus == 'Offline Delivery' ? <li className='block border-b border-gray-700 py-2 px-4 text-center cursor-not-allowed'>Already Offline Delivery</li> : <li onClick={showOfflineHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Offline Delivery</li>}
+              
+
               <li onClick={showCancelledHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Cancelled</li>
               {userRole !=='user' &&  <li onClick={showDeleteHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Delete Order</li> }
                             
