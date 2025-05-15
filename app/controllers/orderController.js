@@ -1,6 +1,7 @@
 import Order from "../models/orderModel.js";
 import mongoose from "mongoose";
 import HubStock from "../models/hubStockModel.js";
+import Hub from "../models/hubModel.js";
 
 
 const getOrders = async (req, res) => {
@@ -196,7 +197,7 @@ const getOrderByDate = async (req, res) => {
         $lt: new Date(targetDate.setHours(23, 59, 59, 999)),
       },
 
-    })
+    }).populate('hub', 'name type')
     res.status(200).json({success:true, orders:datedOrders})
   } catch (error) {
     res.status(200).json({success:false, error:error.message})

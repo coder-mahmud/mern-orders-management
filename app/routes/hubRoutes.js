@@ -1,6 +1,6 @@
 import express from 'express'
 import protect from '../middlewares/authMiddleware.js'
-import { getHubs, createHub, editHub, getHubById, addProductToHub } from '../controllers/hubController.js';
+import { getHubs, createHub, editHub, getHubById, addProductToHub, updateHubs } from '../controllers/hubController.js';
 const hubRoutes = express();
 
 // userRoutes.get("/",(req,res) => {
@@ -13,5 +13,6 @@ hubRoutes.post("/", createHub)
 hubRoutes.post("/edit", editHub)
 hubRoutes.post("/:id/addproduct", addProductToHub)
 
+// hubRoutes.post('/update-hubs-type', updateHubs);
 
 export default hubRoutes

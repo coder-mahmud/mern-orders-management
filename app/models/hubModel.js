@@ -8,6 +8,7 @@ const hubSchema = new mongoose.Schema(
     //   type: mongoose.Schema.Types.ObjectId,
     //   ref: "User", 
     // },
+    type: { type: String, required: true, enum:['insideDhaka','subDhaka'], default: 'insideDhaka'  },
     stock: [{ 
         productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
         stock: { type: Number, default: 0 }

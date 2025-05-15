@@ -20,6 +20,7 @@ import SingleHubDetails from './components/hubs/SingleHubDetails'
 import OrderDetails from './components/orders/OrderDetails'
 import EditOrder from './components/orders/EditOrder'
 import Orders from './pages/Orders'
+import SubOrders from './pages/SubOrders'
 import HubStock from './components/hubs/HubStock'
 
 
@@ -45,6 +46,7 @@ function App() {
             <Route path="products" element={<Products />} />
             <Route path="order/:id" element={<OrderDetails />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="sub-orders" element={<SubOrders />} />
             <Route path="order/edit/:id" element={<EditOrder />} />
           </Route>
 

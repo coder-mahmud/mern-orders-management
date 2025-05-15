@@ -8,11 +8,11 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 
-const Orders = () => {
+const SubOrders = () => {
   const [deliveryDate, setDeliveryDate] = useState(new Date());
   const userRole =  useSelector(state =>  state?.auth?.userInfo?.role);
 
-  const [hubType, setHubType] = useState('insideDhaka')
+  const [hubType, setHubType] = useState('subDhaka')
 
 
   const {data, isLoading, isError, error} = useGetAllOrdersByDateQuery(dayjs(deliveryDate).format('YYYY-MM-DD'))
@@ -28,9 +28,8 @@ const Orders = () => {
 
   console.log("Orders data",data)
 
-  const insidOrders = data.orders.filter(order => order.hub.type == 'insideDhaka')
-
-  const orders = insidOrders;
+  const subOrders = data.orders.filter(order => order.hub.type == 'subDhaka')
+  const orders = subOrders;
 
   const pendingOrders = orders.filter(order => order.orderStatus == 'Pending')
   const deliveredOrders = orders.filter(order => order.orderStatus == 'Delivered')
@@ -206,12 +205,11 @@ const Orders = () => {
           <div className="hubOrderInfo my-4 text-lg">
 
             <div className="hubTypeSwitch mb-10">
-              {hubType == 'insideDhaka' ? <Link to="/sub-orders" className="rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold">Show Sub Dhaka</Link> : <button className="rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold">Show Inside Dhaka</button> }
+              {hubType == 'insideDhaka' ? <Link to="/sub-order" className="rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold">Show Sub Dhaka</Link> : <Link to='/orders' className="rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold">Show Inside Dhaka</Link> }
             </div>
 
 
-
-              <p className="section_title text-xl font-bold mb-2">Inside Dhaka:</p>
+              <p className="section_title text-xl font-bold mb-2">Sub Dhaka:</p>
               <p className="section_title text-lg font-semibold">Total Orders Summary:</p>
               
               <p className=''>Total Orders : {orders.length}</p>
@@ -271,4 +269,4 @@ const Orders = () => {
   )
 }
 
-export default Orders
+export default SubOrders

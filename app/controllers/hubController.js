@@ -4,6 +4,22 @@ import mongoose from "mongoose";
 
 
 
+const updateHubs = async (req, res) => {
+  try {
+    const result = await Hub.updateMany(
+      { type: { $exists: false } }, // Only update hubs missing the type field
+      { $set: { type: 'insideDhaka' } }
+    );
+
+    res.json({
+      message: 'Hubs updated successfully',
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating hubs', error });
+  }
+}
+
 const getHubs = async (req, res) => {
   const allHubs = await Hub.find();
   res.status(200).json({hubs:allHubs})
@@ -119,4 +135,4 @@ const editHub = async (req,res) =>{
   
 }
 
-export {createHub, editHub, getHubs, getHubById, addProductToHub}
+export {createHub, editHub, getHubs, getHubById, addProductToHub, updateHubs}
