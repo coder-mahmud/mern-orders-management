@@ -46,12 +46,14 @@ const Header = () => {
 
   return (
     <div className=' bg-gray-800 text-white border-b border-gray-500'>
-      <div className="container flex justify-between items-center py-3">
+      <div className="container flex flex-col sm:flex-row justify-between items-center py-3">
         <Link to="/"><img className='w-12' src={Logo} alt="" /></Link>
         <ul className='flex gap-2 font-semibold items-center'>
-          {userRole !=='user' ? <li><Link to="/">Home</Link></li> : '' }
           {userRole !=='user' ? <li><Link to="/products">Products</Link></li> : '' }
           <li><Link to="/hubs">Hubs</Link></li>
+          <li><Link to="/rider-report">Rider</Link></li>
+          {userRole !=='user' ? <li><Link to="/internal-report">Report</Link></li> : '' }
+          
           {userRole !=='user' ? <li><Link to="/orders">Orders</Link></li> : '' }
           
           <li  ref={dropdownRef} className='relative'>

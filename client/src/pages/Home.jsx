@@ -61,7 +61,7 @@ const Home = () => {
 
   useEffect(() => {
 
-    console.log("Home use Effect running!")
+    // console.log("Home use Effect running!")
 
     setOrderPrice(selectedProducts.reduce((prev, cur) => prev + cur.totalPrice, 0));
     setFinalPrice(orderPrice - discount +deliveryCharge)

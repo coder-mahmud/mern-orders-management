@@ -63,7 +63,9 @@ const Orders = () => {
  let rutiPrice = getItemPrice('Atar ruti');
  let frenchFryPrice = getItemPrice('French fry');
  let pizzaSaucePrice = getItemPrice('Pizza Sauce');
-
+ let cheeseBallPrice = getItemPrice('Cheese ball');
+ let chickenPopcornPrice = getItemPrice('Chicken popcorn');
+ let chickenStripesPrice = getItemPrice('Chicken stripes');
 
 
 
@@ -179,11 +181,27 @@ const Orders = () => {
     return total + (chickenBallItem ? chickenBallItem.quantity : 0);
   }, 0);
 
+  const totalCheeseBall = orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Cheese ball");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
+  const totalChickenPopcorn = orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken popcorn");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
+  const totalChickenStripes = orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken stripes");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
 
 
-  const totalOrderedItems = totalChickenBallQuantity + totalChickenNuggetsQuantity + totalChickenSausageQuantity + totalChickenParotaQuantity + totalSupremeMayonnaiseQuantity + totalSalamiQuantity + totalSamuchaQuantity + totalChickenMerinationQuantity + totalBurgerPettyQuantity + totalSpringRollQuantity +  totalChickenChaapQuantity + totalFriedChickenQuantity + totalMomoQuantity + totalKaragiChickenQuantity +  totalBotiKababQuantity + totalMojorellaCheeseQuantity + totalAtarruti + totalFrenchFry + totalPizzaSauce; 
 
-  const totalOrderedPrice = totalChickenBallQuantity * ballPrice  + totalChickenNuggetsQuantity *  nuggetsPrice + totalChickenSausageQuantity * sausagePrice  + totalChickenParotaQuantity * porotaPrice  + totalSupremeMayonnaiseQuantity * mayonnaisePrice  + totalSalamiQuantity * salamiPrice  + totalSamuchaQuantity * samuchaPrice  + totalChickenMerinationQuantity * merinationPrice + totalBurgerPettyQuantity * burgerPettyPrice  + totalSpringRollQuantity * springRollPrice  +  totalChickenChaapQuantity * chickenChaapPrice  + totalFriedChickenQuantity * friedChickenPrice  + totalMomoQuantity * momoPrice  + totalKaragiChickenQuantity * karagiChickenPrice +  totalBotiKababQuantity * botiKababPrice + totalMojorellaCheeseQuantity * mojorellaCheesePrice + totalAtarruti * rutiPrice + totalFrenchFry * frenchFryPrice + totalPizzaSauce * pizzaSaucePrice ;
+
+
+
+  const totalOrderedItems = totalChickenBallQuantity + totalChickenNuggetsQuantity + totalChickenSausageQuantity + totalChickenParotaQuantity + totalSupremeMayonnaiseQuantity + totalSalamiQuantity + totalSamuchaQuantity + totalChickenMerinationQuantity + totalBurgerPettyQuantity + totalSpringRollQuantity +  totalChickenChaapQuantity + totalFriedChickenQuantity + totalMomoQuantity + totalKaragiChickenQuantity +  totalBotiKababQuantity + totalMojorellaCheeseQuantity + totalAtarruti + totalFrenchFry + totalPizzaSauce + totalCheeseBall + totalChickenPopcorn + totalChickenStripes; 
+
+  const totalOrderedPrice = totalChickenBallQuantity * ballPrice  + totalChickenNuggetsQuantity *  nuggetsPrice + totalChickenSausageQuantity * sausagePrice  + totalChickenParotaQuantity * porotaPrice  + totalSupremeMayonnaiseQuantity * mayonnaisePrice  + totalSalamiQuantity * salamiPrice  + totalSamuchaQuantity * samuchaPrice  + totalChickenMerinationQuantity * merinationPrice + totalBurgerPettyQuantity * burgerPettyPrice  + totalSpringRollQuantity * springRollPrice  +  totalChickenChaapQuantity * chickenChaapPrice  + totalFriedChickenQuantity * friedChickenPrice  + totalMomoQuantity * momoPrice  + totalKaragiChickenQuantity * karagiChickenPrice +  totalBotiKababQuantity * botiKababPrice + totalMojorellaCheeseQuantity * mojorellaCheesePrice + totalAtarruti * rutiPrice + totalFrenchFry * frenchFryPrice + totalPizzaSauce * pizzaSaucePrice + totalCheeseBall * cheeseBallPrice + totalChickenPopcorn * chickenPopcornPrice + totalChickenStripes * chickenStripesPrice ;
 
   const getDeliveryCharge = (orders) => {
     return orders.reduce((prev, cur) => prev + cur.deliveryCharge ,0)
@@ -247,6 +265,9 @@ const Orders = () => {
 
               {totalFrenchFry > 0 ? <p className="mb-1">French Fry: {totalFrenchFry}</p> : ""}
               {totalPizzaSauce > 0 ? <p className="mb-1">Pizza Sauce: {totalPizzaSauce}</p> : ""}
+              {totalCheeseBall > 0 ? <p className="mb-1">Cheese Ball: {totalCheeseBall}</p> : ""}
+              {totalChickenPopcorn > 0 ? <p className="mb-1">Chicken popcorn: {totalChickenPopcorn}</p> : ""}
+              {totalChickenStripes > 0 ? <p className="mb-1">Chicken stripes: {totalChickenStripes}</p> : ""}
 
               <div className='mt-4 '>
                 {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Ordered Items: {totalOrderedItems} kg</p> : ""}

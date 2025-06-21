@@ -34,8 +34,8 @@ const HubStock = () => {
 
 
 
-  // console.log("data",data)
-  console.log("historyData",historyData)
+  console.log("Hub stock data",data)
+  console.log("Hub stock history Data",historyData)
   
   // console.log("Name", stocks[0]?.hubId?.name)
 

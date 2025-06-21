@@ -33,7 +33,7 @@ const Hubs = () => {
   const [showCreateHub, setShowCreateHub] = useState(false)
 
   const createHubHandler = () => {
-    console.log("Create hub clicked!")
+    // console.log("Create hub clicked!")
     document.body.style.overflow = "hidden";
     setShowCreateHub(true)
   }

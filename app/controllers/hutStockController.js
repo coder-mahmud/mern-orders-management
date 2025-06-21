@@ -11,6 +11,9 @@ const createHubStock = async (req, res) => {
     const hubs = await Hub.find({});
     const products = await Product.find({});
 
+    // console.log("hubs", hubs )
+    // console.log("products",products )
+
     const bulkOps = [];
 
     for (const hub of hubs) {

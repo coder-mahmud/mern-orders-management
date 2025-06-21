@@ -1,9 +1,14 @@
 import express from 'express'
-import { getOrders, createOrder, editOrder, deleteOrder, getHubOrder,getOrderById,changeOrderStatus, getOrderByDate, changeVerifyStatus } from '../controllers/orderController.js'
+import { getRiderReports, createRiderReport, getRiderReportsByDate } from '../controllers/riderReportController.js';
 
-const orderRoutes = express();
 
-orderRoutes.get("/", getOrders);
+const riderReportRoutes = express();
+
+riderReportRoutes.get("/", getRiderReports);
+riderReportRoutes.post("/create", createRiderReport);
+riderReportRoutes.get("/getbydate/:date", getRiderReportsByDate);
+
+/*
 orderRoutes.post("/create", createOrder);
 orderRoutes.post("/edit", editOrder);
 orderRoutes.post("/delete", deleteOrder);
@@ -12,5 +17,5 @@ orderRoutes.post("/verify", changeVerifyStatus);
 orderRoutes.get("/hub/:id/:date", getHubOrder);
 orderRoutes.get("/:id", getOrderById);
 orderRoutes.get("/date/:date", getOrderByDate);
-
-export default orderRoutes;
+*/
+export default riderReportRoutes;

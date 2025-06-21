@@ -44,6 +44,9 @@ app.use(cookieParser())
 app.get('/',(req,res) => res.status(200).json({message:"App is running"}))
 
 import "./cron/recordStockHistory.js";
+import riderReportRoutes from './routes/riderReportRoutes.js';
+import internalReportRoutes from './routes/internalReportsRoutes.js';
+
 
 
 app.use('/user', userRoutes);
@@ -52,6 +55,8 @@ app.use('/product', productRoutes);
 app.use('/order', orderRoutes);
 app.use('/hubstock', hubStockRoutes);
 app.use('/stockhistory', stockHistoryRoutes);
+app.use('/riderreport', riderReportRoutes);
+app.use('/internalreport', internalReportRoutes);
 
 
 app.listen(5000, () => {console.log("server running")} )

@@ -25,7 +25,7 @@ const getOrderById = async (req, res) => {
 
 const getHubOrder = async (req, res) => {
   const { id, date } = req.params;
-  console.log("Hub data",id, date )
+  // console.log("Hub data",id, date )
 
   try {
     const targetDate = new Date(date);
@@ -35,7 +35,7 @@ const getHubOrder = async (req, res) => {
         $gte: new Date(targetDate.setHours(0, 0, 0, 0)),
         $lt: new Date(targetDate.setHours(23, 59, 59, 999)),
       },
-    });
+    }).populate("verifiedBy", "firstName").populate("statusChangedBy", "firstName");
 
     res.status(200).json({message:"Get hub Orders route", orders})
   } catch (error) {
@@ -58,7 +58,7 @@ const createOrder = async (req, res) => {
 }
 
 const changeOrderStatus = async (req, res) => {
-  const {orderId, status} = req.body
+  const {orderId, status, statusChangeTime, statusChangedBy} = req.body
   // console.log("New Status", status)
 
   try {
@@ -66,6 +66,8 @@ const changeOrderStatus = async (req, res) => {
     // console.log("order",order)
     const oldStatus = order.orderStatus;
     order.orderStatus = status;
+    order.statusChangeTime = statusChangeTime;
+    order.statusChangedBy = statusChangedBy;
     // console.log("Old Status", oldStatus)
 
 
@@ -124,6 +126,36 @@ const changeOrderStatus = async (req, res) => {
   }
 
 
+
+
+  
+}
+
+const changeVerifyStatus = async (req, res) => {
+  const {orderId, verifyStatus,verifyTime,verifiedBy} = req.body
+  console.log("New verifyStatus:", verifyStatus)
+  console.log("Verify route hit!")
+
+  
+  try {
+    const order = await Order.findById(orderId);
+    // console.log("order",order)
+    const oldStatus = order.verifyStatus;
+    order.verifyStatus = verifyStatus;
+    order.verifyTime = verifyTime;
+    order.verifiedBy = verifiedBy;
+
+
+    await order.save();
+
+    const populatedOrder = await Order.findById(orderId).populate("verifiedBy");
+    res.status(200).json({message:"Success!", order})
+  } catch (error) {
+    console.log("Error",error)
+    res.status(200).json({message:"Failed!", error})
+  }
+
+//res.status(200).json({message:"verify Success!"})
 
 
   
@@ -206,4 +238,4 @@ const getOrderByDate = async (req, res) => {
   
 }
 
-export { getOrders, createOrder, editOrder, deleteOrder, getHubOrder,getOrderById, changeOrderStatus, getOrderByDate }
+export { getOrders, createOrder, editOrder, deleteOrder, getHubOrder,getOrderById, changeOrderStatus, getOrderByDate,changeVerifyStatus }

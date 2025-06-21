@@ -6,7 +6,7 @@ import {toast} from 'react-toastify'
 import { useSelector } from "react-redux";
 
 const HubStockItem = ({ item }) => {
-  console.log("Item from single stock item", item)
+  // console.log("Item from single stock item", item)
   const [showUpdate, setShowUpdate] = useState(false);
   const [stockItem,setStockItem] = useState(item)
   const [showLoader,setShowLoader] = useState(false)

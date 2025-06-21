@@ -2,11 +2,11 @@ import React, { useState,useEffect,useRef } from 'react'
 import Loader from '../shared/Loader';
 import VerDots from '../../assets/images/ver-dots.svg'
 import { Link } from 'react-router-dom';
-import { useOrderStatusMutation, useDeleteOrderMutation } from '../../slices/orderApiSclice';
+import { useOrderStatusMutation, useDeleteOrderMutation, useOrderVerifyStatusMutation } from '../../slices/orderApiSclice';
 import { toast } from 'react-toastify';
 import Close from '../../assets/images/Close.svg'
 import { useSelector } from 'react-redux';
-
+import dayjs from 'dayjs'
 
 
 
@@ -14,6 +14,7 @@ const HubOrderItem = ({order, users, index}) => {
   // console.log("Order from HubOrderItem", order)
   // console.log("users", users)
   const userRole =  useSelector(state =>  state?.auth?.userInfo?.role);
+  const curUser = useSelector(state =>  state?.auth?.userInfo?.id);
 
   const [showActions, setShowActions] = useState(false)
   const [showLoader, setShowLoader] = useState(false)
@@ -22,8 +23,9 @@ const HubOrderItem = ({order, users, index}) => {
   const [showOffline, setShowOffline] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
 
-
-
+  const now = dayjs();
+  const formattedDateTime = now.format("DD-MM-YY HH:mm a"); // e.g. "2025-06-18 13:45"
+  // console.log("formattedDateTime",formattedDateTime)
 
   const dialogRef = useRef(null)
 
@@ -31,7 +33,7 @@ const HubOrderItem = ({order, users, index}) => {
   // console.log("orderUser", orderUser)
   const [orderStatus, {isLoading} ] = useOrderStatusMutation()
   const [deleteOrder, {isLoading:deleteLoading}] = useDeleteOrderMutation()
-
+  const [orderVerifyStatus, {isLoading:verifyLoading}] = useOrderVerifyStatusMutation();
 
 
 
@@ -94,7 +96,9 @@ const HubOrderItem = ({order, users, index}) => {
     
     const data = {
       status:"Delivered",
-      orderId:order._id
+      orderId:order._id,
+      statusChangeTime:now,
+      statusChangedBy:curUser
     }
     // console.log("data",data)
       
@@ -118,7 +122,9 @@ const HubOrderItem = ({order, users, index}) => {
     setShowLoader(true)
     const data = {
       status:"Cancelled",
-      orderId:order._id
+      orderId:order._id,
+      statusChangeTime:now,
+      statusChangedBy:curUser
     }
     // console.log("data",data)
     try {
@@ -140,7 +146,9 @@ const HubOrderItem = ({order, users, index}) => {
     setShowLoader(true)
     const data = {
       status:"Offline Delivery",
-      orderId:order._id
+      orderId:order._id,
+      statusChangeTime:now,
+      statusChangedBy:curUser
     }
     // console.log("data",data)
     try {
@@ -155,6 +163,28 @@ const HubOrderItem = ({order, users, index}) => {
       setShowDelivered(false)
       setShowOffline(false)
       setShowLoader(false)
+    }
+  }
+
+  const verifiedHandler = async (verifyStatus) => {
+    setShowLoader(true)
+    const data = {
+      verifyStatus,
+      orderId:order._id,
+      verifyTime:now,
+      verifiedBy:curUser
+    }
+    console.log("verify data",data)
+    try {
+      const apiRes = await orderVerifyStatus(data).unwrap();
+      console.log("apiRes", apiRes)
+      toast.success(`Order marked as ${verifyStatus}.`)
+    } catch (error) {
+      console.log("Error", error)
+      toast.error("Something went wrong!")
+    } finally {
+      setShowLoader(false)
+      setShowActions(false)
     }
   }
 
@@ -183,6 +213,8 @@ const HubOrderItem = ({order, users, index}) => {
 
 
 
+
+
   return (
     <div className='flex flex-col md:flex-row justify-between gap-4 py-4 border-b border-gray-500 lg:items-center '>
       {showLoader && <Loader />}
@@ -190,9 +222,12 @@ const HubOrderItem = ({order, users, index}) => {
       <p className='flex-2'><span className="inline-block md:hidden">Customer Details :</span> {order.customerDetails}</p>
       <p className='flex-[.75]'><span className="inline-block md:hidden">Total Bill :</span> {order.finalPrice}</p>
       <p className='flex-[.75]'><span className="inline-block md:hidden">Type : </span> {order.orderType}</p>
-      <p className='flex-[.75]'><span className="inline-block md:hidden">Status :</span> {order.orderStatus}</p>
+      <p className='flex-[.75]'>
+        <span className="inline-block md:hidden">Status :</span> {order.orderStatus} {order.orderStatus !=='Pending' ? order?.statusChangedBy?.firstName + '-' + dayjs(order?.statusChangeTime).format("DD MMM, hh:mm a")  : ''}
+      </p>
+      <p className='flex-[.75]'><span className="inline-block md:hidden">Verified :</span> {order.verifyStatus}  { (order.verifyStatus == 'Verified' &&  order?.verifiedBy?.firstName) ? '-' + order?.verifiedBy?.firstName : ''} { order.verifyTime ? '-' + dayjs(order?.verifyTime).format("DD MMM, hh:mm a") : ''}</p>
       <p className='flex-1 flex justify-start'>
-        <span className="inline-block md:hidden">Created By  :</span> &nbsp; {orderUser[0]?.firstName}</p>
+        <span className="inline-block md:hidden">Created By: &nbsp;</span>  {orderUser[0]?.firstName} - {  dayjs(order.createdAt).format("DD MMM, hh:mm a")}</p>
       <div ref={dialogRef} className='flex-[.75] flex justify-start md:justify-end relative items-center'>
         <span className="inline-block md:hidden">Actions:  </span>
         <img className='cursor-pointer' onClick={() => setShowActions(!showActions)} src={VerDots} alt="" />
@@ -208,6 +243,11 @@ const HubOrderItem = ({order, users, index}) => {
               
 
               <li onClick={showCancelledHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Cancelled</li>
+
+              <li onClick={() => verifiedHandler('Verified')} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Verified</li>
+              {/* <li onClick={() => verifiedHandler('Pending')} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Pending</li> */}
+              <li onClick={() => verifiedHandler('Not Found')} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as NOT Found</li>
+
               {userRole !=='user' &&  <li onClick={showDeleteHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Delete Order</li> }
                             
 

@@ -22,6 +22,8 @@ import EditOrder from './components/orders/EditOrder'
 import Orders from './pages/Orders'
 import SubOrders from './pages/SubOrders'
 import HubStock from './components/hubs/HubStock'
+import RiderOrder from './pages/RiderReport'
+import InternalReport from './pages/InternalReport'
 
 
 
@@ -41,6 +43,8 @@ function App() {
             <Route path="contact" element={<Contact />} />
             <Route path="profile" element={<Profile />} />
             <Route path="hubs" element={<Hubs />} />
+            <Route path="internal-report" element={<InternalReport />} />
+            <Route path="rider-report" element={<RiderOrder />} />
             <Route path="hubs/:id" element={<SingleHubDetails />} />
             <Route path="hubs/:id/stock" element={<HubStock />} />
             <Route path="products" element={<Products />} />

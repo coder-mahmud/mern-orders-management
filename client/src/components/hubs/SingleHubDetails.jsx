@@ -66,7 +66,7 @@ const SingleHubDetails = () => {
   }
 
   // console.log("data", data)
-  console.log("productData", productData)
+  // console.log("productData", productData)
   // console.log("deliveryDate",deliveryDate)
   console.log("hubOrders", hubOrder)
   // console.log("usersData", usersData)
@@ -98,12 +98,17 @@ const SingleHubDetails = () => {
   let rutiPrice = getItemPrice('Atar ruti');
   let frenchFryPrice = getItemPrice('French fry');
   let pizzaSaucePrice = getItemPrice('Pizza Sauce');
+  let cheeseBallPrice = getItemPrice('Cheese ball');
+  let chickenPopcornPrice = getItemPrice('Chicken popcorn');
+  let chickenStripesPrice = getItemPrice('Chicken stripes');
   
 
   const pendingOrders = hubOrder.orders.filter(order => order.orderStatus == 'Pending')
-  const deliveredOrders = hubOrder.orders.filter(order => order.orderStatus == 'Delivered')
+  const deliveredOrders = hubOrder.orders.filter(order => order.orderStatus == 'Delivered' || order.orderStatus == 'Offline Delivery' )
+  // const offlineDeliveredOrders = hubOrder.orders.filter(order => order.orderStatus == 'Offline Delivery')
   const cancelledOrders = hubOrder.orders.filter(order => order.orderStatus == 'Cancelled')
   const offlineOrders = hubOrder.orders.filter(order => order.orderStatus == 'Offline Delivery')
+  const verifiedOrders = hubOrder.orders.filter(order => order.verifyStatus == 'Verified')
   // const totalBallRequired = hubOrder.orders.reduce((prev,cur) => prev.)
 
   const getDeliveryCharge = (orders) => {
@@ -219,11 +224,24 @@ const SingleHubDetails = () => {
     return total + (chickenBallItem ? chickenBallItem.quantity : 0);
   }, 0);
 
+  const totalCheeseBall = hubOrder.orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Cheese ball");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
+  const totalChickenPopcorn = hubOrder.orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken popcorn");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
+  const totalChickenStripes = hubOrder.orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken stripes");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
 
 
-  const totalOrderedItems = totalChickenBallQuantity + totalChickenNuggetsQuantity + totalChickenSausageQuantity + totalChickenParotaQuantity + totalSupremeMayonnaiseQuantity + totalSalamiQuantity + totalSamuchaQuantity + totalChickenMerinationQuantity + totalBurgerPettyQuantity + totalSpringRollQuantity +  totalChickenChaapQuantity + totalFriedChickenQuantity + totalMomoQuantity + totalKaragiChickenQuantity +  totalBotiKababQuantity + totalMojorellaCheeseQuantity + totalRutiQuantity + totalFrenchFry + totalPizzaSauce; 
 
-  const totalOrderedPrice = totalChickenBallQuantity * ballPrice  + totalChickenNuggetsQuantity *  nuggetsPrice + totalChickenSausageQuantity * sausagePrice  + totalChickenParotaQuantity * porotaPrice  + totalSupremeMayonnaiseQuantity * mayonnaisePrice  + totalSalamiQuantity * salamiPrice  + totalSamuchaQuantity * samuchaPrice  + totalChickenMerinationQuantity * merinationPrice + totalBurgerPettyQuantity * burgerPettyPrice  + totalSpringRollQuantity * springRollPrice  +  totalChickenChaapQuantity * chickenChaapPrice  + totalFriedChickenQuantity * friedChickenPrice  + totalMomoQuantity * momoPrice  + totalKaragiChickenQuantity * karagiChickenPrice +  totalBotiKababQuantity * botiKababPrice + totalMojorellaCheeseQuantity * mojorellaCheesePrice + totalRutiQuantity * rutiPrice + totalFrenchFry * frenchFryPrice + totalPizzaSauce * pizzaSaucePrice ; 
+  const totalOrderedItems = totalChickenBallQuantity + totalChickenNuggetsQuantity + totalChickenSausageQuantity + totalChickenParotaQuantity + totalSupremeMayonnaiseQuantity + totalSalamiQuantity + totalSamuchaQuantity + totalChickenMerinationQuantity + totalBurgerPettyQuantity + totalSpringRollQuantity +  totalChickenChaapQuantity + totalFriedChickenQuantity + totalMomoQuantity + totalKaragiChickenQuantity +  totalBotiKababQuantity + totalMojorellaCheeseQuantity + totalRutiQuantity + totalFrenchFry + totalPizzaSauce + totalCheeseBall + totalChickenPopcorn + totalChickenStripes; 
+
+  const totalOrderedPrice = totalChickenBallQuantity * ballPrice  + totalChickenNuggetsQuantity *  nuggetsPrice + totalChickenSausageQuantity * sausagePrice  + totalChickenParotaQuantity * porotaPrice  + totalSupremeMayonnaiseQuantity * mayonnaisePrice  + totalSalamiQuantity * salamiPrice  + totalSamuchaQuantity * samuchaPrice  + totalChickenMerinationQuantity * merinationPrice + totalBurgerPettyQuantity * burgerPettyPrice  + totalSpringRollQuantity * springRollPrice  +  totalChickenChaapQuantity * chickenChaapPrice  + totalFriedChickenQuantity * friedChickenPrice  + totalMomoQuantity * momoPrice  + totalKaragiChickenQuantity * karagiChickenPrice +  totalBotiKababQuantity * botiKababPrice + totalMojorellaCheeseQuantity * mojorellaCheesePrice + totalRutiQuantity * rutiPrice + totalFrenchFry * frenchFryPrice + totalPizzaSauce * pizzaSaucePrice + totalCheeseBall * cheeseBallPrice + totalChickenPopcorn * chickenPopcornPrice + totalChickenStripes * chickenStripesPrice ; 
 
 
 
@@ -257,10 +275,17 @@ const SingleHubDetails = () => {
   const deliveredRuti = orderQuantityCount(deliveredOrders, 'Atar ruti');
   const deliveredFrenchFry = orderQuantityCount(deliveredOrders, 'French fry');
   const deliveredPizzaSauce = orderQuantityCount(deliveredOrders, 'Pizza Sauce');
+  const deliveredCheeseBall = orderQuantityCount(deliveredOrders, 'Cheese ball');
+  const deliveredChickenPopcorn = orderQuantityCount(deliveredOrders, 'Chicken popcorn');
+  const deliveredChickenStripes = orderQuantityCount(deliveredOrders, 'Chicken stripes');
 
-  const totalDeliveredItems = deliveredBall + deliveredNuggets + deliveredSausage + deliveredPorota + deliveredMayonnaise + deliveredSalami + deliveredSamucha + deliveredMerination + deliveredPetty + deliveredRoll + deliveredChaap + deliveredFriedChicken + deliveredMomo + deliveredKaragiChicken + deliveredBotiKabab + deliveredMojorellaCheese + deliveredRuti + deliveredFrenchFry + deliveredPizzaSauce;
 
-  const totalDeliveredPrice = deliveredBall * ballPrice  + deliveredNuggets * nuggetsPrice  + deliveredSausage * sausagePrice + deliveredPorota * porotaPrice + deliveredMayonnaise * mayonnaisePrice  + deliveredSalami * salamiPrice  + deliveredSamucha * samuchaPrice  + deliveredMerination * merinationPrice + deliveredPetty * burgerPettyPrice + deliveredRoll * springRollPrice + deliveredChaap * chickenChaapPrice + deliveredFriedChicken * friedChickenPrice + deliveredMomo * momoPrice + deliveredKaragiChicken * karagiChickenPrice + deliveredBotiKabab * botiKababPrice + deliveredMojorellaCheese * mojorellaCheesePrice + deliveredRuti * rutiPrice + deliveredFrenchFry * frenchFryPrice + deliveredPizzaSauce * pizzaSaucePrice ;
+
+
+
+  const totalDeliveredItems = deliveredBall + deliveredNuggets + deliveredSausage + deliveredPorota + deliveredMayonnaise + deliveredSalami + deliveredSamucha + deliveredMerination + deliveredPetty + deliveredRoll + deliveredChaap + deliveredFriedChicken + deliveredMomo + deliveredKaragiChicken + deliveredBotiKabab + deliveredMojorellaCheese + deliveredRuti + deliveredFrenchFry + deliveredPizzaSauce + deliveredCheeseBall + deliveredChickenPopcorn + deliveredChickenStripes;
+
+  const totalDeliveredPrice = deliveredBall * ballPrice  + deliveredNuggets * nuggetsPrice  + deliveredSausage * sausagePrice + deliveredPorota * porotaPrice + deliveredMayonnaise * mayonnaisePrice  + deliveredSalami * salamiPrice  + deliveredSamucha * samuchaPrice  + deliveredMerination * merinationPrice + deliveredPetty * burgerPettyPrice + deliveredRoll * springRollPrice + deliveredChaap * chickenChaapPrice + deliveredFriedChicken * friedChickenPrice + deliveredMomo * momoPrice + deliveredKaragiChicken * karagiChickenPrice + deliveredBotiKabab * botiKababPrice + deliveredMojorellaCheese * mojorellaCheesePrice + deliveredRuti * rutiPrice + deliveredFrenchFry * frenchFryPrice + deliveredPizzaSauce * pizzaSaucePrice + deliveredCheeseBall * cheeseBallPrice + deliveredChickenPopcorn * chickenPopcornPrice + deliveredChickenStripes * chickenStripesPrice ;
 
 
 
@@ -284,11 +309,14 @@ const SingleHubDetails = () => {
   const pendingRuti = orderQuantityCount(pendingOrders, 'Atar ruti');
   const pendingFrenchFry = orderQuantityCount(pendingOrders, 'French fry');
   const pendingPizzaSauce = orderQuantityCount(pendingOrders, 'Pizza Sauce');
+  const pendingCheeseBall = orderQuantityCount(pendingOrders, 'Cheese ball');
+  const pendingChickenPopcorn = orderQuantityCount(pendingOrders, 'Chicken popcorn');
+  const pendingChickenStripes = orderQuantityCount(pendingOrders, 'Chicken stripes');
 
 
-  const totalPendingItems = pendingBall + pendingNuggets + pendingSausage + pendingPorota + pendingMayonnaise + pendingSalami + pendingSamucha + pendingMerination + pendingPetty + pendingRoll + pendingChaap + pendingFriedChicken + pendingMomo + pendingKaragiChicken + pendingBotiKabab + pendingMojorellaCheese + pendingRuti + pendingFrenchFry + pendingPizzaSauce;
+  const totalPendingItems = pendingBall + pendingNuggets + pendingSausage + pendingPorota + pendingMayonnaise + pendingSalami + pendingSamucha + pendingMerination + pendingPetty + pendingRoll + pendingChaap + pendingFriedChicken + pendingMomo + pendingKaragiChicken + pendingBotiKabab + pendingMojorellaCheese + pendingRuti + pendingFrenchFry + pendingPizzaSauce + pendingCheeseBall + pendingChickenPopcorn + pendingChickenStripes ;
 
-  const totalPendingPrice = pendingBall * ballPrice  + pendingNuggets * nuggetsPrice  + pendingSausage * sausagePrice + pendingPorota * porotaPrice + pendingMayonnaise * mayonnaisePrice  + pendingSalami * salamiPrice  + pendingSamucha * samuchaPrice  + pendingMerination * merinationPrice + pendingPetty * burgerPettyPrice + pendingRoll * springRollPrice + pendingChaap * chickenChaapPrice + pendingFriedChicken * friedChickenPrice + pendingMomo * momoPrice + pendingKaragiChicken * karagiChickenPrice + pendingBotiKabab * botiKababPrice + pendingMojorellaCheese * mojorellaCheesePrice + pendingRuti * rutiPrice + pendingFrenchFry * frenchFryPrice + pendingPizzaSauce * pizzaSaucePrice;
+  const totalPendingPrice = pendingBall * ballPrice  + pendingNuggets * nuggetsPrice  + pendingSausage * sausagePrice + pendingPorota * porotaPrice + pendingMayonnaise * mayonnaisePrice  + pendingSalami * salamiPrice  + pendingSamucha * samuchaPrice  + pendingMerination * merinationPrice + pendingPetty * burgerPettyPrice + pendingRoll * springRollPrice + pendingChaap * chickenChaapPrice + pendingFriedChicken * friedChickenPrice + pendingMomo * momoPrice + pendingKaragiChicken * karagiChickenPrice + pendingBotiKabab * botiKababPrice + pendingMojorellaCheese * mojorellaCheesePrice + pendingRuti * rutiPrice + pendingFrenchFry * frenchFryPrice + pendingPizzaSauce * pizzaSaucePrice + pendingCheeseBall * cheeseBallPrice + pendingChickenPopcorn * chickenPopcornPrice + pendingChickenStripes * chickenStripesPrice ;
 
 
 
@@ -555,6 +583,7 @@ const SingleHubDetails = () => {
             <div className="hubOrderInfo my-4 text-lg">
               <p className="section_title text-lg font-semibold">Hub Orders Summary:</p>
               <p className=''>Total Orders : {hubOrder.orders.length}</p>
+              <p className=''>Verified Orders : {verifiedOrders.length}</p>
               {/* <p className=''>Total Bill : {hubOrder.orders.reduce((prev,cur) => prev + cur.finalPrice,0)}</p> */}
               
               <p className="t">Total Pending: {pendingOrders.length}</p>
@@ -585,6 +614,11 @@ const SingleHubDetails = () => {
                   {totalRutiQuantity > 0 ? <p className="mb-1">Atar Ruti: {totalRutiQuantity}</p> : ""}
                   {totalFrenchFry > 0 ? <p className="mb-1">French Fry: {totalFrenchFry}</p> : ""}
                   {totalPizzaSauce > 0 ? <p className="mb-1">Pizza Sauce: {totalPizzaSauce}</p> : ""}
+                  {totalCheeseBall > 0 ? <p className="mb-1">Cheese Ball: {totalCheeseBall}</p> : ""}
+                  {totalChickenPopcorn > 0 ? <p className="mb-1">Chicken popcorn: {totalChickenPopcorn}</p> : ""}
+                  {totalChickenStripes > 0 ? <p className="mb-1">Chicken stripes: {totalChickenStripes}</p> : ""}
+
+                  <div className="h-[1px] w-[100px] bg-amber-600 my-4"></div> 
 
                   {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Ordered Items: {totalOrderedItems} kg</p> : ""}
                   {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Ordered Price: {totalOrderedPrice}</p> : ""}
@@ -615,7 +649,12 @@ const SingleHubDetails = () => {
                   {deliveredRuti > 0 ? <p className="mb-1">Atar Ruti: {deliveredRuti}</p> : ""}          
                   {deliveredFrenchFry > 0 ? <p className="mb-1">French Fry: {deliveredFrenchFry}</p> : ""}
                   {deliveredPizzaSauce > 0 ? <p className="mb-1">Pizza Sauce: {deliveredPizzaSauce}</p> : ""}
+                  {deliveredCheeseBall > 0 ? <p className="mb-1">Cheese ball: {deliveredCheeseBall}</p> : ""}
+                  {deliveredChickenPopcorn > 0 ? <p className="mb-1">Chicken popcorn: {deliveredChickenPopcorn}</p> : ""}
 
+                  {deliveredChickenStripes > 0 ? <p className="mb-1">Chicken stripes: {deliveredChickenStripes}</p> : ""}
+                  
+                  <div className="h-[1px] w-[100px] bg-amber-600 my-4"></div>   
 
                   {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Delivered Items: {totalDeliveredItems} kg</p> : ""}
                   {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Delivered Price: {totalDeliveredPrice}</p> : ""}
@@ -651,10 +690,17 @@ const SingleHubDetails = () => {
                   {pendingRuti > 0 ? <p className="mb-1">Atar Ruti: {pendingRuti}</p> : ""}
                   {pendingFrenchFry > 0 ? <p className="mb-1">French Fry: {pendingFrenchFry}</p> : ""}
                   {pendingPizzaSauce > 0 ? <p className="mb-1">Pizza Sauce: {pendingPizzaSauce}</p> : ""}
+                  {pendingCheeseBall > 0 ? <p className="mb-1">Cheese ball: {pendingCheeseBall}</p> : ""}
+                  {pendingChickenPopcorn > 0 ? <p className="mb-1">Chicken popcorn: {pendingChickenPopcorn}</p> : ""}
+                  {pendingChickenStripes > 0 ? <p className="mb-1">Chicken stripes: {pendingChickenStripes}</p> : ""}
+
+                  <div className="h-[1px] w-[100px] bg-amber-600 my-4"></div> 
+
 
                   {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Pending Items: {totalPendingItems} kg</p> : ""}
                   {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Pending Price: {totalPendingPrice}</p> : ""}
                   {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Pending Delivery Charge: {totalPendingDeliveryCharge}</p> : ""}
+
                   
 
                   </> : 'No pending product found.'}
@@ -697,6 +743,7 @@ const SingleHubDetails = () => {
               <p className='flex-[.75]'>Bill</p>
               <p className='flex-[.75]'>Type</p>
               <p className='flex-[.75]'>Status</p>
+              <p className='flex-[.75]'>Verified</p>
               <p className='flex-1 flex justify-start'>Created By</p>
               <p className='flex-[.75] flex justify-end'>Action </p>
 

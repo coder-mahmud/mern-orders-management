@@ -40,6 +40,7 @@ const orderSchema = new mongoose.Schema(
     orderType: { type: String, enum: ["Offline", "PandGo"] },
     orderSource: { type: String, enum: ["Facebook", "Website"] },
     orderStatus: { type: String, enum: ["Pending", "Delivered", "Cancelled","Offline Delivery"], default: "Pending"  },
+    verifyStatus: { type: String, enum: ["Verified", "Pending", "Not Found"], default: "Pending"  },
     websiteOrderId: { type: Number, },
     discount: { type: Number },
     orderPrice: { type: Number, required: true },
@@ -49,6 +50,10 @@ const orderSchema = new mongoose.Schema(
     deliveryDate: { type: Date },
     deliveredAt: { type: Date },
     orderType:{ type: String, enum: ["Pending","New"], default: "New"  },
+    verifyTime: { type: Date },
+    verifiedBy: {type: mongoose.Schema.Types.ObjectId,ref: "User",},
+    statusChangeTime: { type: Date },
+    statusChangedBy: {type: mongoose.Schema.Types.ObjectId,ref: "User",},
   },
   { timestamps: true }
 );
