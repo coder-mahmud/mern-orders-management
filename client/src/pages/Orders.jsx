@@ -36,6 +36,7 @@ const Orders = () => {
   const deliveredOrders = orders.filter(order => order.orderStatus == 'Delivered')
   const cancelledOrders = orders.filter(order => order.orderStatus == 'Cancelled')
   const offlineOrders = orders.filter(order => order.orderStatus == 'Offline Delivery')
+  const verfiedOrders = orders.filter(order => order.verifyStatus == 'Verified')
   // const totalBallRequired = orders.reduce((prev,cur) => prev.)
 
   const getItemPrice = (itemName) => {
@@ -233,10 +234,11 @@ const Orders = () => {
               <p className="section_title text-lg font-semibold">Total Orders Summary:</p>
               
               <p className=''>Total Orders : {orders.length}</p>
+              <p className=''>Total Verfied : {verfiedOrders.length}</p>
               {/* <p className=''>Total Bill : {orders.reduce((prev,cur) => prev + cur.finalPrice,0)}</p> */}
               
               <p className="t">Total Pending: {pendingOrders.length}</p>
-              <p className="t">Total Delivered: {deliveredOrders.length}</p>
+              <p className="t">Online Delivery: {deliveredOrders.length}</p>
               <p className="t">Offline Delivery: {offlineOrders.length}</p>
               <p className="t">Total Cancelled: {cancelledOrders.length}</p>
               

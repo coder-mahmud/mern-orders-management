@@ -235,7 +235,7 @@ const HubOrderItem = ({order, users, index}) => {
           <div  className="action_links_wrap z-30 absolute right-20 md:right-10 -top-24 md:top-0  w-[200px] rounded bg-gray-500 py-4">
             <ul>
               <Link to={`/order/${order._id}`} className='border-b border-gray-700 py-2 px-4 text-center block'>View Details</Link>
-              {userRole !=='user' &&  <Link to={`/order/edit/${order._id}`} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer '>Edit Order</Link> }
+              {(userRole !=='user' && userRole !=='userAdmin') &&  <Link to={`/order/edit/${order._id}`} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer '>Edit Order</Link> }
               
               {order.orderStatus == 'Delivered' ? <li className='block border-b border-gray-700 py-2 px-4 text-center cursor-not-allowed'>Already Delivered</li> : <li onClick={showDeliveredHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Delivered</li>}
 
@@ -248,7 +248,7 @@ const HubOrderItem = ({order, users, index}) => {
               {/* <li onClick={() => verifiedHandler('Pending')} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as Pending</li> */}
               <li onClick={() => verifiedHandler('Not Found')} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Mark as NOT Found</li>
 
-              {userRole !=='user' &&  <li onClick={showDeleteHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Delete Order</li> }
+              {(userRole !=='user' && userRole !=='userAdmin') &&  <li onClick={showDeleteHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>Delete Order</li> }
                             
 
               {/* {order.orderStatus == 'Pending' ? <>

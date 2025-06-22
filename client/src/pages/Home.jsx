@@ -29,7 +29,7 @@ const Home = () => {
 
   const userRole =  useSelector(state =>  state?.auth?.userInfo?.role);
   // console.log("Role", userRole)
-  if(userRole == 'user'){
+  if(userRole == 'user' || userRole == 'userAdmin'){
     return <Navigate to="/hubs" replace />;
   }
 
