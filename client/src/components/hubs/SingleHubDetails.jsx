@@ -740,7 +740,7 @@ const SingleHubDetails = () => {
             <div className='hidden md:flex justify-between gap-4 py-4 border-b border-gray-500'>
               <p className='w-[50px]'>SL No.</p>
               <p className='flex-2'>Customer Details</p>
-              <p className='flex-[.75]'>Bill</p>
+              <p className='flex-[1.5]'>Order Details</p>
               <p className='flex-[.75]'>Type</p>
               <p className='flex-[.75]'>Status</p>
               <p className='flex-[.75]'>Verified</p>

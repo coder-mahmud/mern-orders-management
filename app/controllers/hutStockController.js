@@ -75,12 +75,12 @@ const createStockforHub = async (req, res) => {
 }
 
 const editHubStock = async (req,res) =>{
-  const {stockId, quantity} = req.body
-  
+  const {stockId, quantity, stockChangeTime, stockChangedBy} = req.body
+  console.log("stock update Body", stockId, quantity, stockChangeTime, stockChangedBy)
   try {
     const stock = await HubStock.findByIdAndUpdate(
       stockId,
-      { quantity },
+      { quantity,stockChangeTime,stockChangedBy },
       { new: true }
     ).populate({
       path: 'productId',
@@ -88,6 +88,9 @@ const editHubStock = async (req,res) =>{
     }).populate({
       path: 'hubId',
       select: 'name'
+    }).populate({
+      path: 'stockChangedBy',
+      select: 'firstName'
     });
 
     if (!stock) {
@@ -121,6 +124,9 @@ const getHubStock = async (req, res) => {
   }).populate({
     path: 'hubId',
     select: 'name'
+  }).populate({
+    path: 'stockChangedBy',
+    select: 'firstName'
   });
   res.status(200).json({hubStock})
 }

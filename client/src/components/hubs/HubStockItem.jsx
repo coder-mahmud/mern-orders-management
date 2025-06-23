@@ -4,6 +4,9 @@ import { useEditHubStockMutation } from "../../slices/hubStockApiSlice";
 import Loader from "../shared/Loader";
 import {toast} from 'react-toastify'
 import { useSelector } from "react-redux";
+import dayjs from 'dayjs'
+
+
 
 const HubStockItem = ({ item }) => {
   // console.log("Item from single stock item", item)
@@ -12,9 +15,12 @@ const HubStockItem = ({ item }) => {
   const [showLoader,setShowLoader] = useState(false)
 
   const userRole =  useSelector(state =>  state?.auth?.userInfo?.role);
+  const curUser = useSelector(state =>  state?.auth?.userInfo?.id);
   // console.log("userRole",userRole)
 
   const [editHubStock, {isLoading}] = useEditHubStockMutation();
+
+  const now = dayjs();
 
   const handleChange = (e) => {
     console.log("Changing data:", e.target.value)
@@ -27,7 +33,9 @@ const HubStockItem = ({ item }) => {
     setShowLoader(true)
     const data = {
       stockId:stockItem._id,
-      quantity: stockItem.quantity
+      quantity: stockItem.quantity,
+      stockChangeTime:now,
+      stockChangedBy:curUser
     }
     console.log("Stock:", stockItem )
     console.log("data:", data )
@@ -59,6 +67,10 @@ const HubStockItem = ({ item }) => {
         <div className="stock_wrapper">
           <div className="">
             <p className="mb-4 text-xl">Quantity: {item.quantity}</p>
+            <p className="mb-2 text-lg">{item?.stockChangedBy?.firstName}</p>
+            {item?.stockChangeTime ? <p className="mb-4 text-lg">{ dayjs( item.stockChangeTime).format("DD MMM, hh:mm a") }</p> : ''}
+            
+            
             {userRole == 'admin' || userRole == 'superAdmin' ? <div className="rounded px-6 py-2 bg-amber-600 hover:bg-amber-800 cursor-pointer font-semibold inline-flex items-center gap-2" onClick={() => setShowUpdate(true)} >
               <img className="h-4" src={Pencil} />
               Edit Stock

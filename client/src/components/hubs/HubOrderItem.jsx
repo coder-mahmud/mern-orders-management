@@ -220,7 +220,10 @@ const HubOrderItem = ({order, users, index}) => {
       {showLoader && <Loader />}
       <p className='w-[50px]'>{index+1}.</p>
       <p className='flex-2'><span className="inline-block md:hidden">Customer Details :</span> {order.customerDetails}</p>
-      <p className='flex-[.75]'><span className="inline-block md:hidden">Total Bill :</span> {order.finalPrice}</p>
+      <p className='flex-[1.5]'><span className="inline-block md:hidden">Order Details :</span> 
+        {order.orderItems.map(item => <span key={item.productId}>{item.name} - {item.quantity}kg, </span>)}
+        {order.finalPrice}tk
+      </p>
       <p className='flex-[.75]'><span className="inline-block md:hidden">Type : </span> {order.orderType}</p>
       <p className='flex-[.75]'>
         <span className="inline-block md:hidden">Status :</span> {order.orderStatus} {order.orderStatus !=='Pending' ? order?.statusChangedBy?.firstName + '-' + dayjs(order?.statusChangeTime).format("DD MMM, hh:mm a")  : ''}
