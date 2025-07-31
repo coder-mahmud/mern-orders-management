@@ -10,7 +10,7 @@ import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import hubStockRoutes from './routes/hubStockRoutes.js';
 import stockHistoryRoutes from './routes/stockHistoryRoutes.js';
-
+import calculationRoutes from './routes/calculationRoutes.js';
 
 
 
@@ -57,6 +57,8 @@ app.use('/hubstock', hubStockRoutes);
 app.use('/stockhistory', stockHistoryRoutes);
 app.use('/riderreport', riderReportRoutes);
 app.use('/internalreport', internalReportRoutes);
+app.use('/calculation', calculationRoutes);
+
 
 
 app.listen(5000, () => {console.log("server running")} )

@@ -569,6 +569,7 @@ const SingleHubDetails = () => {
             { (userRole ==='admin' || userRole ==='controller' || userRole ==='superAdmin') ? '' : ''}
             
             <Link className='rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold' to={`/hubs/${id}/stock`}>Hub Stock</Link>
+            <Link className='rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold' to={`/hubs/${id}/calculation`}>Hub Daily Calculation</Link>
 
             
 

@@ -47,7 +47,7 @@ const getServerTime = async (req, res) => {
 const getStockForHub = async (req, res) => {
 
   const {hubId,date} = req.params;
-  console.log("Data",hubId, date)
+  // console.log("Data",hubId, date)
 
   try {
     // Convert string to Date object and normalize to midnight

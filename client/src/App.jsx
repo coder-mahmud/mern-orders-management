@@ -24,6 +24,7 @@ import SubOrders from './pages/SubOrders'
 import HubStock from './components/hubs/HubStock'
 import RiderOrder from './pages/RiderReport'
 import InternalReport from './pages/InternalReport'
+import HubCalculation from './components/hubs/HubCalculation'
 
 
 
@@ -47,6 +48,7 @@ function App() {
             <Route path="rider-report" element={<RiderOrder />} />
             <Route path="hubs/:id" element={<SingleHubDetails />} />
             <Route path="hubs/:id/stock" element={<HubStock />} />
+            <Route path="hubs/:id/calculation" element={<HubCalculation />} />
             <Route path="products" element={<Products />} />
             <Route path="order/:id" element={<OrderDetails />} />
             <Route path="orders" element={<Orders />} />
