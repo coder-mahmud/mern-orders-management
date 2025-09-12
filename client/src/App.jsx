@@ -6,6 +6,7 @@ import Layout from './pages/Layout'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 
+
 //import pages
 import Home from './pages/Home'
 import Contact from './pages/Contact'
@@ -25,6 +26,7 @@ import HubStock from './components/hubs/HubStock'
 import RiderOrder from './pages/RiderReport'
 import InternalReport from './pages/InternalReport'
 import HubCalculation from './components/hubs/HubCalculation'
+import ActivityLog from './pages/ActivityLog'
 
 
 
@@ -54,6 +56,7 @@ function App() {
             <Route path="orders" element={<Orders />} />
             <Route path="sub-orders" element={<SubOrders />} />
             <Route path="order/edit/:id" element={<EditOrder />} />
+            <Route path="/activity" element={<ActivityLog />} />
           </Route>
 
           <Route path="/login" element={<Login />} />

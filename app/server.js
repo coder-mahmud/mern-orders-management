@@ -11,6 +11,7 @@ import orderRoutes from './routes/orderRoutes.js';
 import hubStockRoutes from './routes/hubStockRoutes.js';
 import stockHistoryRoutes from './routes/stockHistoryRoutes.js';
 import calculationRoutes from './routes/calculationRoutes.js';
+import activityRoutes from './routes/activityLogsRoute.js';
 
 
 
@@ -58,6 +59,7 @@ app.use('/stockhistory', stockHistoryRoutes);
 app.use('/riderreport', riderReportRoutes);
 app.use('/internalreport', internalReportRoutes);
 app.use('/calculation', calculationRoutes);
+app.use('/activity', activityRoutes);
 
 
 

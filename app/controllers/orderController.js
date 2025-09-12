@@ -2,6 +2,8 @@ import Order from "../models/orderModel.js";
 import mongoose from "mongoose";
 import HubStock from "../models/hubStockModel.js";
 import Hub from "../models/hubModel.js";
+import { logActivity } from "../utils/logActivity.js";
+import User from "../models/userModels.js";
 
 
 const getOrders = async (req, res) => {
@@ -50,6 +52,10 @@ const createOrder = async (req, res) => {
   // console.log("data",orderItems, customerDetails,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user )
   try {
     const newOrder = await Order.create({hub, orderItems, customerDetails,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user,orderType})
+
+    // Log activity
+    await logActivity(user, "CREATE_ORDER", hub , `Created post on : ${hub}`, req);    
+
     res.status(201).json({message:"Order creates successfully!", order:newOrder})
   } catch (error) {
     res.status(404).json({message:"Failed", error})

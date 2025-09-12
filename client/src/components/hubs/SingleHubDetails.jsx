@@ -101,6 +101,8 @@ const SingleHubDetails = () => {
   let cheeseBallPrice = getItemPrice('Cheese ball');
   let chickenPopcornPrice = getItemPrice('Chicken popcorn');
   let chickenStripesPrice = getItemPrice('Chicken stripes');
+  let vegetableSpringRollPrice = getItemPrice('Vegetable Spring Roll');
+  let teturChatniPrice = getItemPrice('Tetul Chatni');
   
 
   const pendingOrders = hubOrder.orders.filter(order => order.orderStatus == 'Pending')
@@ -232,16 +234,27 @@ const SingleHubDetails = () => {
     const chickenBallItem = order.orderItems.find(item => item.name === "Chicken popcorn");
     return total + (chickenBallItem ? chickenBallItem.quantity : 0);
   }, 0);
+
   const totalChickenStripes = hubOrder.orders.reduce((total, order) => {
     const chickenBallItem = order.orderItems.find(item => item.name === "Chicken stripes");
     return total + (chickenBallItem ? chickenBallItem.quantity : 0);
   }, 0);
 
+  const totalVegetableSpringRoll = hubOrder.orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Vegetable Spring Roll");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
+
+  const totalTetulChatni = hubOrder.orders.reduce((total, order) => {
+    const chickenBallItem = order.orderItems.find(item => item.name === "Tetul Chatni");
+    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
+  }, 0);
 
 
-  const totalOrderedItems = totalChickenBallQuantity + totalChickenNuggetsQuantity + totalChickenSausageQuantity + totalChickenParotaQuantity + totalSupremeMayonnaiseQuantity + totalSalamiQuantity + totalSamuchaQuantity + totalChickenMerinationQuantity + totalBurgerPettyQuantity + totalSpringRollQuantity +  totalChickenChaapQuantity + totalFriedChickenQuantity + totalMomoQuantity + totalKaragiChickenQuantity +  totalBotiKababQuantity + totalMojorellaCheeseQuantity + totalRutiQuantity + totalFrenchFry + totalPizzaSauce + totalCheeseBall + totalChickenPopcorn + totalChickenStripes; 
 
-  const totalOrderedPrice = totalChickenBallQuantity * ballPrice  + totalChickenNuggetsQuantity *  nuggetsPrice + totalChickenSausageQuantity * sausagePrice  + totalChickenParotaQuantity * porotaPrice  + totalSupremeMayonnaiseQuantity * mayonnaisePrice  + totalSalamiQuantity * salamiPrice  + totalSamuchaQuantity * samuchaPrice  + totalChickenMerinationQuantity * merinationPrice + totalBurgerPettyQuantity * burgerPettyPrice  + totalSpringRollQuantity * springRollPrice  +  totalChickenChaapQuantity * chickenChaapPrice  + totalFriedChickenQuantity * friedChickenPrice  + totalMomoQuantity * momoPrice  + totalKaragiChickenQuantity * karagiChickenPrice +  totalBotiKababQuantity * botiKababPrice + totalMojorellaCheeseQuantity * mojorellaCheesePrice + totalRutiQuantity * rutiPrice + totalFrenchFry * frenchFryPrice + totalPizzaSauce * pizzaSaucePrice + totalCheeseBall * cheeseBallPrice + totalChickenPopcorn * chickenPopcornPrice + totalChickenStripes * chickenStripesPrice ; 
+  const totalOrderedItems = totalChickenBallQuantity + totalChickenNuggetsQuantity + totalChickenSausageQuantity + totalChickenParotaQuantity + totalSupremeMayonnaiseQuantity + totalSalamiQuantity + totalSamuchaQuantity + totalChickenMerinationQuantity + totalBurgerPettyQuantity + totalSpringRollQuantity +  totalChickenChaapQuantity + totalFriedChickenQuantity + totalMomoQuantity + totalKaragiChickenQuantity +  totalBotiKababQuantity + totalMojorellaCheeseQuantity + totalRutiQuantity + totalFrenchFry + totalPizzaSauce + totalCheeseBall + totalChickenPopcorn + totalChickenStripes + totalVegetableSpringRoll + totalTetulChatni; 
+
+  const totalOrderedPrice = totalChickenBallQuantity * ballPrice  + totalChickenNuggetsQuantity *  nuggetsPrice + totalChickenSausageQuantity * sausagePrice  + totalChickenParotaQuantity * porotaPrice  + totalSupremeMayonnaiseQuantity * mayonnaisePrice  + totalSalamiQuantity * salamiPrice  + totalSamuchaQuantity * samuchaPrice  + totalChickenMerinationQuantity * merinationPrice + totalBurgerPettyQuantity * burgerPettyPrice  + totalSpringRollQuantity * springRollPrice  +  totalChickenChaapQuantity * chickenChaapPrice  + totalFriedChickenQuantity * friedChickenPrice  + totalMomoQuantity * momoPrice  + totalKaragiChickenQuantity * karagiChickenPrice +  totalBotiKababQuantity * botiKababPrice + totalMojorellaCheeseQuantity * mojorellaCheesePrice + totalRutiQuantity * rutiPrice + totalFrenchFry * frenchFryPrice + totalPizzaSauce * pizzaSaucePrice + totalCheeseBall * cheeseBallPrice + totalChickenPopcorn * chickenPopcornPrice + totalChickenStripes * chickenStripesPrice + totalVegetableSpringRoll * vegetableSpringRollPrice + totalTetulChatni * teturChatniPrice ; 
 
 
 
@@ -278,14 +291,16 @@ const SingleHubDetails = () => {
   const deliveredCheeseBall = orderQuantityCount(deliveredOrders, 'Cheese ball');
   const deliveredChickenPopcorn = orderQuantityCount(deliveredOrders, 'Chicken popcorn');
   const deliveredChickenStripes = orderQuantityCount(deliveredOrders, 'Chicken stripes');
+  const deliveredVegetableRoll = orderQuantityCount(deliveredOrders, 'Vegetable Spring Roll');
+  const deliveredTetulChatni = orderQuantityCount(deliveredOrders, 'Tetul Chatni');
 
 
 
 
 
-  const totalDeliveredItems = deliveredBall + deliveredNuggets + deliveredSausage + deliveredPorota + deliveredMayonnaise + deliveredSalami + deliveredSamucha + deliveredMerination + deliveredPetty + deliveredRoll + deliveredChaap + deliveredFriedChicken + deliveredMomo + deliveredKaragiChicken + deliveredBotiKabab + deliveredMojorellaCheese + deliveredRuti + deliveredFrenchFry + deliveredPizzaSauce + deliveredCheeseBall + deliveredChickenPopcorn + deliveredChickenStripes;
+  const totalDeliveredItems = deliveredBall + deliveredNuggets + deliveredSausage + deliveredPorota + deliveredMayonnaise + deliveredSalami + deliveredSamucha + deliveredMerination + deliveredPetty + deliveredRoll + deliveredChaap + deliveredFriedChicken + deliveredMomo + deliveredKaragiChicken + deliveredBotiKabab + deliveredMojorellaCheese + deliveredRuti + deliveredFrenchFry + deliveredPizzaSauce + deliveredCheeseBall + deliveredChickenPopcorn + deliveredChickenStripes + deliveredVegetableRoll + deliveredTetulChatni;
 
-  const totalDeliveredPrice = deliveredBall * ballPrice  + deliveredNuggets * nuggetsPrice  + deliveredSausage * sausagePrice + deliveredPorota * porotaPrice + deliveredMayonnaise * mayonnaisePrice  + deliveredSalami * salamiPrice  + deliveredSamucha * samuchaPrice  + deliveredMerination * merinationPrice + deliveredPetty * burgerPettyPrice + deliveredRoll * springRollPrice + deliveredChaap * chickenChaapPrice + deliveredFriedChicken * friedChickenPrice + deliveredMomo * momoPrice + deliveredKaragiChicken * karagiChickenPrice + deliveredBotiKabab * botiKababPrice + deliveredMojorellaCheese * mojorellaCheesePrice + deliveredRuti * rutiPrice + deliveredFrenchFry * frenchFryPrice + deliveredPizzaSauce * pizzaSaucePrice + deliveredCheeseBall * cheeseBallPrice + deliveredChickenPopcorn * chickenPopcornPrice + deliveredChickenStripes * chickenStripesPrice ;
+  const totalDeliveredPrice = deliveredBall * ballPrice  + deliveredNuggets * nuggetsPrice  + deliveredSausage * sausagePrice + deliveredPorota * porotaPrice + deliveredMayonnaise * mayonnaisePrice  + deliveredSalami * salamiPrice  + deliveredSamucha * samuchaPrice  + deliveredMerination * merinationPrice + deliveredPetty * burgerPettyPrice + deliveredRoll * springRollPrice + deliveredChaap * chickenChaapPrice + deliveredFriedChicken * friedChickenPrice + deliveredMomo * momoPrice + deliveredKaragiChicken * karagiChickenPrice + deliveredBotiKabab * botiKababPrice + deliveredMojorellaCheese * mojorellaCheesePrice + deliveredRuti * rutiPrice + deliveredFrenchFry * frenchFryPrice + deliveredPizzaSauce * pizzaSaucePrice + deliveredCheeseBall * cheeseBallPrice + deliveredChickenPopcorn * chickenPopcornPrice + deliveredChickenStripes * chickenStripesPrice + deliveredVegetableRoll * vegetableSpringRollPrice + deliveredTetulChatni * teturChatniPrice;
 
 
 
@@ -312,11 +327,13 @@ const SingleHubDetails = () => {
   const pendingCheeseBall = orderQuantityCount(pendingOrders, 'Cheese ball');
   const pendingChickenPopcorn = orderQuantityCount(pendingOrders, 'Chicken popcorn');
   const pendingChickenStripes = orderQuantityCount(pendingOrders, 'Chicken stripes');
+  const pendingVegetableRoll = orderQuantityCount(pendingOrders, 'Vegetable Spring Roll');
+  const pendingTetulChatni = orderQuantityCount(pendingOrders, 'Tetul Chatni');
 
 
-  const totalPendingItems = pendingBall + pendingNuggets + pendingSausage + pendingPorota + pendingMayonnaise + pendingSalami + pendingSamucha + pendingMerination + pendingPetty + pendingRoll + pendingChaap + pendingFriedChicken + pendingMomo + pendingKaragiChicken + pendingBotiKabab + pendingMojorellaCheese + pendingRuti + pendingFrenchFry + pendingPizzaSauce + pendingCheeseBall + pendingChickenPopcorn + pendingChickenStripes ;
+  const totalPendingItems = pendingBall + pendingNuggets + pendingSausage + pendingPorota + pendingMayonnaise + pendingSalami + pendingSamucha + pendingMerination + pendingPetty + pendingRoll + pendingChaap + pendingFriedChicken + pendingMomo + pendingKaragiChicken + pendingBotiKabab + pendingMojorellaCheese + pendingRuti + pendingFrenchFry + pendingPizzaSauce + pendingCheeseBall + pendingChickenPopcorn + pendingChickenStripes + pendingVegetableRoll + pendingTetulChatni ;
 
-  const totalPendingPrice = pendingBall * ballPrice  + pendingNuggets * nuggetsPrice  + pendingSausage * sausagePrice + pendingPorota * porotaPrice + pendingMayonnaise * mayonnaisePrice  + pendingSalami * salamiPrice  + pendingSamucha * samuchaPrice  + pendingMerination * merinationPrice + pendingPetty * burgerPettyPrice + pendingRoll * springRollPrice + pendingChaap * chickenChaapPrice + pendingFriedChicken * friedChickenPrice + pendingMomo * momoPrice + pendingKaragiChicken * karagiChickenPrice + pendingBotiKabab * botiKababPrice + pendingMojorellaCheese * mojorellaCheesePrice + pendingRuti * rutiPrice + pendingFrenchFry * frenchFryPrice + pendingPizzaSauce * pizzaSaucePrice + pendingCheeseBall * cheeseBallPrice + pendingChickenPopcorn * chickenPopcornPrice + pendingChickenStripes * chickenStripesPrice ;
+  const totalPendingPrice = pendingBall * ballPrice  + pendingNuggets * nuggetsPrice  + pendingSausage * sausagePrice + pendingPorota * porotaPrice + pendingMayonnaise * mayonnaisePrice  + pendingSalami * salamiPrice  + pendingSamucha * samuchaPrice  + pendingMerination * merinationPrice + pendingPetty * burgerPettyPrice + pendingRoll * springRollPrice + pendingChaap * chickenChaapPrice + pendingFriedChicken * friedChickenPrice + pendingMomo * momoPrice + pendingKaragiChicken * karagiChickenPrice + pendingBotiKabab * botiKababPrice + pendingMojorellaCheese * mojorellaCheesePrice + pendingRuti * rutiPrice + pendingFrenchFry * frenchFryPrice + pendingPizzaSauce * pizzaSaucePrice + pendingCheeseBall * cheeseBallPrice + pendingChickenPopcorn * chickenPopcornPrice + pendingChickenStripes * chickenStripesPrice + pendingVegetableRoll * vegetableSpringRollPrice + pendingTetulChatni * teturChatniPrice ;
 
 
 
@@ -618,6 +635,9 @@ const SingleHubDetails = () => {
                   {totalCheeseBall > 0 ? <p className="mb-1">Cheese Ball: {totalCheeseBall}</p> : ""}
                   {totalChickenPopcorn > 0 ? <p className="mb-1">Chicken popcorn: {totalChickenPopcorn}</p> : ""}
                   {totalChickenStripes > 0 ? <p className="mb-1">Chicken stripes: {totalChickenStripes}</p> : ""}
+                  {totalVegetableSpringRoll > 0 ? <p className="mb-1">Vegetable Spring Roll: {totalVegetableSpringRoll}</p> : ""}
+                  {totalTetulChatni > 0 ? <p className="mb-1">Tetul Chatni: {totalTetulChatni}</p> : ""}
+
 
                   <div className="h-[1px] w-[100px] bg-amber-600 my-4"></div> 
 
@@ -654,6 +674,8 @@ const SingleHubDetails = () => {
                   {deliveredChickenPopcorn > 0 ? <p className="mb-1">Chicken popcorn: {deliveredChickenPopcorn}</p> : ""}
 
                   {deliveredChickenStripes > 0 ? <p className="mb-1">Chicken stripes: {deliveredChickenStripes}</p> : ""}
+                  {deliveredVegetableRoll > 0 ? <p className="mb-1">Vegetable Spring Roll: {deliveredVegetableRoll}</p> : ""}
+                  {deliveredTetulChatni > 0 ? <p className="mb-1">Tetul chatni: {deliveredTetulChatni}</p> : ""}
                   
                   <div className="h-[1px] w-[100px] bg-amber-600 my-4"></div>   
 
@@ -694,6 +716,8 @@ const SingleHubDetails = () => {
                   {pendingCheeseBall > 0 ? <p className="mb-1">Cheese ball: {pendingCheeseBall}</p> : ""}
                   {pendingChickenPopcorn > 0 ? <p className="mb-1">Chicken popcorn: {pendingChickenPopcorn}</p> : ""}
                   {pendingChickenStripes > 0 ? <p className="mb-1">Chicken stripes: {pendingChickenStripes}</p> : ""}
+                  {pendingVegetableRoll > 0 ? <p className="mb-1">Vegetable Spring Roll: {pendingVegetableRoll}</p> : ""}
+                  {pendingTetulChatni > 0 ? <p className="mb-1">Tetul Chatni: {pendingTetulChatni}</p> : ""}
 
                   <div className="h-[1px] w-[100px] bg-amber-600 my-4"></div> 
 
