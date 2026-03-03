@@ -57,6 +57,7 @@ const Header = () => {
           {userRole !=='user' ? <li><Link to="/orders">Orders</Link></li> : '' }
 
           <li><Link to="/activity">Activity</Link></li>
+          <li><Link to="/search">Search</Link></li>
           
           <li  ref={dropdownRef} className='relative'>
             <a onClick={showUserOptionsHandler} className='cursor-pointer' ><img className='w-8' src={UserImage} alt="" /></a>

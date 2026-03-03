@@ -41,6 +41,7 @@ const Home = () => {
 
   const [ showLoader, setShowLoader ] = useState(false)
   const [customerDetails, setCustomerDetails] = useState();
+  const [phoneNumber, setPhoneNumber] = useState();
   const [hub, setHub] = useState();
   const [selectedHub, setSelectedHub] = useState();
   const [deliveryCharge, setDeliveryCharge] = useState(70);
@@ -119,6 +120,15 @@ const Home = () => {
     );
   };
 
+  const bengaliToEnglishDigits = (str) => {
+    return str.replace(/[০-৯]/g, (d) => "০১২৩৪৫৬৭৮৯".indexOf(d));
+  };
+
+  const validateBDNumber = (number) => {
+    const bdPattern = /^01[3-9][0-9]{8}$/;
+    return bdPattern.test(number);
+  };
+
   const confirmOrderHandler = async () => {
     setShowLoader(true)
     // console.log("Confirm clicked!")
@@ -128,9 +138,29 @@ const Home = () => {
     // console.log("discount", discount)
     // console.log("deliveryDate", deliveryDate)
 
+    //1. translate to eng
+    let cleaned = bengaliToEnglishDigits(phoneNumber);
+
+    // 2. Remove + sign if entered
+    cleaned = cleaned.replace(/\+/g, "");
+
+    // 3. Remove spaces or dashes if needed
+    cleaned = cleaned.replace(/[\s-]/g, "");
+
+    console.log("Cleaned ph number:", cleaned)
+
+    // 4. Validate BD mobile number
+    if (!validateBDNumber(cleaned)) {
+      alert("Please enter a valid Bangladeshi mobile number (e.g., 01712345678).");
+      return;
+    }
+
+
+
     const data = {
       orderItems:selectedProducts,
       customerDetails,
+      phoneNumber:cleaned,
       orderPrice,
       deliveryCharge,
       discount,
@@ -141,7 +171,7 @@ const Home = () => {
       hub,
     }
 
-    console.log("data",data)
+    // console.log("data",data)
 
     try {
       const apiRes = await createOrder(data).unwrap();
@@ -156,6 +186,7 @@ const Home = () => {
       setShowLoader(false)
       setShowModal(false)
       setCustomerDetails('')
+      setPhoneNumber('')
       setHub('')
       setSelectedHub('')
       setDeliveryCharge(70)
@@ -189,6 +220,10 @@ const Home = () => {
             <div className="form_row flex flex-col gap-2 mb-6">
               <label htmlFor="">Customer Details:</label>
               <textarea type="text" placeholder='Customer Details:' className='border rounded border-gray-500 py-3 px-4' value={customerDetails} onChange = {(e) => setCustomerDetails(e.target.value)} />
+            </div>               
+            <div className="form_row flex flex-col gap-2 mb-6">
+              <label htmlFor="">Customer Mobile:</label>
+              <input type="tel" placeholder='Customer Mobile:' className='border rounded border-gray-500 py-3 px-4' value={phoneNumber} onChange = {(e) => setPhoneNumber(e.target.value)} required />
             </div>            
 
             <div className="form_row flex flex-col gap-2 mb-6">
@@ -245,6 +280,7 @@ const Home = () => {
             <div className="overlay_content_inner  overflow-y-auto h-full flex flex-col gap-4 scrollbar-thin">
               <h2 className='text-xl mb-4'>Here is the order details:</h2>
               <p><span className='font-semibold'>Customer Details: </span> {customerDetails}</p>
+              <p><span className='font-semibold'>Mobile Number: </span> {phoneNumber}</p>
               <p><span className='font-semibold'>Hub: </span>{selectedHub[0].name}</p>
               <p className=""><span className='font-semibold'>Delivery Charge: </span> {deliveryCharge}</p>
               <p className=""><span className='font-semibold'>Delivery Date: </span> {dayjs(deliveryDate).format("DD-MM-YYYY")}</p>

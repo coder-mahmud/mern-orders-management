@@ -37,7 +37,7 @@ const orderSchema = new mongoose.Schema(
     hub: { type: mongoose.Schema.Types.ObjectId, ref: "Hub", required:true },
 
     customerDetails: { type: String, required:true },
-    orderType: { type: String, enum: ["Offline", "PandGo"] },
+    phoneNumber: { type: String },
     orderSource: { type: String, enum: ["Facebook", "Website"] },
     orderStatus: { type: String, enum: ["Pending", "Delivered", "Cancelled","Offline Delivery"], default: "Pending"  },
     verifyStatus: { type: String, enum: ["Verified", "Pending", "Not Found"], default: "Pending"  },
@@ -57,6 +57,15 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Compound indexes for your main search cases
+orderSchema.index({ phoneNumber: 1, deliveryDate: -1 });
+orderSchema.index({ "orderItems.productId": 1, deliveryDate: -1 });
+
+// Optional single-field indexes for flexibility
+orderSchema.index({ phoneNumber: 1 });
+orderSchema.index({ "orderItems.productId": 1 });
+orderSchema.index({ deliveryDate: -1 });
 
 const Order = mongoose.model("Order", orderSchema);
 export default Order;

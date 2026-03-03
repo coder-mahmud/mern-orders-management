@@ -21,7 +21,7 @@ dotenv.config();
 const app = express();
 connect();
 
-const whitelist = ['http://localhost:3000', 'https://portal.foodulogybd.com', 'https://portal.foodulogybd.com/', 'http://datu.mahmud1.xyz/'];
+const whitelist = ['http://localhost:3000', 'https://portal.foodulogybd.com', 'https://portal.foodulogybd.com/', 'https://krishipanda.com'];
 
 const corsOptions = {
   credentials: true,
@@ -32,7 +32,9 @@ const corsOptions = {
     if(whitelist.includes(origin))
       return callback(null, true)
       callback(new Error('Not allowed by CORS'));
-  }
+  }, 
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }
 
 app.use(cors(corsOptions))
@@ -63,4 +65,4 @@ app.use('/activity', activityRoutes);
 
 
 
-app.listen(5000, () => {console.log("server running")} )
+app.listen(3004, () => {console.log("server running")} )

@@ -48,10 +48,10 @@ const getHubOrder = async (req, res) => {
 }
 
 const createOrder = async (req, res) => {
-  const {hub, orderItems, customerDetails,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user, orderType} = req.body
+  const {hub, orderItems, customerDetails,phoneNumber, orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user, orderType} = req.body
   // console.log("data",orderItems, customerDetails,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user )
   try {
-    const newOrder = await Order.create({hub, orderItems, customerDetails,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user,orderType})
+    const newOrder = await Order.create({hub, orderItems, customerDetails, phoneNumber,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user,orderType})
 
     // Log activity
     await logActivity(user, "CREATE_ORDER", hub , `Created post on : ${hub}`, req);    
@@ -170,7 +170,7 @@ const changeVerifyStatus = async (req, res) => {
 
 const editOrder = async (req, res) => {
   console.log("editOrder route!")
-  const {orderId,orderItems,finalPrice,discount, customerDetails,deliveryDate,orderType  } = req.body;
+  const {orderId,orderItems,finalPrice,discount, customerDetails,phoneNumber, deliveryDate,orderType  } = req.body;
   // console.log("Body data:", orderId,orderItems,finalPrice,discount)
 
   try {
@@ -183,6 +183,7 @@ const editOrder = async (req, res) => {
     order.finalPrice = finalPrice || order.finalPrice
     order.discount = discount || order.discount
     order.customerDetails = customerDetails || order.customerDetails
+    order.phoneNumber = phoneNumber || order.phoneNumber
     order.deliveryDate = deliveryDate || order.deliveryDate
     order.orderType = orderType || order.orderType
 
@@ -244,4 +245,95 @@ const getOrderByDate = async (req, res) => {
   
 }
 
-export { getOrders, createOrder, editOrder, deleteOrder, getHubOrder,getOrderById, changeOrderStatus, getOrderByDate,changeVerifyStatus }
+const searchOrders = async (req, res) => {
+  console.log("Search order hit!")
+  
+  try {
+    const { phone, productId, startDate, endDate, page = 1, limit = 100 } = req.query;
+
+    const query = {};
+
+    if (phone) {
+      query.phoneNumber = phone.replace(/\+/g, "").replace(/\s/g, "");
+    }
+
+    if (productId) {
+      query["orderItems.productId"] = productId;
+    }
+
+    if (startDate && endDate) {
+      query.deliveryDate = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const orders = await Order.find(query)
+      .sort({ deliveryDate: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Order.countDocuments(query);
+
+    res.json({
+      data: orders,
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / parseInt(limit)),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+
+
+
+
+  /*
+  try {
+    const { phone, start, end, productId } = req.query;
+    
+    console.log("phone:", phone)
+
+    const query = {};
+
+    // Phone + date range
+    if (phone) {
+      query.phoneNumber = phone;
+    }
+
+    if (start && end) {
+      query.deliveryDate = {
+        $gte: new Date(start),
+        $lte: new Date(end),
+      };
+    }
+
+    // Product + date range
+    if (productId) {
+      query["orderItems.productId"] = productId;
+    }
+
+    const orders = await Order.find(query)
+      .sort({ deliveryDate: -1 }) // latest first
+      .skip(skip)
+      .limit(100); // optional: limit results for performance
+
+    res.json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+
+  */
+
+
+
+  
+}
+
+
+
+export { getOrders, createOrder, editOrder, deleteOrder, getHubOrder,getOrderById, changeOrderStatus, getOrderByDate,changeVerifyStatus, searchOrders }

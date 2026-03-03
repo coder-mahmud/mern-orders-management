@@ -220,6 +220,7 @@ const HubOrderItem = ({order, users, index}) => {
       {showLoader && <Loader />}
       <p className='w-[50px]'>{index+1}.</p>
       <p className='flex-2'><span className="inline-block md:hidden">Customer Details :</span> {order.customerDetails}</p>
+      <p className='flex-1'><span className="inline-block md:hidden">Phone Number :</span> {order.phoneNumber}</p>
       <p className='flex-[1.5]'><span className="inline-block md:hidden">Order Details :</span> 
         {order.orderItems.map(item => <span key={item.productId}>{item.name} - {item.quantity}kg, </span>)}
         {order.finalPrice}tk

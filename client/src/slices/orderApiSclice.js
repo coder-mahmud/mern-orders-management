@@ -79,7 +79,19 @@ export const orderApiSlice = apiSlice.injectEndpoints({
     }),
     
 
-
+    searchOrders: builder.query({
+      query: ({ phone, startDate, endDate, productId }) => {
+        const params = new URLSearchParams();
+        console.log("phone:", phone)
+    
+        if (phone) params.append("phone", phone);
+        if (startDate) params.append("start", startDate);
+        if (endDate) params.append("end", endDate);
+        if (productId) params.append("productId", productId);
+    
+        return `${ORDER_URL}/search?${params.toString()}`;
+      },
+    }),
 
 
 
@@ -88,4 +100,4 @@ export const orderApiSlice = apiSlice.injectEndpoints({
 })
 
 
-export const { useCreateOrderMutation, useGetHubOrderQuery, useGetOrderByIdQuery, useOrderStatusMutation, useEditOrderMutation, useGetAllOrdersByDateQuery, useDeleteOrderMutation, useOrderVerifyStatusMutation  } = orderApiSlice;
+export const { useCreateOrderMutation, useGetHubOrderQuery, useGetOrderByIdQuery, useOrderStatusMutation, useEditOrderMutation, useGetAllOrdersByDateQuery, useDeleteOrderMutation, useOrderVerifyStatusMutation, useLazySearchOrdersQuery  } = orderApiSlice;

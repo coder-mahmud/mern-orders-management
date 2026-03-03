@@ -471,31 +471,6 @@ const SingleHubDetails = () => {
     };
 
 
-
-/*
-    const generatePDF = () => {
-      const doc = new jsPDF();
-      const itemsPerPage = 15;
-      let y = 10;
-    
-      hubOrder.orders.forEach((order, index) => {
-        if (index > 0 && index % itemsPerPage === 0) {
-          doc.addPage();
-          y = 10;
-        }
-    
-        // Clean line breaks and trim extra spaces
-        const cleanedText = `${index + 1}. ${order.customerDetails.replace(/\n+/g, ' ').trim()}`;
-    
-        const lines = doc.splitTextToSize(cleanedText, 180);
-        doc.text(lines, 10, y);
-        y += lines.length * 10 + 3;
-      });
-    
-      doc.save('customer-details.pdf');
-    };
-  */
-
     
 
     const generatePDF = () => {
@@ -765,6 +740,7 @@ const SingleHubDetails = () => {
             <div className='hidden md:flex justify-between gap-4 py-4 border-b border-gray-500'>
               <p className='w-[50px]'>SL No.</p>
               <p className='flex-2'>Customer Details</p>
+              <p className='flex-1'>Phone Number</p>
               <p className='flex-[1.5]'>Order Details</p>
               <p className='flex-[.75]'>Type</p>
               <p className='flex-[.75]'>Status</p>

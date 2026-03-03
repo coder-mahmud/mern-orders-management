@@ -27,6 +27,7 @@ import RiderOrder from './pages/RiderReport'
 import InternalReport from './pages/InternalReport'
 import HubCalculation from './components/hubs/HubCalculation'
 import ActivityLog from './pages/ActivityLog'
+import SearchOrders from './pages/Search'
 
 
 
@@ -57,6 +58,7 @@ function App() {
             <Route path="sub-orders" element={<SubOrders />} />
             <Route path="order/edit/:id" element={<EditOrder />} />
             <Route path="/activity" element={<ActivityLog />} />
+            <Route path="/search" element={<SearchOrders />} />
           </Route>
 
           <Route path="/login" element={<Login />} />
