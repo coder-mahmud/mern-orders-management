@@ -249,34 +249,39 @@ const searchOrders = async (req, res) => {
   console.log("Search order hit!")
   
   try {
-    const { phone, productId, startDate, endDate, page = 1, limit = 100 } = req.query;
-
+    let { phone, productIds, startDate, endDate, page = 1, limit = 100 } = req.query;
+  
     const query = {};
-
+  
     if (phone) {
       query.phoneNumber = phone.replace(/\+/g, "").replace(/\s/g, "");
     }
-
-    if (productId) {
-      query["orderItems.productId"] = productId;
+  
+    // support multiple products
+    if (productIds) {
+      // convert string to array if passed as CSV
+      if (typeof productIds === "string") {
+        productIds = productIds.split(",");
+      }
+      query["orderItems.productId"] = { $in: productIds };
     }
-
+  
     if (startDate && endDate) {
       query.deliveryDate = {
         $gte: new Date(startDate),
         $lte: new Date(endDate),
       };
     }
-
+  
     const skip = (parseInt(page) - 1) * parseInt(limit);
-
+  
     const orders = await Order.find(query)
       .sort({ deliveryDate: -1 })
       .skip(skip)
       .limit(parseInt(limit));
-
+  
     const total = await Order.countDocuments(query);
-
+  
     res.json({
       data: orders,
       total,
@@ -287,8 +292,6 @@ const searchOrders = async (req, res) => {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
-
-
 
 
   /*

@@ -78,7 +78,7 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ['Order'],
     }),
     
-
+    /*
     searchOrders: builder.query({
       query: ({ phone, startDate, endDate, productId }) => {
         const params = new URLSearchParams();
@@ -92,6 +92,20 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         return `${ORDER_URL}/search?${params.toString()}`;
       },
     }),
+
+    */
+
+    searchOrders: builder.query({
+      query: ({ phone, productIds = [], startDate, endDate, page = 1 }) => {
+        const productIdsStr = productIds.join(","); // convert array to CSV
+        return {
+          url: `${ORDER_URL}/search?phone=${phone || ""}&productIds=${productIdsStr}&startDate=${startDate || ""}&endDate=${endDate || ""}&page=${page}&limit=100`,
+          method: "GET",
+        };
+      },
+    }),
+
+
 
 
 

@@ -16,7 +16,8 @@ const EditOrder = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [totalBill, setTotalBill] = useState(0);
   const [discount, setDiscount] = useState(0);
-  const [customerDetails, setCustomerDetails] = useState(0);
+  const [customerDetails, setCustomerDetails] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [deliveryDate, setDeliveryDate] = useState();
   const [orderType, setOrderType] = useState();
 
@@ -32,6 +33,7 @@ const EditOrder = () => {
       setTotalBill(data.order.finalPrice);
       setDiscount(data.order.discount)
       setCustomerDetails(data.order.customerDetails)
+      setPhoneNumber(data.order.phoneNumber)
       setDeliveryDate(data.order.deliveryDate)
       setOrderType(data.order.orderType)
     }
@@ -79,6 +81,7 @@ const EditOrder = () => {
       finalPrice:totalBill,
       discount,
       customerDetails,
+      phoneNumber,
       deliveryDate,
       orderType
 
@@ -119,6 +122,9 @@ const EditOrder = () => {
       <div className="container">
         <p className='mb-4'><label className='mb-1 block'>Customer Details: </label>
         <textarea className='w-full border border-gray-500 rounded p-4 min-h-32' name="" id="" value={customerDetails} onChange={(e) => setCustomerDetails(e.target.value)} ></textarea>
+        </p>
+        <p className='mb-4'><label className='mb-1 block'>Phone Number: </label>
+        <input className='w-full border border-gray-500 rounded p-4' name="" id="" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} ></input>
         </p>
         <p className='mb-2'><b>Bill: </b>{totalBill}</p>
 
