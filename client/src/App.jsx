@@ -28,6 +28,10 @@ import InternalReport from './pages/InternalReport'
 import HubCalculation from './components/hubs/HubCalculation'
 import ActivityLog from './pages/ActivityLog'
 import SearchOrders from './pages/Search'
+import RidersCalculation from './pages/Riders'
+import AddRiderStockPage from './pages/AddRiderStockPage'
+import RiderList from './pages/Riders'
+import RiderStockDetails from './pages/RiderStockDetails'
 
 
 
@@ -49,6 +53,9 @@ function App() {
             <Route path="hubs" element={<Hubs />} />
             <Route path="internal-report" element={<InternalReport />} />
             <Route path="rider-report" element={<RiderOrder />} />
+            <Route path="riders" element={<RiderList />} />
+            <Route path="riders/:riderId" element={<RiderStockDetails />} />
+            <Route path="riders/addstock" element={<AddRiderStockPage />} />
             <Route path="hubs/:id" element={<SingleHubDetails />} />
             <Route path="hubs/:id/stock" element={<HubStock />} />
             <Route path="hubs/:id/calculation" element={<HubCalculation />} />

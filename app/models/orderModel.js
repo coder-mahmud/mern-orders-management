@@ -54,6 +54,9 @@ const orderSchema = new mongoose.Schema(
     verifiedBy: {type: mongoose.Schema.Types.ObjectId,ref: "User",},
     statusChangeTime: { type: Date },
     statusChangedBy: {type: mongoose.Schema.Types.ObjectId,ref: "User",},
+    rider: {type: mongoose.Schema.Types.ObjectId, ref: "User",},
+    riderAssignedAt: {type: Date,},
+    riderAssignedBy: {type: mongoose.Schema.Types.ObjectId, ref: "User",},
   },
   { timestamps: true }
 );

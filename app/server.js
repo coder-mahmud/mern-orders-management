@@ -12,7 +12,10 @@ import hubStockRoutes from './routes/hubStockRoutes.js';
 import stockHistoryRoutes from './routes/stockHistoryRoutes.js';
 import calculationRoutes from './routes/calculationRoutes.js';
 import activityRoutes from './routes/activityLogsRoute.js';
-
+import "./cron/recordStockHistory.js";
+import riderReportRoutes from './routes/riderReportRoutes.js';
+import internalReportRoutes from './routes/internalReportsRoutes.js';
+import riderStockReportRoutes from './routes/riderStockRoutes.js';
 
 
 dotenv.config();
@@ -46,9 +49,6 @@ app.use(cookieParser())
 
 app.get('/',(req,res) => res.status(200).json({message:"App is running"}))
 
-import "./cron/recordStockHistory.js";
-import riderReportRoutes from './routes/riderReportRoutes.js';
-import internalReportRoutes from './routes/internalReportsRoutes.js';
 
 
 
@@ -62,6 +62,8 @@ app.use('/riderreport', riderReportRoutes);
 app.use('/internalreport', internalReportRoutes);
 app.use('/calculation', calculationRoutes);
 app.use('/activity', activityRoutes);
+app.use('/riderstock', riderStockReportRoutes);
+
 
 
 

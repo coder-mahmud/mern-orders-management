@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user','staff','admin','userAdmin', 'controller','superAdmin'],
+        enum: ['user','staff','admin','userAdmin', 'controller','superAdmin','rider'],
         default:'user'
     },
     status: {
@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
+    },
+    tokenVersion: {
+        type: Number,
+        default: 0
     },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },

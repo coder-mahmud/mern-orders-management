@@ -7,29 +7,38 @@ import "react-datepicker/dist/react-datepicker.css";
 import dayjs from 'dayjs'
 import Close from '../assets/images/Close.svg'
 import Button from '../components/Button';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import { useCreateOrderMutation } from '../slices/orderApiSclice';
 import {toast} from 'react-toastify'
 import { Navigate } from 'react-router-dom';
+import { useLogoutMutation } from '../slices/userApiSlice';
+// import { clearCredential } from '../../slices/authSlice'
+import { clearCredential } from '../slices/authSlice';
+import { useNavigate } from 'react-router-dom'
 
 
 
 
 
-const Home = () => {
+const Home =  () => {
+  const [logout,{isLoading:logOutLoading}] = useLogoutMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   //const userName = useSelector(state =>  state.auth.userInfo.name);
   const userId = useSelector(state =>  state?.auth?.userInfo?.id);
   // console.log("userId",userId)
 
   if(!userId){
-    console.log("No user found, returning to login")
+    // console.log("No user found, returning to login")
     return <Navigate to="/login" replace />;
   }
 
   const userRole =  useSelector(state =>  state?.auth?.userInfo?.role);
+  const userTokenVersion = useSelector(state => state?.auth?.userInfo?.tokenVersion);
   // console.log("Role", userRole)
-  if(userRole == 'user' || userRole == 'userAdmin'){
+
+  if(userRole == 'user' || userRole == 'userAdmin' || userRole == 'rider'){
     return <Navigate to="/hubs" replace />;
   }
 
@@ -72,7 +81,23 @@ const Home = () => {
     
   }, [isHubLoading, selectedProducts,orderPrice, discount, hub, deliveryCharge]); 
 
+  useEffect(() => {
+    const forceLogoutIfNeeded = async () => {
+      if (userId && (userTokenVersion === undefined || userTokenVersion === null || userTokenVersion !== 1)) {
+        try {
+          await logout({}).unwrap();
+        } catch (error) {
+          console.log('Logout api failed:', error);
+        } finally {
+          dispatch(clearCredential());
+          toast.error('Session expired. Please login again.');
+          navigate('/login');
+        }
+      }
+    };
 
+    forceLogoutIfNeeded();
+  }, [userId, userTokenVersion, logout, dispatch, navigate]);
 
   if(isLoading || isHubLoading ){
     return <Loader />

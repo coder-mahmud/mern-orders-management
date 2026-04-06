@@ -66,6 +66,16 @@ export const userApiSlice = apiSlice.injectEndpoints({
       providesTags: ['User'],
     }),
 
+    getUserById:builder.query({
+      query:(data) => ({
+        url:`${USERS_URL}/find/${data.userId}`,
+        method: "GET" ,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }),
+      providesTags: ['User'],
+    }),
 
 
 
@@ -76,4 +86,4 @@ export const userApiSlice = apiSlice.injectEndpoints({
 })
 
 
-export const { useRegisterMutation,useLoginMutation, useVerifyMutation,useLogoutMutation, useResetPassReqMutation, useResetPassMutation, useGetAllUsersQuery } = userApiSlice;
+export const { useRegisterMutation,useLoginMutation, useVerifyMutation,useLogoutMutation, useResetPassReqMutation, useResetPassMutation, useGetAllUsersQuery, useGetUserByIdQuery } = userApiSlice;

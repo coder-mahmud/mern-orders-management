@@ -53,14 +53,15 @@ const userLogin = async (req,res) => {
   try {
     const user = await User.findOne({username});
     if(user && await user.matchPassword(password)){
-      generateToken(res, user._id)
+      generateToken(res, user._id, user.tokenVersion)
       res.status(200).json({
         name: user.firstName + ' ' + user.lastName,
         username:user.username,
         email: user.email,
         role:user.role,
         id:user._id,
-        status:user.status
+        status:user.status,
+        tokenVersion:user.tokenVersion,
       })
       // res.status(200).json({
       //   ...user.toObject(), // Convert user to a plain object
@@ -85,10 +86,16 @@ const userLogOut = async (req,res) => {
   res.status(200).json({message:"User Logged out"})
 }
 
+const allUserLogOut = async (req,res) => {
+  await User.updateMany({}, { $inc: { tokenVersion: 1 } });
+  res.status(200).json({message:"All user Logged out!"})
+}
+
 
 const userProfile = async (req,res) => {
   res.status(200).json({message:"user profile route"})
 }
+
 const verifyUser = async (req,res) => {
   res.status(200).json({message:"user profile verified"})
 }
@@ -201,7 +208,7 @@ const resetPassword = async (req,res) => {
   const { token } = req.params;
   const { newPassword } = req.body;
 
-  console.log("Token", token)
+  // console.log("Token", token)
 
   try {
     const user = await User.findOne({
@@ -245,7 +252,27 @@ const getAllUser = async (req,res) => {
 
 }
 
+const getUserById = async (req,res) => {
+
+  const { userId } = req.params;
+
+
+  // console.log("Token", token)
+
+  try {
+    const user = await User.findOne({
+      _id:userId
+    }).select('firstName lastName email role');;
+
+    if (!user) return res.status(400).json({ message: 'Invalid or expired token.' });
+    res.status(200).json({ message: 'User found successfully.', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Error resetting password.', error });
+  }
+
+
+}
 
 
 
-export {createUser,userLogin,userLogOut, userProfile, userEdit, verifyUser, resetPasswordRequest, resetPassword, getAllUser}
+export {createUser,userLogin,userLogOut, userProfile, userEdit, verifyUser, resetPasswordRequest, resetPassword, getAllUser, allUserLogOut, getUserById}

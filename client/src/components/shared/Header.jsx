@@ -23,7 +23,7 @@ const Header = () => {
   const logoutHandler = async () => {
     try {
       const apiRes = await logout({}).unwrap();
-      console.log("apiRes",apiRes);
+      // console.log("apiRes",apiRes);
       toast.success("Logout successful!");
       dispatch(clearCredential())
 
@@ -51,13 +51,14 @@ const Header = () => {
         <ul className='flex flex-wrap justify-center gap-2 font-semibold items-center'>
           {userRole !=='user' ? <li><Link to="/products">Products</Link></li> : '' }
           <li><Link to="/hubs">Hubs</Link></li>
-          <li><Link to="/rider-report">Rider</Link></li>
-          {userRole !=='user' ? <li><Link to="/internal-report">Report</Link></li> : '' }
+          <li><Link to="/riders">Riders</Link></li>
+          {/* {userRole !=='user' ? <li><Link to="/internal-report">Report</Link></li> : '' } */}
           
           {userRole !=='user' ? <li><Link to="/orders">Orders</Link></li> : '' }
 
-          <li><Link to="/activity">Activity</Link></li>
-          <li><Link to="/search">Search</Link></li>
+          {(userRole =='staff' || userRole =='admin' || userRole =='superAdmin') ? <li><Link to="/activity">Activity</Link></li> : '' }
+          {/* <li><Link to="/activity">Activity</Link></li> */}
+          {(userRole =='staff' || userRole =='admin' || userRole =='superAdmin') ? <li><Link to="/search">Search</Link></li> : '' }
           
           <li  ref={dropdownRef} className='relative'>
             <a onClick={showUserOptionsHandler} className='cursor-pointer' ><img className='w-8' src={UserImage} alt="" /></a>

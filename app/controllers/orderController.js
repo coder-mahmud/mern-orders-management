@@ -63,6 +63,8 @@ const createOrder = async (req, res) => {
   
 }
 
+/*
+// old controller before adding rider who delivers the order
 const changeOrderStatus = async (req, res) => {
   const {orderId, status, statusChangeTime, statusChangedBy} = req.body
   // console.log("New Status", status)
@@ -136,6 +138,103 @@ const changeOrderStatus = async (req, res) => {
 
   
 }
+*/
+
+const changeOrderStatus = async (req, res) => {
+  const { orderId, status, statusChangeTime, statusChangedBy, riderId } = req.body;
+
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const oldStatus = order.orderStatus;
+
+    order.orderStatus = status;
+    order.statusChangeTime = statusChangeTime;
+    order.statusChangedBy = statusChangedBy;
+
+    // save rider only when delivered/offline delivered
+    if (status === "Delivered" || status === "Offline Delivery") {
+      if (!riderId) {
+        return res.status(400).json({ message: "Rider is required for delivery" });
+      }
+
+      const rider = await User.findById(riderId);
+
+      if (!rider) {
+        return res.status(404).json({ message: "Rider not found" });
+      }
+
+      if (
+        (Array.isArray(rider.role) && !rider.role.includes("rider")) ||
+        (!Array.isArray(rider.role) && rider.role !== "rider")
+      ) {
+        return res.status(400).json({ message: "Selected user is not a rider" });
+      }
+
+      order.rider = riderId;
+      order.isDelivered = true;
+      order.deliveredAt = new Date();
+    }
+
+    // if cancelled, rollback hub stock if already delivered before
+    if ((oldStatus === "Delivered" || oldStatus === "Offline Delivery") && status === "Cancelled") {
+      const hubId = order.hub;
+
+      const updates = order.orderItems.map((item) => ({
+        updateOne: {
+          filter: {
+            hubId,
+            productId: new mongoose.Types.ObjectId(item.productId),
+          },
+          update: {
+            $inc: { quantity: item.quantity },
+          },
+        },
+      }));
+
+      await HubStock.bulkWrite(updates);
+
+      order.isDelivered = false;
+      order.deliveredAt = null;
+      order.rider = null;
+    }
+
+    // decrement hub stock only when moving from non-delivered to delivered/offline delivered
+    if (
+      (status === "Delivered" || status === "Offline Delivery") &&
+      oldStatus !== "Delivered" &&
+      oldStatus !== "Offline Delivery"
+    ) {
+      const hubId = order.hub;
+
+      const updates = order.orderItems.map((item) => ({
+        updateOne: {
+          filter: { hubId, productId: item.productId },
+          update: {
+            $inc: { quantity: -item.quantity },
+          },
+        },
+      }));
+
+      await HubStock.bulkWrite(updates);
+    }
+
+    await order.save();
+
+    const populatedOrder = await Order.findById(orderId)
+      .populate("rider", "firstName lastName username")
+      .populate("statusChangedBy", "firstName");
+
+    res.status(200).json({ message: "Success!", order: populatedOrder });
+  } catch (error) {
+    console.log("Error", error);
+    res.status(500).json({ message: "Failed!", error: error.message });
+  }
+};
 
 const changeVerifyStatus = async (req, res) => {
   const {orderId, verifyStatus,verifyTime,verifiedBy} = req.body

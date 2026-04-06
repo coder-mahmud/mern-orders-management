@@ -14,6 +14,9 @@ cron.schedule("00 11 * * *", async () => {
 
     const historyRecords = [];
 
+    // temporary commenting for daily stock
+
+    /*
     for (const stock of allStock) {
       // Optional: check to prevent duplicates
       const exists = await StockHistory.findOne({
@@ -31,9 +34,10 @@ cron.schedule("00 11 * * *", async () => {
         });
       }
     }
+      */
 
     if (historyRecords.length > 0) {
-      await StockHistory.insertMany(historyRecords);
+      //await StockHistory.insertMany(historyRecords);
       console.log(`✅ ${historyRecords.length} stock history records created.`);
     } else {
       console.log("📭 No new records to insert today.");
