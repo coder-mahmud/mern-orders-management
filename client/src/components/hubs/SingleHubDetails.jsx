@@ -68,7 +68,7 @@ const SingleHubDetails = () => {
   // console.log("data", data)
   // console.log("productData", productData)
   // console.log("deliveryDate",deliveryDate)
-  console.log("hubOrders", hubOrder)
+  // console.log("hubOrders", hubOrder)
   // console.log("usersData", usersData)
   // console.log("Hub Products", hubProducts)
   //console.log("customerDetails", hubOrder.orders[1].customerDetails)

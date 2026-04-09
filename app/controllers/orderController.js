@@ -37,7 +37,7 @@ const getHubOrder = async (req, res) => {
         $gte: new Date(targetDate.setHours(0, 0, 0, 0)),
         $lt: new Date(targetDate.setHours(23, 59, 59, 999)),
       },
-    }).populate("verifiedBy", "firstName").populate("statusChangedBy", "firstName");
+    }).populate("verifiedBy", "firstName").populate("statusChangedBy", "firstName").populate("rider", "firstName lastName");
 
     res.status(200).json({message:"Get hub Orders route", orders})
   } catch (error) {

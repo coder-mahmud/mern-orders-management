@@ -9,13 +9,10 @@ import {
   useGetRiderRemainingStockQuery,
 } from '../slices/riderStockApiSlice';
 
-//import { useGetUserByIdQuery } from '../slices/userApiSlice';
-
 const RiderStockDetails = () => {
   const { riderId } = useParams();
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState('current'); // current | assigned
-  //const {data:userData, isLoading:userDataLoading} = useGetUserByIdQuery({userId:riderId})
+  const [viewMode, setViewMode] = useState('current');
 
   const formattedDate = dayjs(selectedDate).format('YYYY-MM-DD');
 
@@ -52,8 +49,6 @@ const RiderStockDetails = () => {
 
   const riderStock = assignedData?.riderStock;
   const currentStock = currentData;
-
-
 
   return (
     <div className='bg-gray-800 text-white min-h-[95vh] py-14'>
@@ -112,44 +107,139 @@ const RiderStockDetails = () => {
               Date: {dayjs(currentStock?.date).format('DD-MM-YYYY')}
             </p>
 
-            <p className='text-sm text-gray-300 mb-4'>
+            <p className='text-sm text-gray-300 mb-2'>
               Total Delivered Orders: {currentStock?.totalDeliveredOrders || 0}
             </p>
 
-            <div className='flex flex-col gap-3'>
-              <div className='hidden sm:flex justify-between border-b border-gray-500 pb-2 font-semibold'>
-                <span className='w-[35%]'>Product</span>
-                <span className='w-[20%] text-center'>Assigned</span>
-                <span className='w-[20%] text-center'>Delivered</span>
-                <span className='w-[25%] text-center'>Remaining</span>
-              </div>
+            <p className='text-sm text-gray-300 mb-2'>
+              Total Delivered Quantity: {currentStock?.totalDeliveredQty || 0} kg
+            </p>
 
-              {currentStock?.remainingItems?.map((item) => (
-                <div
-                  key={item.productId}
-                  className='flex flex-col sm:flex-row justify-between border-b border-gray-600 pb-2 gap-2'
-                >
-                  <span className='w-full sm:w-[35%]'>
-                    <span className='sm:hidden font-semibold'>Product: </span>
-                    {item.productName}
-                  </span>
+            <p className='text-sm text-gray-300 mb-2'>
+              Total Order Price: {Number(currentStock?.totalOrderPrice || 0).toFixed(2)} tk
+            </p>
 
-                  <span className='w-full sm:w-[20%] text-left sm:text-center'>
-                    <span className='sm:hidden font-semibold'>Assigned: </span>
-                    {item.assignedQty}
-                  </span>
+            <p className='text-sm text-gray-300 mb-2'>
+              Total Delivery Charge: {Number(currentStock?.totalDeliveryCharge || 0).toFixed(2)} tk
+            </p>
 
-                  <span className='w-full sm:w-[20%] text-left sm:text-center'>
-                    <span className='sm:hidden font-semibold'>Delivered: </span>
-                    {item.deliveredQty}
-                  </span>
+            <p className='text-sm text-gray-300 mb-2'>
+              Total Discount: {Number(currentStock?.totalDiscount || 0).toFixed(2)} tk
+            </p>
 
-                  <span className='w-full sm:w-[25%] text-left sm:text-center font-semibold'>
-                    <span className='sm:hidden font-semibold'>Remaining: </span>
-                    {item.remainingQty}
-                  </span>
+            <p className='text-sm text-gray-300 mb-6'>
+              Grand Total Final Price: {Number(currentStock?.grandTotalFinalPrice || 0).toFixed(2)} tk
+            </p>
+
+            {/* DELIVERED ITEM TOTALS */}
+            <div className='border border-gray-700 rounded-lg p-4 mb-6'>
+              <h3 className='text-lg font-semibold mb-3 text-green-400'>
+                Delivered Item Totals
+              </h3>
+
+              <div className='flex flex-col gap-3'>
+                <div className='hidden sm:flex justify-between border-b border-gray-500 pb-2 font-semibold'>
+                  <span className='w-[70%]'>Product</span>
+                  <span className='w-[30%] text-center'>Delivered Qty</span>
                 </div>
-              ))}
+
+                {currentStock?.deliveredSummary?.map((item) => (
+                  <div
+                    key={item.productId}
+                    className='flex flex-col sm:flex-row justify-between border-b border-gray-600 pb-2 gap-2'
+                  >
+                    <span className='w-full sm:w-[70%]'>
+                      <span className='sm:hidden font-semibold'>Product: </span>
+                      {item.productName}
+                    </span>
+
+                    <span className='w-full sm:w-[30%] text-left sm:text-center'>
+                      <span className='sm:hidden font-semibold'>Delivered Qty: </span>
+                      {item.qty}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* REMAINING ITEM TOTALS */}
+            <div className='border border-gray-700 rounded-lg p-4 mb-6'>
+              <h3 className='text-lg font-semibold mb-3 text-yellow-400'>
+                Remaining Item Totals
+              </h3>
+
+              <div className='flex flex-col gap-3'>
+                <div className='hidden sm:flex justify-between border-b border-gray-500 pb-2 font-semibold'>
+                  <span className='w-[70%]'>Product</span>
+                  <span className='w-[30%] text-center'>Remaining Qty</span>
+                </div>
+
+                {currentStock?.remainingSummary?.map((item) => (
+                  <div
+                    key={item.productId}
+                    className='flex flex-col sm:flex-row justify-between border-b border-gray-600 pb-2 gap-2'
+                  >
+                    <span className='w-full sm:w-[70%]'>
+                      <span className='sm:hidden font-semibold'>Product: </span>
+                      {item.productName}
+                    </span>
+
+                    <span className='w-full sm:w-[30%] text-left sm:text-center'>
+                      <span className='sm:hidden font-semibold'>Remaining Qty: </span>
+                      {item.qty}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* FULL DETAILS TABLE */}
+            <div className='border border-gray-700 rounded-lg p-4'>
+              <h3 className='text-lg font-semibold mb-3 text-blue-400'>
+                Full Stock Details
+              </h3>
+
+              <div className='flex flex-col gap-3'>
+                <div className='hidden sm:flex justify-between border-b border-gray-500 pb-2 font-semibold'>
+                  <span className='w-[22%]'>Product</span>
+                  <span className='w-[12%] text-center'>Assigned</span>
+                  <span className='w-[12%] text-center'>Delivered</span>
+                  <span className='w-[16%] text-center'>Order Price</span>
+                  <span className='w-[12%] text-center'>Remaining</span>
+                </div>
+
+                {currentStock?.remainingItems?.map((item) => (
+                  <div
+                    key={item.productId}
+                    className='flex flex-col sm:flex-row justify-between border-b border-gray-600 pb-2 gap-2'
+                  >
+                    <span className='w-full sm:w-[22%]'>
+                      <span className='sm:hidden font-semibold'>Product: </span>
+                      {item.productName}
+                    </span>
+
+                    <span className='w-full sm:w-[12%] text-left sm:text-center'>
+                      <span className='sm:hidden font-semibold'>Assigned: </span>
+                      {item.assignedQty}
+                    </span>
+
+                    <span className='w-full sm:w-[12%] text-left sm:text-center'>
+                      <span className='sm:hidden font-semibold'>Delivered: </span>
+                      {item.deliveredQty}
+                    </span>
+
+                    <span className='w-full sm:w-[16%] text-left sm:text-center'>
+                      <span className='sm:hidden font-semibold'>Order Price: </span>
+                      ৳{Number(item.totalOrderPrice || 0).toFixed(2)}
+                    </span>
+
+                    <span className='w-full sm:w-[12%] text-left sm:text-center font-semibold'>
+                      <span className='sm:hidden font-semibold'>Remaining: </span>
+                      {item.remainingQty}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         ) : viewMode === 'assigned' && riderStock ? (

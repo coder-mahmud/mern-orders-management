@@ -28,6 +28,7 @@ const HubOrderItem = ({ order, users, index }) => {
   const dialogRef = useRef(null);
 
   const orderUser = users.filter((user) => user._id == order.user);
+  console.log("Order:",order)
 
   const riders = users.filter((user) => {
     if (Array.isArray(user.role)) {
@@ -260,9 +261,10 @@ const HubOrderItem = ({ order, users, index }) => {
       <p className='flex-[.75]'>
         <span className='inline-block md:hidden'>Status :</span> {order.orderStatus}{' '}
         {order.orderStatus !== 'Pending'
-          ? order?.statusChangedBy?.firstName +
+          ? 'Mod: '+order?.statusChangedBy?.firstName +
             '-' +
-            dayjs(order?.statusChangeTime).format('DD MMM, hh:mm a')
+            dayjs(order?.statusChangeTime).format('DD MMM, hh:mm a') + 
+            ' Rider: '+ order.rider.firstName
           : ''}
       </p>
 

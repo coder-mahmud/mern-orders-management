@@ -172,7 +172,7 @@ const AddRiderStockPage = () => {
                       <input
                         type="number"
                         min="0"
-                        step="1"
+                        step="0.5"
                         placeholder='Enter quantity'
                         className='border rounded border-gray-500 py-2 px-4 w-full'
                         value={product.assignedQty}

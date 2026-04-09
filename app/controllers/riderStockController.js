@@ -305,7 +305,7 @@ const getRiderRemainingStock = async (req, res) => {
 };
 
 */
-
+/*
 const getRiderRemainingStock = async (req, res) => {
   const { riderId, date } = req.params;
 
@@ -396,6 +396,1027 @@ const getRiderRemainingStock = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+*/
+/*
+const getRiderRemainingStock = async (req, res) => {
+  const { riderId, date } = req.params;
+
+  try {
+    const targetDate = new Date(date);
+
+    const startDate = new Date(targetDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(targetDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    const rider = await User.findById(riderId).select(
+      "firstName lastName username role phone"
+    );
+
+    if (!rider) {
+      return res.status(404).json({
+        success: false,
+        message: "Rider not found",
+      });
+    }
+
+    const riderStock = await RiderStock.findOne({
+      rider: riderId,
+      date: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    }).populate("items.productId", "name");
+
+    if (!riderStock) {
+      return res.status(404).json({
+        success: false,
+        message: "No rider stock found for this date",
+      });
+    }
+
+    const deliveredOrders = await Order.find({
+      rider: riderId,
+      isDelivered: true,
+      deliveryDate: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    }).populate("orderItems.productId", "name");
+
+    const deliveredMap = {};
+    const deliveredNameMap = {};
+
+    for (const order of deliveredOrders) {
+      for (const item of order.orderItems) {
+        if (!item.productId) continue;
+
+        const productId = item.productId?._id
+          ? item.productId._id.toString()
+          : item.productId.toString();
+
+        deliveredMap[productId] =
+          (deliveredMap[productId] || 0) + Number(item.quantity || 0);
+
+        if (!deliveredNameMap[productId]) {
+          deliveredNameMap[productId] = item.productId?.name || "";
+        }
+      }
+    }
+
+    const remainingItems = [];
+    const assignedProductIds = new Set();
+
+    for (const item of riderStock.items) {
+      if (!item.productId) continue;
+
+      const productId = item.productId?._id
+        ? item.productId._id.toString()
+        : item.productId.toString();
+
+      assignedProductIds.add(productId);
+
+      const deliveredQty = deliveredMap[productId] || 0;
+      const assignedQty = Number(item.assignedQty || 0);
+      const remainingQty = assignedQty - deliveredQty;
+
+      remainingItems.push({
+        productId: item.productId?._id || item.productId,
+        productName: item.productId?.name || "",
+        assignedQty,
+        deliveredQty,
+        remainingQty,
+      });
+    }
+
+    // Add items that were delivered but not assigned initially
+    for (const productId in deliveredMap) {
+      if (!assignedProductIds.has(productId)) {
+        const deliveredQty = Number(deliveredMap[productId] || 0);
+
+        remainingItems.push({
+          productId,
+          productName: deliveredNameMap[productId] || "",
+          assignedQty: 0,
+          deliveredQty,
+          remainingQty: -deliveredQty,
+        });
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      rider,
+      date: startDate,
+      totalDeliveredOrders: deliveredOrders.length,
+      remainingItems,
+    });
+  } catch (error) {
+    console.log("Error", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+const getRiderRemainingStock = async (req, res) => {
+  const { riderId, date } = req.params;
+
+  try {
+    const targetDate = new Date(date);
+
+    const startDate = new Date(targetDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(targetDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    const rider = await User.findById(riderId).select(
+      "firstName lastName username role phone"
+    );
+
+    if (!rider) {
+      return res.status(404).json({
+        success: false,
+        message: "Rider not found",
+      });
+    }
+
+    const riderStock = await RiderStock.findOne({
+      rider: riderId,
+      date: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    }).populate("items.productId", "name");
+
+    if (!riderStock) {
+      return res.status(404).json({
+        success: false,
+        message: "No rider stock found for this date",
+      });
+    }
+
+    const deliveredOrders = await Order.find({
+      rider: riderId,
+      isDelivered: true,
+      deliveryDate: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    }).populate("orderItems.productId", "name");
+
+    const deliveredMap = {};
+    const deliveredNameMap = {};
+    const totalPriceMap = {};
+
+    for (const order of deliveredOrders) {
+      for (const item of order.orderItems) {
+        if (!item.productId) continue;
+
+        const productId = item.productId?._id
+          ? item.productId._id.toString()
+          : item.productId.toString();
+
+        const quantity = Number(item.quantity || 0);
+        const price =
+          Number(item.price || item.unitPrice || item.salePrice || 0) * quantity;
+
+        deliveredMap[productId] = (deliveredMap[productId] || 0) + quantity;
+        totalPriceMap[productId] = (totalPriceMap[productId] || 0) + price;
+
+        if (!deliveredNameMap[productId]) {
+          deliveredNameMap[productId] = item.productId?.name || "";
+        }
+      }
+    }
+
+    const remainingItems = [];
+    const assignedProductIds = new Set();
+
+    for (const item of riderStock.items) {
+      if (!item.productId) continue;
+
+      const productId = item.productId?._id
+        ? item.productId._id.toString()
+        : item.productId.toString();
+
+      assignedProductIds.add(productId);
+
+      const assignedQty = Number(item.assignedQty || 0);
+      const deliveredQty = Number(deliveredMap[productId] || 0);
+      const remainingQty = assignedQty - deliveredQty;
+      const totalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+      remainingItems.push({
+        productId: item.productId?._id || item.productId,
+        productName: item.productId?.name || "",
+        assignedQty,
+        deliveredQty,
+        remainingQty,
+        totalOrderPrice,
+      });
+    }
+
+    // Delivered but not assigned initially
+    for (const productId in deliveredMap) {
+      if (!assignedProductIds.has(productId)) {
+        const deliveredQty = Number(deliveredMap[productId] || 0);
+        const totalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+        remainingItems.push({
+          productId,
+          productName: deliveredNameMap[productId] || "",
+          assignedQty: 0,
+          deliveredQty,
+          remainingQty: -deliveredQty,
+          totalOrderPrice,
+        });
+      }
+    }
+
+    const totalDeliveredQty = remainingItems.reduce(
+      (sum, item) => sum + Number(item.deliveredQty || 0),
+      0
+    );
+
+    const grandTotalOrderPrice = remainingItems.reduce(
+      (sum, item) => sum + Number(item.totalOrderPrice || 0),
+      0
+    );
+
+    return res.status(200).json({
+      success: true,
+      rider,
+      date: startDate,
+      totalDeliveredOrders: deliveredOrders.length,
+      totalDeliveredQty,
+      grandTotalOrderPrice,
+      remainingItems,
+    });
+  } catch (error) {
+    console.log("Error", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+
+const getRiderRemainingStock = async (req, res) => {
+  const { riderId, date } = req.params;
+
+  try {
+    const targetDate = new Date(date);
+
+    const startDate = new Date(targetDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(targetDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    const rider = await User.findById(riderId).select(
+      "firstName lastName username role phone"
+    );
+
+    if (!rider) {
+      return res.status(404).json({
+        success: false,
+        message: "Rider not found",
+      });
+    }
+
+    const riderStock = await RiderStock.findOne({
+      rider: riderId,
+      date: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    }).populate("items.productId", "name");
+
+    if (!riderStock) {
+      return res.status(404).json({
+        success: false,
+        message: "No rider stock found for this date",
+      });
+    }
+
+    const deliveredOrders = await Order.find({
+      rider: riderId,
+      isDelivered: true,
+      deliveryDate: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    }).populate("orderItems.productId", "name");
+
+    const deliveredMap = {};
+    const deliveredNameMap = {};
+    const totalPriceMap = {};
+
+    let grandTotalFinalPrice = 0;
+
+    for (const order of deliveredOrders) {
+      grandTotalFinalPrice += Number(order.finalPrice || 0);
+
+      for (const item of order.orderItems) {
+        if (!item.productId) continue;
+
+        const productId = item.productId?._id
+          ? item.productId._id.toString()
+          : item.productId.toString();
+
+        const quantity = Number(item.quantity || 0);
+        const itemTotalPrice = Number(item.totalPrice || 0);
+
+        deliveredMap[productId] = (deliveredMap[productId] || 0) + quantity;
+        totalPriceMap[productId] = (totalPriceMap[productId] || 0) + itemTotalPrice;
+
+        if (!deliveredNameMap[productId]) {
+          deliveredNameMap[productId] = item.productId?.name || item.name || "";
+        }
+      }
+    }
+
+    const remainingItems = [];
+    const assignedProductIds = new Set();
+
+    for (const item of riderStock.items) {
+      if (!item.productId) continue;
+
+      const productId = item.productId?._id
+        ? item.productId._id.toString()
+        : item.productId.toString();
+
+      assignedProductIds.add(productId);
+
+      const assignedQty = Number(item.assignedQty || 0);
+      const deliveredQty = Number(deliveredMap[productId] || 0);
+      const remainingQty = assignedQty - deliveredQty;
+      const totalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+      remainingItems.push({
+        productId: item.productId?._id || item.productId,
+        productName: item.productId?.name || "",
+        assignedQty,
+        deliveredQty,
+        remainingQty,
+        totalOrderPrice,
+      });
+    }
+
+    // Add items delivered but not assigned initially
+    for (const productId in deliveredMap) {
+      if (!assignedProductIds.has(productId)) {
+        const deliveredQty = Number(deliveredMap[productId] || 0);
+        const totalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+        remainingItems.push({
+          productId,
+          productName: deliveredNameMap[productId] || "",
+          assignedQty: 0,
+          deliveredQty,
+          remainingQty: -deliveredQty,
+          totalOrderPrice,
+        });
+      }
+    }
+
+    const totalDeliveredQty = remainingItems.reduce(
+      (sum, item) => sum + Number(item.deliveredQty || 0),
+      0
+    );
+
+    return res.status(200).json({
+      success: true,
+      rider,
+      date: startDate,
+      totalDeliveredOrders: deliveredOrders.length,
+      totalDeliveredQty,
+      grandTotalFinalPrice,
+      remainingItems,
+    });
+  } catch (error) {
+    console.log("Error", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+
+
+
+const getRiderRemainingStock = async (req, res) => {
+  const { riderId, date } = req.params;
+
+  try {
+    const targetDate = new Date(date);
+
+    const startDate = new Date(targetDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(targetDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    const rider = await User.findById(riderId).select(
+      "firstName lastName username role phone"
+    );
+
+    if (!rider) {
+      return res.status(404).json({
+        success: false,
+        message: "Rider not found",
+      });
+    }
+
+    const riderStock = await RiderStock.findOne({
+      rider: riderId,
+      date: { $gte: startDate, $lte: endDate },
+    }).populate("items.productId", "name");
+
+    if (!riderStock) {
+      return res.status(404).json({
+        success: false,
+        message: "No rider stock found for this date",
+      });
+    }
+
+    const deliveredOrders = await Order.find({
+      rider: riderId,
+      isDelivered: true,
+      deliveryDate: { $gte: startDate, $lte: endDate },
+    }).populate("orderItems.productId", "name");
+
+    const deliveredMap = {};
+    const deliveredNameMap = {};
+    const totalPriceMap = {};
+
+    let grandTotalFinalPrice = 0;
+
+    for (const order of deliveredOrders) {
+      // ✅ GRAND TOTAL FROM FINAL PRICE
+      grandTotalFinalPrice += Number(order.finalPrice || 0);
+
+      for (const item of order.orderItems) {
+        if (!item.productId) continue;
+
+        const productId = item.productId?._id
+          ? item.productId._id.toString()
+          : item.productId.toString();
+
+        const quantity = Number(item.quantity || 0);
+        const itemTotalPrice = Number(item.totalPrice || 0);
+
+        deliveredMap[productId] =
+          (deliveredMap[productId] || 0) + quantity;
+
+        totalPriceMap[productId] =
+          (totalPriceMap[productId] || 0) + itemTotalPrice;
+
+        if (!deliveredNameMap[productId]) {
+          deliveredNameMap[productId] =
+            item.productId?.name || item.name || "";
+        }
+      }
+    }
+
+    const remainingItems = [];
+    const assignedProductIds = new Set();
+
+    for (const item of riderStock.items) {
+      if (!item.productId) continue;
+
+      const productId = item.productId?._id
+        ? item.productId._id.toString()
+        : item.productId.toString();
+
+      assignedProductIds.add(productId);
+
+      const assignedQty = Number(item.assignedQty || 0);
+      const deliveredQty = Number(deliveredMap[productId] || 0);
+      const remainingQty = assignedQty - deliveredQty;
+      const totalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+      remainingItems.push({
+        productId: item.productId?._id || item.productId,
+        productName: item.productId?.name || "",
+        assignedQty,
+        deliveredQty,
+        remainingQty,
+        totalOrderPrice,
+      });
+    }
+
+    // ✅ Handle delivered but not assigned (negative stock)
+    for (const productId in deliveredMap) {
+      if (!assignedProductIds.has(productId)) {
+        const deliveredQty = Number(deliveredMap[productId] || 0);
+        const totalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+        remainingItems.push({
+          productId,
+          productName: deliveredNameMap[productId] || "",
+          assignedQty: 0,
+          deliveredQty,
+          remainingQty: -deliveredQty,
+          totalOrderPrice,
+        });
+      }
+    }
+
+    const totalDeliveredQty = remainingItems.reduce(
+      (sum, item) => sum + Number(item.deliveredQty || 0),
+      0
+    );
+
+    return res.status(200).json({
+      success: true,
+      rider,
+      date: startDate,
+      totalDeliveredOrders: deliveredOrders.length,
+      totalDeliveredQty,
+      grandTotalFinalPrice,
+      remainingItems,
+    });
+  } catch (error) {
+    console.log("Error", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+const getRiderRemainingStock = async (req, res) => {
+  const { riderId, date } = req.params;
+
+  try {
+    const targetDate = new Date(date);
+
+    const startDate = new Date(targetDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(targetDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    const rider = await User.findById(riderId).select(
+      "firstName lastName username role phone"
+    );
+
+    if (!rider) {
+      return res.status(404).json({
+        success: false,
+        message: "Rider not found",
+      });
+    }
+
+    const riderStock = await RiderStock.findOne({
+      rider: riderId,
+      date: { $gte: startDate, $lte: endDate },
+    }).populate("items.productId", "name");
+
+    if (!riderStock) {
+      return res.status(404).json({
+        success: false,
+        message: "No rider stock found for this date",
+      });
+    }
+
+    const deliveredOrders = await Order.find({
+      rider: riderId,
+      isDelivered: true,
+      deliveryDate: { $gte: startDate, $lte: endDate },
+    }).populate("orderItems.productId", "name");
+
+    const deliveredMap = {};
+    const deliveredNameMap = {};
+    const totalPriceMap = {};
+
+    let grandTotalFinalPrice = 0;
+
+    for (const order of deliveredOrders) {
+      // ✅ GRAND TOTAL FROM FINAL PRICE
+      grandTotalFinalPrice += Number(order.finalPrice || 0);
+
+      for (const item of order.orderItems) {
+        if (!item.productId) continue;
+
+        const productId = item.productId?._id
+          ? item.productId._id.toString()
+          : item.productId.toString();
+
+        const quantity = Number(item.quantity || 0);
+        const itemTotalPrice = Number(item.totalPrice || 0);
+
+        deliveredMap[productId] =
+          (deliveredMap[productId] || 0) + quantity;
+
+        totalPriceMap[productId] =
+          (totalPriceMap[productId] || 0) + itemTotalPrice;
+
+        if (!deliveredNameMap[productId]) {
+          deliveredNameMap[productId] =
+            item.productId?.name || item.name || "";
+        }
+      }
+    }
+
+    const remainingItems = [];
+    const assignedProductIds = new Set();
+
+    for (const item of riderStock.items) {
+      if (!item.productId) continue;
+
+      const productId = item.productId?._id
+        ? item.productId._id.toString()
+        : item.productId.toString();
+
+      assignedProductIds.add(productId);
+
+      const assignedQty = Number(item.assignedQty || 0);
+      const deliveredQty = Number(deliveredMap[productId] || 0);
+      const remainingQty = assignedQty - deliveredQty;
+      const totalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+      remainingItems.push({
+        productId: item.productId?._id || item.productId,
+        productName: item.productId?.name || "",
+        assignedQty,
+        deliveredQty,
+        remainingQty,
+        totalOrderPrice,
+      });
+    }
+
+    // ✅ Handle delivered but not assigned (negative stock)
+    for (const productId in deliveredMap) {
+      if (!assignedProductIds.has(productId)) {
+        const deliveredQty = Number(deliveredMap[productId] || 0);
+        const totalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+        remainingItems.push({
+          productId,
+          productName: deliveredNameMap[productId] || "",
+          assignedQty: 0,
+          deliveredQty,
+          remainingQty: -deliveredQty,
+          totalOrderPrice,
+        });
+      }
+    }
+
+    const totalDeliveredQty = remainingItems.reduce(
+      (sum, item) => sum + Number(item.deliveredQty || 0),
+      0
+    );
+
+    
+    return res.status(200).json({
+      success: true,
+      rider,
+      date: startDate,
+      totalDeliveredOrders: deliveredOrders.length,
+      totalDeliveredQty,
+      grandTotalFinalPrice,
+      remainingItems,
+    });
+    
+
+
+
+
+
+  } catch (error) {
+    console.log("Error", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+
+const getRiderRemainingStock = async (req, res) => {
+  const { riderId, date } = req.params;
+
+  try {
+    const targetDate = new Date(date);
+
+    const startDate = new Date(targetDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(targetDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    const rider = await User.findById(riderId).select(
+      "firstName lastName username role phone"
+    );
+
+    if (!rider) {
+      return res.status(404).json({
+        success: false,
+        message: "Rider not found",
+      });
+    }
+
+    const riderStock = await RiderStock.findOne({
+      rider: riderId,
+      date: { $gte: startDate, $lte: endDate },
+    }).populate("items.productId", "name");
+
+    if (!riderStock) {
+      return res.status(404).json({
+        success: false,
+        message: "No rider stock found for this date",
+      });
+    }
+
+    const deliveredOrders = await Order.find({
+      rider: riderId,
+      isDelivered: true,
+      deliveryDate: { $gte: startDate, $lte: endDate },
+    }).populate("orderItems.productId", "name");
+
+    const deliveredMap = {};
+    const deliveredNameMap = {};
+    const totalPriceMap = {};
+
+    let grandTotalFinalPrice = 0;
+
+    for (const order of deliveredOrders) {
+      grandTotalFinalPrice += Number(order.finalPrice || 0);
+
+      for (const item of order.orderItems) {
+        if (!item.productId) continue;
+
+        const productId = item.productId?._id
+          ? item.productId._id.toString()
+          : item.productId.toString();
+
+        const quantity = Number(item.quantity || 0);
+        const itemTotalPrice = Number(item.totalPrice || 0);
+
+        deliveredMap[productId] = (deliveredMap[productId] || 0) + quantity;
+        totalPriceMap[productId] = (totalPriceMap[productId] || 0) + itemTotalPrice;
+
+        if (!deliveredNameMap[productId]) {
+          deliveredNameMap[productId] =
+            item.productId?.name || item.name || "";
+        }
+      }
+    }
+
+    const remainingItems = [];
+    const assignedProductIds = new Set();
+
+    for (const item of riderStock.items) {
+      if (!item.productId) continue;
+
+      const productId = item.productId?._id
+        ? item.productId._id.toString()
+        : item.productId.toString();
+
+      assignedProductIds.add(productId);
+
+      const assignedQty = Number(item.assignedQty || 0);
+      const deliveredQty = Number(deliveredMap[productId] || 0);
+      const remainingQty = assignedQty - deliveredQty;
+      const totalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+      remainingItems.push({
+        productId: item.productId?._id || item.productId,
+        productName: item.productId?.name || "",
+        assignedQty,
+        deliveredQty,
+        remainingQty,
+        totalOrderPrice,
+      });
+    }
+
+    for (const productId in deliveredMap) {
+      if (!assignedProductIds.has(productId)) {
+        const deliveredQty = Number(deliveredMap[productId] || 0);
+        const totalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+        remainingItems.push({
+          productId,
+          productName: deliveredNameMap[productId] || "",
+          assignedQty: 0,
+          deliveredQty,
+          remainingQty: -deliveredQty,
+          totalOrderPrice,
+        });
+      }
+    }
+
+    const totalDeliveredQty = remainingItems.reduce(
+      (sum, item) => sum + Number(item.deliveredQty || 0),
+      0
+    );
+
+    const deliveredSummary = remainingItems.map((item) => ({
+      productId: item.productId,
+      productName: item.productName,
+      qty: Number(item.deliveredQty || 0),
+    }));
+
+    const remainingSummary = remainingItems.map((item) => ({
+      productId: item.productId,
+      productName: item.productName,
+      qty: Number(item.remainingQty || 0),
+    }));
+
+    return res.status(200).json({
+      success: true,
+      rider,
+      date: startDate,
+      totalDeliveredOrders: deliveredOrders.length,
+      totalDeliveredQty,
+      grandTotalFinalPrice,
+      remainingItems,
+      deliveredSummary,
+      remainingSummary,
+    });
+  } catch (error) {
+    console.log("Error", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+
+*/
+
+const getRiderRemainingStock = async (req, res) => {
+  const { riderId, date } = req.params;
+
+  try {
+    const targetDate = new Date(date);
+
+    const startDate = new Date(targetDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(targetDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    const rider = await User.findById(riderId).select(
+      "firstName lastName username role phone"
+    );
+
+    if (!rider) {
+      return res.status(404).json({
+        success: false,
+        message: "Rider not found",
+      });
+    }
+
+    const riderStock = await RiderStock.findOne({
+      rider: riderId,
+      date: { $gte: startDate, $lte: endDate },
+    }).populate("items.productId", "name");
+
+    if (!riderStock) {
+      return res.status(404).json({
+        success: false,
+        message: "No rider stock found for this date",
+      });
+    }
+
+    const deliveredOrders = await Order.find({
+      rider: riderId,
+      isDelivered: true,
+      deliveryDate: { $gte: startDate, $lte: endDate },
+    }).populate("orderItems.productId", "name");
+
+    const deliveredMap = {};
+    const deliveredNameMap = {};
+    const totalPriceMap = {};
+
+    let grandTotalFinalPrice = 0;
+    let totalDiscount = 0;
+    let totalOrderPrice = 0;
+    let totalDeliveryCharge = 0;
+
+    for (const order of deliveredOrders) {
+      grandTotalFinalPrice += Number(order.finalPrice || 0);
+      totalDiscount += Number(order.discount || 0);
+      totalOrderPrice += Number(order.orderPrice || 0);
+      totalDeliveryCharge += Number(order.deliveryCharge || 0);
+
+      for (const item of order.orderItems) {
+        if (!item.productId) continue;
+
+        const productId = item.productId?._id
+          ? item.productId._id.toString()
+          : item.productId.toString();
+
+        const quantity = Number(item.quantity || 0);
+        const itemTotalPrice = Number(item.totalPrice || 0);
+
+        deliveredMap[productId] = (deliveredMap[productId] || 0) + quantity;
+        totalPriceMap[productId] = (totalPriceMap[productId] || 0) + itemTotalPrice;
+
+        if (!deliveredNameMap[productId]) {
+          deliveredNameMap[productId] =
+            item.productId?.name || item.name || "";
+        }
+      }
+    }
+
+    const remainingItems = [];
+    const assignedProductIds = new Set();
+
+    for (const item of riderStock.items) {
+      if (!item.productId) continue;
+
+      const productId = item.productId?._id
+        ? item.productId._id.toString()
+        : item.productId.toString();
+
+      assignedProductIds.add(productId);
+
+      const assignedQty = Number(item.assignedQty || 0);
+      const deliveredQty = Number(deliveredMap[productId] || 0);
+      const remainingQty = assignedQty - deliveredQty;
+      const itemWiseTotalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+      remainingItems.push({
+        productId: item.productId?._id || item.productId,
+        productName: item.productId?.name || "",
+        assignedQty,
+        deliveredQty,
+        remainingQty,
+        totalOrderPrice: itemWiseTotalOrderPrice,
+      });
+    }
+
+    for (const productId in deliveredMap) {
+      if (!assignedProductIds.has(productId)) {
+        const deliveredQty = Number(deliveredMap[productId] || 0);
+        const itemWiseTotalOrderPrice = Number(totalPriceMap[productId] || 0);
+
+        remainingItems.push({
+          productId,
+          productName: deliveredNameMap[productId] || "",
+          assignedQty: 0,
+          deliveredQty,
+          remainingQty: -deliveredQty,
+          totalOrderPrice: itemWiseTotalOrderPrice,
+        });
+      }
+    }
+
+    const totalDeliveredQty = remainingItems.reduce(
+      (sum, item) => sum + Number(item.deliveredQty || 0),
+      0
+    );
+
+    const deliveredSummary = remainingItems.map((item) => ({
+      productId: item.productId,
+      productName: item.productName,
+      qty: Number(item.deliveredQty || 0),
+    }));
+
+    const remainingSummary = remainingItems.map((item) => ({
+      productId: item.productId,
+      productName: item.productName,
+      qty: Number(item.remainingQty || 0),
+    }));
+
+    return res.status(200).json({
+      success: true,
+      rider,
+      date: startDate,
+      totalDeliveredOrders: deliveredOrders.length,
+      totalDeliveredQty,
+      grandTotalFinalPrice,
+      totalDiscount,
+      totalOrderPrice,
+      totalDeliveryCharge,
+      remainingItems,
+      deliveredSummary,
+      remainingSummary,
+    });
+  } catch (error) {
+    console.log("Error", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+
+
+
+
 
 const getRiderDeliverySummary = async (req, res) => {
   const { riderId, date } = req.params;
