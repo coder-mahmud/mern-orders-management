@@ -287,7 +287,10 @@ const HubOrderItem = ({ order, users, index }) => {
 
       <p className='flex-1 flex justify-start'>
         <span className='inline-block md:hidden'>Created By: &nbsp;</span>
-        {orderUser[0]?.firstName} - {dayjs(order.createdAt).format('DD MMM, hh:mm a')}
+        <div className="flex gap-2">
+          {orderUser[0]?.firstName} - {dayjs(order.createdAt).format('DD MMM, hh:mm a')} 
+          {order?.editor? (` | Edited By: ${order.editor.firstName}`) : ""}
+        </div>
       </p>
 
       <div

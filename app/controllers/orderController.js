@@ -37,7 +37,7 @@ const getHubOrder = async (req, res) => {
         $gte: new Date(targetDate.setHours(0, 0, 0, 0)),
         $lt: new Date(targetDate.setHours(23, 59, 59, 999)),
       },
-    }).populate("verifiedBy", "firstName").populate("statusChangedBy", "firstName").populate("rider", "firstName lastName");
+    }).populate("verifiedBy", "firstName").populate("statusChangedBy", "firstName").populate("rider", "firstName lastName").populate("editor", "firstName lastName");
 
     res.status(200).json({message:"Get hub Orders route", orders})
   } catch (error) {
@@ -269,7 +269,7 @@ const changeVerifyStatus = async (req, res) => {
 
 const editOrder = async (req, res) => {
   console.log("editOrder route!")
-  const {orderId,orderItems,finalPrice,discount, customerDetails,phoneNumber, deliveryDate,orderType  } = req.body;
+  const {orderId,orderItems,finalPrice,discount, customerDetails,phoneNumber, deliveryDate,orderType, editor  } = req.body;
   // console.log("Body data:", orderId,orderItems,finalPrice,discount)
 
   try {
@@ -285,6 +285,7 @@ const editOrder = async (req, res) => {
     order.phoneNumber = phoneNumber || order.phoneNumber
     order.deliveryDate = deliveryDate || order.deliveryDate
     order.orderType = orderType || order.orderType
+    order.editor = editor || order.editor
 
     const updatedOrder = await order.save();
 

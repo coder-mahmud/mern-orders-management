@@ -27,6 +27,7 @@ const AddRiderStockPage = () => {
   const [selectedRider, setSelectedRider] = useState('');
   const [stockDate, setStockDate] = useState(new Date());
   const [productStocks, setProductStocks] = useState([]);
+  const [exchangedNote, setExchangedNote] = useState('');
 
   const { data, isLoading } = useGetAllProductQuery();
   const { data: usersData, isLoading: isUsersLoading } = useGetAllUsersQuery();
@@ -95,6 +96,7 @@ const AddRiderStockPage = () => {
       riderId: selectedRider,
       date: stockDate,
       items,
+      exchangedProductsNote: exchangedNote,
     };
 
     try {
@@ -105,6 +107,7 @@ const AddRiderStockPage = () => {
       toast.success(apiRes?.message || 'Rider stock saved successfully');
 
       setSelectedRider('');
+      setExchangedNote('');
       setStockDate(new Date());
       setProductStocks((prev) =>
         prev.map((item) => ({
@@ -185,6 +188,18 @@ const AddRiderStockPage = () => {
                 ))}
               </div>
             </div>
+
+            <div className="form_row flex flex-col gap-2 mb-6 mt-6">
+              <label>Exchanged Products Note:</label>
+              <textarea
+                rows={4}
+                placeholder="Write notes about exchanged products..."
+                className="border border-gray-500 rounded px-4 py-2 bg-gray-800 text-white"
+                value={exchangedNote}
+                onChange={(e) => setExchangedNote(e.target.value)}
+              />
+            </div>
+
 
             <div className="mt-8">
               <button className='text-center rounded px-6 py-2 bg-amber-700  hover:bg-amber-800 cursor-pointer font-semibold'>Save Rider Stock</button>

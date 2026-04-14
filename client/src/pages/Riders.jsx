@@ -44,11 +44,16 @@ const RiderList = () => {
   return (
     <div className='bg-gray-800 text-white min-h-[95vh] py-14'>
       <div className='container'>
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
           <h1 className='text-xl font-semibold '>All Riders</h1>
+          <div className="flex gap-2 flex-wrap">
+          {(userRole === 'staff' || userRole === 'admin' || userRole === 'superAdmin') ? (
+            <Link to="/allriders" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>All riders Stock</Link>
+          ) : ''}
           {(userRole === 'staff' || userRole === 'admin' || userRole === 'superAdmin') ? (
             <Link to="/riders/addstock" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Add Rider Stock</Link>
           ) : ''}
+          </div>
           
 
         </div>

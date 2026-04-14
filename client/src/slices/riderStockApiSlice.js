@@ -72,6 +72,14 @@ export const riderStockApiSlice = apiSlice.injectEndpoints({
       providesTags: ["RiderStock"],
     }),
 
+    getAllRidersSummaryByDate: builder.query({
+      query: ({ date }) => `${RIDER_STOCK_URL}/all-riders-summary/${date}`,
+    }),
+
+
+
+
+
     
   }),
 });
@@ -85,4 +93,5 @@ export const {
   useGetRiderStockByDateQuery,
   useGetRiderRemainingStockQuery,
   useGetRiderDeliverySummaryQuery,
+  useGetAllRidersSummaryByDateQuery,
 } = riderStockApiSlice;

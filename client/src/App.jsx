@@ -32,6 +32,8 @@ import RidersCalculation from './pages/Riders'
 import AddRiderStockPage from './pages/AddRiderStockPage'
 import RiderList from './pages/Riders'
 import RiderStockDetails from './pages/RiderStockDetails'
+import AllRidersSummary from './pages/AllRidersSummary'
+import EditRiderStockPage from './pages/EditRiderStockPage'
 
 
 
@@ -54,7 +56,9 @@ function App() {
             <Route path="internal-report" element={<InternalReport />} />
             <Route path="rider-report" element={<RiderOrder />} />
             <Route path="riders" element={<RiderList />} />
+            <Route path="allriders" element={<AllRidersSummary />} />
             <Route path="riders/:riderId" element={<RiderStockDetails />} />
+            <Route path="/riders/:riderId/edit" element={<EditRiderStockPage />} />
             <Route path="riders/addstock" element={<AddRiderStockPage />} />
             <Route path="hubs/:id" element={<SingleHubDetails />} />
             <Route path="hubs/:id/stock" element={<HubStock />} />

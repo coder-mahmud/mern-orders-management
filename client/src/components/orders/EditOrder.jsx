@@ -7,10 +7,17 @@ import Button from '../Button';
 import {toast} from 'react-toastify'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useSelector } from 'react-redux';
+
+
+
+
 
 const EditOrder = () => {
   const params = useParams();
   const orderId = params.id;
+  const userRole = useSelector((state) => state?.auth?.userInfo?.role);
+  const curUser = useSelector((state) => state?.auth?.userInfo?.id);
 
   const [deliveryCharge, setDeliveryCharge] = useState(0);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -83,7 +90,8 @@ const EditOrder = () => {
       customerDetails,
       phoneNumber,
       deliveryDate,
-      orderType
+      orderType,
+      editor:curUser
 
     };
     // console.log("Updated Order Data:", data);

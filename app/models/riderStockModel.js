@@ -12,6 +12,10 @@ const riderStockSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    exchangedProductsNote: {
+      type: String,
+      default: "",
+    },
     items: [
       {
         productId: {

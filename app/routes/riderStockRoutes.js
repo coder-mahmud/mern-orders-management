@@ -7,7 +7,7 @@ import { getRiderStocks,
   deleteRiderStock,
   getRiderStockByDate,
   getRiderRemainingStock,
-  getRiderDeliverySummary, } from '../controllers/riderStockController.js';
+  getRiderDeliverySummary, getAllRidersSummaryByDate } from '../controllers/riderStockController.js';
 
   
 
@@ -31,6 +31,7 @@ riderStockReportRoutes.get("/remaining/:riderId/:date", getRiderRemainingStock);
 riderStockReportRoutes.get("/summary/:riderId/:date", getRiderDeliverySummary);
 riderStockReportRoutes.get("/:id", getRiderStockById);
 riderStockReportRoutes.get("/", getRiderStocks);
+riderStockReportRoutes.get('/all-riders-summary/:date', getAllRidersSummaryByDate);
 
 
 export default riderStockReportRoutes;

@@ -34,7 +34,7 @@ const getRiderStockById = async (req, res) => {
 };
 
 const createOrUpdateRiderStock = async (req, res) => {
-  const { riderId, date, items } = req.body;
+  const { riderId, date, items, exchangedProductsNote } = req.body;
 
   try {
     if (!riderId || !date || !items || !Array.isArray(items) || items.length === 0) {
@@ -82,6 +82,7 @@ const createOrUpdateRiderStock = async (req, res) => {
 
     if (existingStock) {
       existingStock.items = formattedItems;
+      existingStock.exchangedProductsNote = exchangedProductsNote || "";
       const updatedStock = await existingStock.save();
 
       const populatedStock = await RiderStock.findById(updatedStock._id)
@@ -99,6 +100,7 @@ const createOrUpdateRiderStock = async (req, res) => {
       rider: riderId,
       date: normalizedDate,
       items: formattedItems,
+      exchangedProductsNote: exchangedProductsNote || "",
     });
 
     const populatedStock = await RiderStock.findById(newStock._id)
@@ -214,893 +216,6 @@ const getRiderStockByDate = async (req, res) => {
 };
 
 /*
-const getRiderRemainingStock = async (req, res) => {
-  const { riderId, date } = req.params;
-
-  try {
-    const targetDate = new Date(date);
-
-    const startDate = new Date(targetDate);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(targetDate);
-    endDate.setHours(23, 59, 59, 999);
-
-    const rider = await User.findById(riderId).select(
-      "firstName lastName username role phone"
-    );
-
-    if (!rider) {
-      return res.status(404).json({
-        success: false,
-        message: "Rider not found",
-      });
-    }
-
-    const riderStock = await RiderStock.findOne({
-      rider: riderId,
-      date: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).populate("items.productId", "name");
-
-    if (!riderStock) {
-      return res.status(404).json({
-        success: false,
-        message: "No rider stock found for this date",
-      });
-    }
-
-    const deliveredOrders = await Order.find({
-      rider: riderId,
-      isDelivered: true,
-      deliveredAt: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).populate("orderItems.productId", "name");
-
-    const deliveredMap = {};
-
-    for (const order of deliveredOrders) {
-      for (const item of order.orderItems) {
-        const productId = item.productId?._id
-          ? item.productId._id.toString()
-          : item.productId.toString();
-
-        deliveredMap[productId] = (deliveredMap[productId] || 0) + Number(item.quantity || 0);
-      }
-    }
-
-    const remainingItems = riderStock.items.map((item) => {
-      const productId = item.productId?._id
-        ? item.productId._id.toString()
-        : item.productId.toString();
-
-      const deliveredQty = deliveredMap[productId] || 0;
-      const assignedQty = Number(item.assignedQty || 0);
-      const remainingQty = assignedQty - deliveredQty;
-
-      return {
-        productId: item.productId?._id || item.productId,
-        productName: item.productId?.name || "",
-        assignedQty,
-        deliveredQty,
-        remainingQty,
-      };
-    });
-
-    res.status(200).json({
-      success: true,
-      rider,
-      date: startDate,
-      totalDeliveredOrders: deliveredOrders.length,
-      remainingItems,
-    });
-  } catch (error) {
-    console.log("Error", error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
-
-*/
-/*
-const getRiderRemainingStock = async (req, res) => {
-  const { riderId, date } = req.params;
-
-  try {
-    const targetDate = new Date(date);
-
-    const startDate = new Date(targetDate);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(targetDate);
-    endDate.setHours(23, 59, 59, 999);
-
-    const rider = await User.findById(riderId).select(
-      "firstName lastName username role phone"
-    );
-
-    if (!rider) {
-      return res.status(404).json({
-        success: false,
-        message: "Rider not found",
-      });
-    }
-
-    const riderStock = await RiderStock.findOne({
-      rider: riderId,
-      date: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).populate("items.productId", "name");
-
-    if (!riderStock) {
-      return res.status(404).json({
-        success: false,
-        message: "No rider stock found for this date",
-      });
-    }
-
-    const deliveredOrders = await Order.find({
-      rider: riderId,
-      isDelivered: true,
-      deliveryDate: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).populate("orderItems.productId", "name");
-
-    const deliveredMap = {};
-
-    for (const order of deliveredOrders) {
-      for (const item of order.orderItems) {
-        const productId = item.productId?._id
-          ? item.productId._id.toString()
-          : item.productId.toString();
-
-        deliveredMap[productId] =
-          (deliveredMap[productId] || 0) + Number(item.quantity || 0);
-      }
-    }
-
-    const remainingItems = riderStock.items.map((item) => {
-      const productId = item.productId?._id
-        ? item.productId._id.toString()
-        : item.productId.toString();
-
-      const deliveredQty = deliveredMap[productId] || 0;
-      const assignedQty = Number(item.assignedQty || 0);
-      const remainingQty = assignedQty - deliveredQty;
-
-      return {
-        productId: item.productId?._id || item.productId,
-        productName: item.productId?.name || "",
-        assignedQty,
-        deliveredQty,
-        remainingQty,
-      };
-    });
-
-    res.status(200).json({
-      success: true,
-      rider,
-      date: startDate,
-      totalDeliveredOrders: deliveredOrders.length,
-      remainingItems,
-    });
-  } catch (error) {
-    console.log("Error", error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
-*/
-/*
-const getRiderRemainingStock = async (req, res) => {
-  const { riderId, date } = req.params;
-
-  try {
-    const targetDate = new Date(date);
-
-    const startDate = new Date(targetDate);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(targetDate);
-    endDate.setHours(23, 59, 59, 999);
-
-    const rider = await User.findById(riderId).select(
-      "firstName lastName username role phone"
-    );
-
-    if (!rider) {
-      return res.status(404).json({
-        success: false,
-        message: "Rider not found",
-      });
-    }
-
-    const riderStock = await RiderStock.findOne({
-      rider: riderId,
-      date: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).populate("items.productId", "name");
-
-    if (!riderStock) {
-      return res.status(404).json({
-        success: false,
-        message: "No rider stock found for this date",
-      });
-    }
-
-    const deliveredOrders = await Order.find({
-      rider: riderId,
-      isDelivered: true,
-      deliveryDate: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).populate("orderItems.productId", "name");
-
-    const deliveredMap = {};
-    const deliveredNameMap = {};
-
-    for (const order of deliveredOrders) {
-      for (const item of order.orderItems) {
-        if (!item.productId) continue;
-
-        const productId = item.productId?._id
-          ? item.productId._id.toString()
-          : item.productId.toString();
-
-        deliveredMap[productId] =
-          (deliveredMap[productId] || 0) + Number(item.quantity || 0);
-
-        if (!deliveredNameMap[productId]) {
-          deliveredNameMap[productId] = item.productId?.name || "";
-        }
-      }
-    }
-
-    const remainingItems = [];
-    const assignedProductIds = new Set();
-
-    for (const item of riderStock.items) {
-      if (!item.productId) continue;
-
-      const productId = item.productId?._id
-        ? item.productId._id.toString()
-        : item.productId.toString();
-
-      assignedProductIds.add(productId);
-
-      const deliveredQty = deliveredMap[productId] || 0;
-      const assignedQty = Number(item.assignedQty || 0);
-      const remainingQty = assignedQty - deliveredQty;
-
-      remainingItems.push({
-        productId: item.productId?._id || item.productId,
-        productName: item.productId?.name || "",
-        assignedQty,
-        deliveredQty,
-        remainingQty,
-      });
-    }
-
-    // Add items that were delivered but not assigned initially
-    for (const productId in deliveredMap) {
-      if (!assignedProductIds.has(productId)) {
-        const deliveredQty = Number(deliveredMap[productId] || 0);
-
-        remainingItems.push({
-          productId,
-          productName: deliveredNameMap[productId] || "",
-          assignedQty: 0,
-          deliveredQty,
-          remainingQty: -deliveredQty,
-        });
-      }
-    }
-
-    return res.status(200).json({
-      success: true,
-      rider,
-      date: startDate,
-      totalDeliveredOrders: deliveredOrders.length,
-      remainingItems,
-    });
-  } catch (error) {
-    console.log("Error", error);
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-};
-
-const getRiderRemainingStock = async (req, res) => {
-  const { riderId, date } = req.params;
-
-  try {
-    const targetDate = new Date(date);
-
-    const startDate = new Date(targetDate);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(targetDate);
-    endDate.setHours(23, 59, 59, 999);
-
-    const rider = await User.findById(riderId).select(
-      "firstName lastName username role phone"
-    );
-
-    if (!rider) {
-      return res.status(404).json({
-        success: false,
-        message: "Rider not found",
-      });
-    }
-
-    const riderStock = await RiderStock.findOne({
-      rider: riderId,
-      date: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).populate("items.productId", "name");
-
-    if (!riderStock) {
-      return res.status(404).json({
-        success: false,
-        message: "No rider stock found for this date",
-      });
-    }
-
-    const deliveredOrders = await Order.find({
-      rider: riderId,
-      isDelivered: true,
-      deliveryDate: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).populate("orderItems.productId", "name");
-
-    const deliveredMap = {};
-    const deliveredNameMap = {};
-    const totalPriceMap = {};
-
-    for (const order of deliveredOrders) {
-      for (const item of order.orderItems) {
-        if (!item.productId) continue;
-
-        const productId = item.productId?._id
-          ? item.productId._id.toString()
-          : item.productId.toString();
-
-        const quantity = Number(item.quantity || 0);
-        const price =
-          Number(item.price || item.unitPrice || item.salePrice || 0) * quantity;
-
-        deliveredMap[productId] = (deliveredMap[productId] || 0) + quantity;
-        totalPriceMap[productId] = (totalPriceMap[productId] || 0) + price;
-
-        if (!deliveredNameMap[productId]) {
-          deliveredNameMap[productId] = item.productId?.name || "";
-        }
-      }
-    }
-
-    const remainingItems = [];
-    const assignedProductIds = new Set();
-
-    for (const item of riderStock.items) {
-      if (!item.productId) continue;
-
-      const productId = item.productId?._id
-        ? item.productId._id.toString()
-        : item.productId.toString();
-
-      assignedProductIds.add(productId);
-
-      const assignedQty = Number(item.assignedQty || 0);
-      const deliveredQty = Number(deliveredMap[productId] || 0);
-      const remainingQty = assignedQty - deliveredQty;
-      const totalOrderPrice = Number(totalPriceMap[productId] || 0);
-
-      remainingItems.push({
-        productId: item.productId?._id || item.productId,
-        productName: item.productId?.name || "",
-        assignedQty,
-        deliveredQty,
-        remainingQty,
-        totalOrderPrice,
-      });
-    }
-
-    // Delivered but not assigned initially
-    for (const productId in deliveredMap) {
-      if (!assignedProductIds.has(productId)) {
-        const deliveredQty = Number(deliveredMap[productId] || 0);
-        const totalOrderPrice = Number(totalPriceMap[productId] || 0);
-
-        remainingItems.push({
-          productId,
-          productName: deliveredNameMap[productId] || "",
-          assignedQty: 0,
-          deliveredQty,
-          remainingQty: -deliveredQty,
-          totalOrderPrice,
-        });
-      }
-    }
-
-    const totalDeliveredQty = remainingItems.reduce(
-      (sum, item) => sum + Number(item.deliveredQty || 0),
-      0
-    );
-
-    const grandTotalOrderPrice = remainingItems.reduce(
-      (sum, item) => sum + Number(item.totalOrderPrice || 0),
-      0
-    );
-
-    return res.status(200).json({
-      success: true,
-      rider,
-      date: startDate,
-      totalDeliveredOrders: deliveredOrders.length,
-      totalDeliveredQty,
-      grandTotalOrderPrice,
-      remainingItems,
-    });
-  } catch (error) {
-    console.log("Error", error);
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-};
-
-
-const getRiderRemainingStock = async (req, res) => {
-  const { riderId, date } = req.params;
-
-  try {
-    const targetDate = new Date(date);
-
-    const startDate = new Date(targetDate);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(targetDate);
-    endDate.setHours(23, 59, 59, 999);
-
-    const rider = await User.findById(riderId).select(
-      "firstName lastName username role phone"
-    );
-
-    if (!rider) {
-      return res.status(404).json({
-        success: false,
-        message: "Rider not found",
-      });
-    }
-
-    const riderStock = await RiderStock.findOne({
-      rider: riderId,
-      date: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).populate("items.productId", "name");
-
-    if (!riderStock) {
-      return res.status(404).json({
-        success: false,
-        message: "No rider stock found for this date",
-      });
-    }
-
-    const deliveredOrders = await Order.find({
-      rider: riderId,
-      isDelivered: true,
-      deliveryDate: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).populate("orderItems.productId", "name");
-
-    const deliveredMap = {};
-    const deliveredNameMap = {};
-    const totalPriceMap = {};
-
-    let grandTotalFinalPrice = 0;
-
-    for (const order of deliveredOrders) {
-      grandTotalFinalPrice += Number(order.finalPrice || 0);
-
-      for (const item of order.orderItems) {
-        if (!item.productId) continue;
-
-        const productId = item.productId?._id
-          ? item.productId._id.toString()
-          : item.productId.toString();
-
-        const quantity = Number(item.quantity || 0);
-        const itemTotalPrice = Number(item.totalPrice || 0);
-
-        deliveredMap[productId] = (deliveredMap[productId] || 0) + quantity;
-        totalPriceMap[productId] = (totalPriceMap[productId] || 0) + itemTotalPrice;
-
-        if (!deliveredNameMap[productId]) {
-          deliveredNameMap[productId] = item.productId?.name || item.name || "";
-        }
-      }
-    }
-
-    const remainingItems = [];
-    const assignedProductIds = new Set();
-
-    for (const item of riderStock.items) {
-      if (!item.productId) continue;
-
-      const productId = item.productId?._id
-        ? item.productId._id.toString()
-        : item.productId.toString();
-
-      assignedProductIds.add(productId);
-
-      const assignedQty = Number(item.assignedQty || 0);
-      const deliveredQty = Number(deliveredMap[productId] || 0);
-      const remainingQty = assignedQty - deliveredQty;
-      const totalOrderPrice = Number(totalPriceMap[productId] || 0);
-
-      remainingItems.push({
-        productId: item.productId?._id || item.productId,
-        productName: item.productId?.name || "",
-        assignedQty,
-        deliveredQty,
-        remainingQty,
-        totalOrderPrice,
-      });
-    }
-
-    // Add items delivered but not assigned initially
-    for (const productId in deliveredMap) {
-      if (!assignedProductIds.has(productId)) {
-        const deliveredQty = Number(deliveredMap[productId] || 0);
-        const totalOrderPrice = Number(totalPriceMap[productId] || 0);
-
-        remainingItems.push({
-          productId,
-          productName: deliveredNameMap[productId] || "",
-          assignedQty: 0,
-          deliveredQty,
-          remainingQty: -deliveredQty,
-          totalOrderPrice,
-        });
-      }
-    }
-
-    const totalDeliveredQty = remainingItems.reduce(
-      (sum, item) => sum + Number(item.deliveredQty || 0),
-      0
-    );
-
-    return res.status(200).json({
-      success: true,
-      rider,
-      date: startDate,
-      totalDeliveredOrders: deliveredOrders.length,
-      totalDeliveredQty,
-      grandTotalFinalPrice,
-      remainingItems,
-    });
-  } catch (error) {
-    console.log("Error", error);
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-};
-
-
-
-
-const getRiderRemainingStock = async (req, res) => {
-  const { riderId, date } = req.params;
-
-  try {
-    const targetDate = new Date(date);
-
-    const startDate = new Date(targetDate);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(targetDate);
-    endDate.setHours(23, 59, 59, 999);
-
-    const rider = await User.findById(riderId).select(
-      "firstName lastName username role phone"
-    );
-
-    if (!rider) {
-      return res.status(404).json({
-        success: false,
-        message: "Rider not found",
-      });
-    }
-
-    const riderStock = await RiderStock.findOne({
-      rider: riderId,
-      date: { $gte: startDate, $lte: endDate },
-    }).populate("items.productId", "name");
-
-    if (!riderStock) {
-      return res.status(404).json({
-        success: false,
-        message: "No rider stock found for this date",
-      });
-    }
-
-    const deliveredOrders = await Order.find({
-      rider: riderId,
-      isDelivered: true,
-      deliveryDate: { $gte: startDate, $lte: endDate },
-    }).populate("orderItems.productId", "name");
-
-    const deliveredMap = {};
-    const deliveredNameMap = {};
-    const totalPriceMap = {};
-
-    let grandTotalFinalPrice = 0;
-
-    for (const order of deliveredOrders) {
-      // ✅ GRAND TOTAL FROM FINAL PRICE
-      grandTotalFinalPrice += Number(order.finalPrice || 0);
-
-      for (const item of order.orderItems) {
-        if (!item.productId) continue;
-
-        const productId = item.productId?._id
-          ? item.productId._id.toString()
-          : item.productId.toString();
-
-        const quantity = Number(item.quantity || 0);
-        const itemTotalPrice = Number(item.totalPrice || 0);
-
-        deliveredMap[productId] =
-          (deliveredMap[productId] || 0) + quantity;
-
-        totalPriceMap[productId] =
-          (totalPriceMap[productId] || 0) + itemTotalPrice;
-
-        if (!deliveredNameMap[productId]) {
-          deliveredNameMap[productId] =
-            item.productId?.name || item.name || "";
-        }
-      }
-    }
-
-    const remainingItems = [];
-    const assignedProductIds = new Set();
-
-    for (const item of riderStock.items) {
-      if (!item.productId) continue;
-
-      const productId = item.productId?._id
-        ? item.productId._id.toString()
-        : item.productId.toString();
-
-      assignedProductIds.add(productId);
-
-      const assignedQty = Number(item.assignedQty || 0);
-      const deliveredQty = Number(deliveredMap[productId] || 0);
-      const remainingQty = assignedQty - deliveredQty;
-      const totalOrderPrice = Number(totalPriceMap[productId] || 0);
-
-      remainingItems.push({
-        productId: item.productId?._id || item.productId,
-        productName: item.productId?.name || "",
-        assignedQty,
-        deliveredQty,
-        remainingQty,
-        totalOrderPrice,
-      });
-    }
-
-    // ✅ Handle delivered but not assigned (negative stock)
-    for (const productId in deliveredMap) {
-      if (!assignedProductIds.has(productId)) {
-        const deliveredQty = Number(deliveredMap[productId] || 0);
-        const totalOrderPrice = Number(totalPriceMap[productId] || 0);
-
-        remainingItems.push({
-          productId,
-          productName: deliveredNameMap[productId] || "",
-          assignedQty: 0,
-          deliveredQty,
-          remainingQty: -deliveredQty,
-          totalOrderPrice,
-        });
-      }
-    }
-
-    const totalDeliveredQty = remainingItems.reduce(
-      (sum, item) => sum + Number(item.deliveredQty || 0),
-      0
-    );
-
-    return res.status(200).json({
-      success: true,
-      rider,
-      date: startDate,
-      totalDeliveredOrders: deliveredOrders.length,
-      totalDeliveredQty,
-      grandTotalFinalPrice,
-      remainingItems,
-    });
-  } catch (error) {
-    console.log("Error", error);
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-};
-
-const getRiderRemainingStock = async (req, res) => {
-  const { riderId, date } = req.params;
-
-  try {
-    const targetDate = new Date(date);
-
-    const startDate = new Date(targetDate);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(targetDate);
-    endDate.setHours(23, 59, 59, 999);
-
-    const rider = await User.findById(riderId).select(
-      "firstName lastName username role phone"
-    );
-
-    if (!rider) {
-      return res.status(404).json({
-        success: false,
-        message: "Rider not found",
-      });
-    }
-
-    const riderStock = await RiderStock.findOne({
-      rider: riderId,
-      date: { $gte: startDate, $lte: endDate },
-    }).populate("items.productId", "name");
-
-    if (!riderStock) {
-      return res.status(404).json({
-        success: false,
-        message: "No rider stock found for this date",
-      });
-    }
-
-    const deliveredOrders = await Order.find({
-      rider: riderId,
-      isDelivered: true,
-      deliveryDate: { $gte: startDate, $lte: endDate },
-    }).populate("orderItems.productId", "name");
-
-    const deliveredMap = {};
-    const deliveredNameMap = {};
-    const totalPriceMap = {};
-
-    let grandTotalFinalPrice = 0;
-
-    for (const order of deliveredOrders) {
-      // ✅ GRAND TOTAL FROM FINAL PRICE
-      grandTotalFinalPrice += Number(order.finalPrice || 0);
-
-      for (const item of order.orderItems) {
-        if (!item.productId) continue;
-
-        const productId = item.productId?._id
-          ? item.productId._id.toString()
-          : item.productId.toString();
-
-        const quantity = Number(item.quantity || 0);
-        const itemTotalPrice = Number(item.totalPrice || 0);
-
-        deliveredMap[productId] =
-          (deliveredMap[productId] || 0) + quantity;
-
-        totalPriceMap[productId] =
-          (totalPriceMap[productId] || 0) + itemTotalPrice;
-
-        if (!deliveredNameMap[productId]) {
-          deliveredNameMap[productId] =
-            item.productId?.name || item.name || "";
-        }
-      }
-    }
-
-    const remainingItems = [];
-    const assignedProductIds = new Set();
-
-    for (const item of riderStock.items) {
-      if (!item.productId) continue;
-
-      const productId = item.productId?._id
-        ? item.productId._id.toString()
-        : item.productId.toString();
-
-      assignedProductIds.add(productId);
-
-      const assignedQty = Number(item.assignedQty || 0);
-      const deliveredQty = Number(deliveredMap[productId] || 0);
-      const remainingQty = assignedQty - deliveredQty;
-      const totalOrderPrice = Number(totalPriceMap[productId] || 0);
-
-      remainingItems.push({
-        productId: item.productId?._id || item.productId,
-        productName: item.productId?.name || "",
-        assignedQty,
-        deliveredQty,
-        remainingQty,
-        totalOrderPrice,
-      });
-    }
-
-    // ✅ Handle delivered but not assigned (negative stock)
-    for (const productId in deliveredMap) {
-      if (!assignedProductIds.has(productId)) {
-        const deliveredQty = Number(deliveredMap[productId] || 0);
-        const totalOrderPrice = Number(totalPriceMap[productId] || 0);
-
-        remainingItems.push({
-          productId,
-          productName: deliveredNameMap[productId] || "",
-          assignedQty: 0,
-          deliveredQty,
-          remainingQty: -deliveredQty,
-          totalOrderPrice,
-        });
-      }
-    }
-
-    const totalDeliveredQty = remainingItems.reduce(
-      (sum, item) => sum + Number(item.deliveredQty || 0),
-      0
-    );
-
-    
-    return res.status(200).json({
-      success: true,
-      rider,
-      date: startDate,
-      totalDeliveredOrders: deliveredOrders.length,
-      totalDeliveredQty,
-      grandTotalFinalPrice,
-      remainingItems,
-    });
-    
-
-
-
-
-
-  } catch (error) {
-    console.log("Error", error);
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-};
-
-
 const getRiderRemainingStock = async (req, res) => {
   const { riderId, date } = req.params;
 
@@ -1417,9 +532,10 @@ const getRiderRemainingStock = async (req, res) => {
 
 
 
-
+/* */
 const getRiderDeliverySummary = async (req, res) => {
   const { riderId, date } = req.params;
+  // console.log("/summary/:riderId/:date:", date)
 
   try {
     const targetDate = new Date(date);
@@ -1430,10 +546,15 @@ const getRiderDeliverySummary = async (req, res) => {
     const endDate = new Date(targetDate);
     endDate.setHours(23, 59, 59, 999);
 
+
+    // console.log("date param:", date);
+    // console.log("startDate:", startDate.toISOString());
+    // console.log("endDate:", endDate.toISOString());
+
     const deliveredOrders = await Order.find({
       rider: riderId,
       isDelivered: true,
-      deliveredAt: {
+      deliveryDate: {
         $gte: startDate,
         $lte: endDate,
       },
@@ -1452,6 +573,125 @@ const getRiderDeliverySummary = async (req, res) => {
   }
 };
 
+
+
+/*
+const getRiderDeliverySummary = async (req, res) => {
+  const { riderId, date } = req.params;
+
+  try {
+    const [year, month, day] = date.split("-").map(Number);
+
+    const startDate = new Date(year, month - 1, day);
+    const nextDate = new Date(year, month - 1, day + 1);
+
+    console.log("date param:", date);
+    console.log("startDate:", startDate.toISOString());
+    console.log("endDate:", endDate.toISOString());
+
+    const deliveredOrders = await Order.find({
+      rider: riderId,
+      isDelivered: true,
+      deliveredAt: {
+        $gte: startDate,
+        $lt: nextDate,
+      },
+    })
+      .populate("rider", "firstName lastName")
+      .populate("orderItems.productId", "name")
+      .populate("hub", "name");
+
+    res.status(200).json({
+      success: true,
+      totalOrders: deliveredOrders.length,
+      orders: deliveredOrders,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+*/
+const getAllRidersSummaryByDate = async (req, res) => {
+  const { date } = req.params;
+
+  try {
+    const targetDate = new Date(date);
+
+    const startDate = new Date(targetDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(targetDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    const riderStocks = await RiderStock.find({
+      date: { $gte: startDate, $lte: endDate },
+    }).populate("rider", "firstName lastName username role phone");
+
+    if (!riderStocks || riderStocks.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No rider stock found for this date",
+      });
+    }
+
+    const summaries = await Promise.all(
+      riderStocks.map(async (stock) => {
+        const riderId = stock.rider?._id || stock.rider;
+
+        const deliveredOrders = await Order.find({
+          rider: riderId,
+          isDelivered: true,
+          deliveryDate: { $gte: startDate, $lte: endDate },
+        });
+
+        let grandTotalFinalPrice = 0;
+        let totalDiscount = 0;
+        let totalOrderPrice = 0;
+        let totalDeliveryCharge = 0;
+        let totalDeliveredQty = 0;
+
+        for (const order of deliveredOrders) {
+          grandTotalFinalPrice += Number(order.finalPrice || 0);
+          totalDiscount += Number(order.discount || 0);
+          totalOrderPrice += Number(order.orderPrice || 0);
+          totalDeliveryCharge += Number(order.deliveryCharge || 0);
+
+          for (const item of order.orderItems || []) {
+            totalDeliveredQty += Number(item.quantity || 0);
+          }
+        }
+
+        return {
+          riderId,
+          rider: stock.rider,
+          date: startDate,
+          totalDeliveredOrders: deliveredOrders.length,
+          totalDeliveredQty,
+          totalOrderPrice,
+          totalDeliveryCharge,
+          totalDiscount,
+          grandTotalFinalPrice,
+        };
+      })
+    );
+
+    return res.status(200).json({
+      success: true,
+      date: startDate,
+      riders: summaries,
+    });
+  } catch (error) {
+    console.log("Error", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+
+
+
 export {
   getRiderStocks,
   getRiderStockById,
@@ -1461,4 +701,5 @@ export {
   getRiderStockByDate,
   getRiderRemainingStock,
   getRiderDeliverySummary,
+  getAllRidersSummaryByDate
 };
