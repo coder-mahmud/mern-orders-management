@@ -74,7 +74,7 @@ const Home =  () => {
     // console.log("Home use Effect running!")
 
     setOrderPrice(selectedProducts.reduce((prev, cur) => prev + cur.totalPrice, 0));
-    setFinalPrice(orderPrice - discount +deliveryCharge)
+    setFinalPrice(orderPrice - discount + deliveryCharge)
     if(!isHubLoading){
       setSelectedHub ( hubData.hubs.filter(hubItem => hubItem._id == hub))
     }
@@ -107,7 +107,7 @@ const Home =  () => {
   // console.log('hubData', hubData)
 
   const refinedProducts = data.products.filter(product => product.name !=='Atar Ruti 20 piece')
-  console.log("refinedProducts",refinedProducts)
+  // console.log("refinedProducts",refinedProducts)
   
 
   const handleCheckboxChange = (e,productName,price) => {
@@ -172,7 +172,7 @@ const Home =  () => {
     // 3. Remove spaces or dashes if needed
     cleaned = cleaned.replace(/[\s-]/g, "");
 
-    console.log("Cleaned ph number:", cleaned)
+    // console.log("Cleaned ph number:", cleaned)
 
     // 4. Validate BD mobile number
     if (!validateBDNumber(cleaned)) {

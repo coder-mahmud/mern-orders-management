@@ -419,6 +419,13 @@ const getRiderRemainingStock = async (req, res) => {
     let totalOrderPrice = 0;
     let totalDeliveryCharge = 0;
 
+    // console.log("deliveredOrders on controller: ", deliveredOrders)
+    const totalOrderPriceCalculated = deliveredOrders.reduce((acc,cur)=>acc+cur.orderPrice,0)
+    // console.log("totalOrderPriceCalculated",totalOrderPriceCalculated)
+    for(const order of deliveredOrders){
+      console.log("Price:", order.orderPrice)
+    }
+
     for (const order of deliveredOrders) {
       grandTotalFinalPrice += Number(order.finalPrice || 0);
       totalDiscount += Number(order.discount || 0);

@@ -47,11 +47,12 @@ const getHubOrder = async (req, res) => {
   
 }
 
+/*
 const createOrder = async (req, res) => {
-  const {hub, orderItems, customerDetails,phoneNumber, orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user, orderType} = req.body
+  const {hub, orderItems, customerDetails,phoneNumber, orderPrice, deliveryCharge, discount, finalPrice,deliveryDate, user, orderType} = req.body
   // console.log("data",orderItems, customerDetails,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user )
   try {
-    const newOrder = await Order.create({hub, orderItems, customerDetails, phoneNumber,orderPrice, deliveryCharge,discount, finalPrice,deliveryDate, user,orderType})
+    const newOrder = await Order.create({hub, orderItems, customerDetails, phoneNumber,orderPrice, deliveryCharge,discount, finalPrice, deliveryDate, user,orderType})
 
     // Log activity
     await logActivity(user, "CREATE_ORDER", hub , `Created post on : ${hub}`, req);    
@@ -62,7 +63,81 @@ const createOrder = async (req, res) => {
   }
   
 }
+*/
 
+const createOrder = async (req, res) => {
+  const {
+    hub,
+    orderItems = [],
+    customerDetails,
+    phoneNumber,
+    deliveryCharge = 0,
+    discount = 0,
+    deliveryDate,
+    user,
+    orderType,
+  } = req.body;
+
+  try {
+    if (!hub) {
+      return res.status(400).json({ message: "Hub is required" });
+    }
+
+    if (!Array.isArray(orderItems) || orderItems.length === 0) {
+      return res.status(400).json({ message: "orderItems must be a non-empty array" });
+    }
+
+    const normalizedOrderItems = orderItems.map((item) => {
+      const quantity = Number(item.quantity) || 0;
+      const price = Number(item.price) || 0;
+      const totalPrice = quantity * price;
+
+      return {
+        ...item,
+        quantity,
+        price,
+        totalPrice,
+      };
+    });
+
+    const calculatedOrderPrice = normalizedOrderItems.reduce(
+      (sum, item) => sum + item.totalPrice,
+      0
+    );
+
+    const numericDeliveryCharge = Number(deliveryCharge) || 0;
+    const numericDiscount = Number(discount) || 0;
+
+    const calculatedFinalPrice =
+      calculatedOrderPrice + numericDeliveryCharge - numericDiscount;
+
+    const newOrder = await Order.create({
+      hub,
+      orderItems: normalizedOrderItems,
+      customerDetails,
+      phoneNumber,
+      orderPrice: calculatedOrderPrice,
+      deliveryCharge: numericDeliveryCharge,
+      discount: numericDiscount,
+      finalPrice: calculatedFinalPrice,
+      deliveryDate,
+      user,
+      orderType,
+    });
+
+    await logActivity(user, "CREATE_ORDER", hub, `Created post on : ${hub}`, req);
+
+    res.status(201).json({
+      message: "Order creates successfully!",
+      order: newOrder,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed",
+      error: error.message,
+    });
+  }
+};
 /*
 // old controller before adding rider who delivers the order
 const changeOrderStatus = async (req, res) => {
@@ -266,7 +341,7 @@ const changeVerifyStatus = async (req, res) => {
   
 }
 
-
+/*
 const editOrder = async (req, res) => {
   console.log("editOrder route!")
   const {orderId,orderItems,finalPrice,discount, customerDetails,phoneNumber, deliveryDate,orderType, editor  } = req.body;
@@ -297,6 +372,84 @@ const editOrder = async (req, res) => {
 
   
 }
+*/
+const editOrder = async (req, res) => {
+  console.log("editOrder route!");
+
+  const {
+    orderId,
+    orderItems,
+    discount,
+    customerDetails,
+    phoneNumber,
+    deliveryDate,
+    orderType,
+    editor,
+    deliveryCharge,
+  } = req.body;
+
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ success: false, error: "Order not found!" });
+    }
+
+    // Keep existing items if new items are not provided
+    const sourceOrderItems = Array.isArray(orderItems) && orderItems.length > 0
+      ? orderItems
+      : order.orderItems;
+
+    const normalizedOrderItems = sourceOrderItems.map((item) => {
+      const quantity = Number(item.quantity) || 0;
+      const price = Number(item.price) || 0;
+      const totalPrice = quantity * price;
+
+      return {
+        ...item,
+        quantity,
+        price,
+        totalPrice,
+      };
+    });
+
+    const calculatedOrderPrice = normalizedOrderItems.reduce(
+      (sum, item) => sum + item.totalPrice,
+      0
+    );
+
+    const numericDiscount =
+      discount !== undefined ? Number(discount) || 0 : Number(order.discount) || 0;
+
+    const numericDeliveryCharge =
+      deliveryCharge !== undefined
+        ? Number(deliveryCharge) || 0
+        : Number(order.deliveryCharge) || 0;
+
+    const calculatedFinalPrice =
+      calculatedOrderPrice + numericDeliveryCharge - numericDiscount;
+
+    order.orderItems = normalizedOrderItems;
+    order.orderPrice = calculatedOrderPrice;
+    order.discount = numericDiscount;
+    order.deliveryCharge = numericDeliveryCharge;
+    order.finalPrice = calculatedFinalPrice;
+
+    if (customerDetails !== undefined) order.customerDetails = customerDetails;
+    if (phoneNumber !== undefined) order.phoneNumber = phoneNumber;
+    if (deliveryDate !== undefined) order.deliveryDate = deliveryDate;
+    if (orderType !== undefined) order.orderType = orderType;
+    if (editor !== undefined) order.editor = editor;
+
+    const updatedOrder = await order.save();
+
+    res.status(200).json({ success: true, order: updatedOrder });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+
 
 const deleteOrder = async (req, res) => {
   const {orderId} = req.body
@@ -378,7 +531,7 @@ const searchOrders = async (req, res) => {
     const orders = await Order.find(query)
       .sort({ deliveryDate: -1 })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(parseInt(limit)).populate('hub','name');
   
     const total = await Order.countDocuments(query);
   

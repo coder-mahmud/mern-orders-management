@@ -95,7 +95,17 @@ const RiderStockDetails = () => {
     });
   }, [deliveredOrders, phoneSearch]);
 
-console.log("assignedData",assignedData)
+// console.log("assignedData",assignedData)
+console.log("deliveredOrders",deliveredOrders)
+const orderProductTotal = deliveredOrders.reduce((acc,cur) => acc + cur.orderPrice ,0)
+const orderFinalTotal = deliveredOrders.reduce((acc,cur) => acc + cur.finalPrice ,0)
+const orderDiscountTotal = deliveredOrders.reduce((acc,cur) => acc + cur.discount ,0)
+const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryCharge ,0)
+// console.log("orderProductTotal: ",orderProductTotal)
+// console.log("orderFinalTotal: ", orderFinalTotal)
+// console.log("orderDiscountTotal: ", orderDiscountTotal)
+// console.log("orderChargeTotal: ", orderChargeTotal)
+// console.log("currentStock",currentStock)
 
   return (
     <div className='bg-gray-800 text-white min-h-[95vh] py-14'>
@@ -173,7 +183,7 @@ console.log("assignedData",assignedData)
             </p>
 
             <p className='text-sm text-gray-300 mb-2'>
-              Total Order Price: {Number(currentStock?.totalOrderPrice || 0).toFixed(2)} tk
+              Total Product Price: {Number(currentStock?.totalOrderPrice || 0).toFixed(2)} tk
             </p>
 
             <p className='text-sm text-gray-300 mb-2'>

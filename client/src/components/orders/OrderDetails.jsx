@@ -35,7 +35,9 @@ const OrderDetails = () => {
           <div>
             {order.orderItems.map(item => <li key={item.productId}>{item.name} - {item.quantity}kg - {item.totalPrice}tk</li>)}
           </div>
+          <p>Products Total Price: {order.orderPrice}</p>
           <p>Delivery Charge: {order.deliveryCharge}</p>
+          <p>Discount: {order.discount}</p>
           <p>Bill: {order.finalPrice}</p>
           
         </div>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import dayjs from "dayjs";
+import { Link } from "react-router-dom";
 
 import Loader from "../components/shared/Loader";
 import Button from "../components/Button";
@@ -42,6 +43,8 @@ const SearchOrders = () => {
   };
 
   if (productLoading) return <Loader />;
+
+  console.log("orders",orders)
 
   return (
     <div className="bg-gray-800 text-white min-h-[95vh] py-14">
@@ -146,9 +149,12 @@ const SearchOrders = () => {
                       <th className="p-3 border-b border-gray-600">
                         Customer Details
                       </th>
-                      {/* <th className="p-3 text-left border-b border-gray-600">
-                        Status
-                      </th> */}
+                      <th className="p-3 text-left border-b border-gray-600">
+                        Hub
+                      </th>
+                      <th className="p-3 text-left border-b border-gray-600">
+                        Details
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -169,9 +175,13 @@ const SearchOrders = () => {
                         <td className="p-3 border-b border-gray-700">
                           {order.customerDetails}
                         </td>
-                        {/* <td className="p-3 border-b border-gray-700">
-                          {order.orderStatus}
-                        </td> */}
+                        <td className="p-3 border-b border-gray-700">
+                          {order.hub.name}
+                        </td>
+                        <td className="p-3 border-b border-gray-700">
+                          <Link to={`/order/${order._id}`}>Details</Link>
+                          
+                        </td>
                       </tr>
                     ))}
                   </tbody>
