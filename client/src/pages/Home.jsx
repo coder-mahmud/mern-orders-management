@@ -264,6 +264,7 @@ const Home =  () => {
               <label htmlFor="">Delivery Charge:</label>
               <select className='border rounded border-gray-500 h-11 flex items-center px-4 ' name="" id="" value={deliveryCharge} onChange = {(e) => setDeliveryCharge(+(e.target.value))} >
                 <option value="70">70tk</option>
+                <option value="90">90tk</option>
                 <option value="120">120tk</option>
               </select>
             </div>
