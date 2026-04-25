@@ -1,308 +1,184 @@
-import React,{useState} from 'react'
-import DatePicker from "react-datepicker";
-import { useGetAllOrdersByDateQuery } from '../slices/orderApiSclice';
-import Loader from '../components/shared/Loader';
-import dayjs from 'dayjs';
-import { useGetAllProductQuery } from '../slices/productApiSlice';
-import { useSelector } from 'react-redux';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import DatePicker from 'react-datepicker';
+import dayjs from 'dayjs';
 
+import Loader from '../components/shared/Loader';
+import { useGetAllOrdersByDateQuery } from '../slices/orderApiSclice';
+import { useGetAllProductQuery } from '../slices/productApiSlice';
+
+const ADMIN_ROLES = ['admin', 'superAdmin'];
+const INSIDE_DHAKA = 'insideDhaka';
+
+const sortByProductOrder = (products = []) => {
+  return [...products].sort((a, b) => {
+    const sortA = a.sortOrder ?? 999999;
+    const sortB = b.sortOrder ?? 999999;
+
+    if (sortA !== sortB) return sortA - sortB;
+    return a.name.localeCompare(b.name);
+  });
+};
+
+const sumDeliveryCharge = (orders = []) => {
+  return orders.reduce((total, order) => total + Number(order.deliveryCharge || 0), 0);
+};
+
+const buildItemSummary = (orders = [], products = []) => {
+  const quantityMap = orders.reduce((map, order) => {
+    order.orderItems?.forEach((item) => {
+      map[item.name] = (map[item.name] || 0) + Number(item.quantity || 0);
+    });
+
+    return map;
+  }, {});
+
+  return sortByProductOrder(products)
+    .map((product) => {
+      const quantity = quantityMap[product.name] || 0;
+      const price = Number(product.price || 0);
+
+      return {
+        name: product.name,
+        quantity,
+        price,
+        totalPrice: quantity * price,
+      };
+    })
+    .filter((item) => item.quantity > 0);
+};
+
+const getItemsTotal = (items = []) => {
+  return items.reduce((total, item) => total + Number(item.quantity || 0), 0);
+};
+
+const getItemsPriceTotal = (items = []) => {
+  return items.reduce((total, item) => total + Number(item.totalPrice || 0), 0);
+};
+
+const OrdersItemSummary = ({ items, showAdminTotals, deliveryCharge }) => {
+  const totalItems = getItemsTotal(items);
+  const totalPrice = getItemsPriceTotal(items);
+
+  return (
+    <>
+      <p className="section_title text-lg font-semibold mt-6">Orders Items:</p>
+
+      {items.length ? (
+        <>
+          {items.map((item) => (
+            <p key={item.name} className="mb-1">
+              {item.name}: {item.quantity}
+            </p>
+          ))}
+
+          <div className="mt-4">
+            {showAdminTotals && (
+              <>
+                <p>Total Ordered Items: {totalItems} kg</p>
+                <p>Total Ordered Price: {totalPrice}</p>
+                <p>Total Delivery Charge: {deliveryCharge}</p>
+              </>
+            )}
+          </div>
+        </>
+      ) : (
+        <p>No ordered product found.</p>
+      )}
+    </>
+  );
+};
 
 const Orders = () => {
   const [deliveryDate, setDeliveryDate] = useState(new Date());
-  const userRole =  useSelector(state =>  state?.auth?.userInfo?.role);
+  const userRole = useSelector((state) => state?.auth?.userInfo?.role);
 
-  const [hubType, setHubType] = useState('insideDhaka')
+  const { data, isLoading, isError, error } = useGetAllOrdersByDateQuery(
+    dayjs(deliveryDate).format('YYYY-MM-DD')
+  );
+  const { data: productData, isLoading: isProductLoading } = useGetAllProductQuery();
 
+  const allOrders = data?.orders || [];
+  const products = productData?.products || [];
+  const showAdminTotals = ADMIN_ROLES.includes(userRole);
 
-  const {data, isLoading, isError, error} = useGetAllOrdersByDateQuery(dayjs(deliveryDate).format('YYYY-MM-DD'))
-  const {data:productData, isLoading:isProductLoading} = useGetAllProductQuery()
+  const insideDhakaOrders = useMemo(() => {
+    return allOrders.filter((order) => order.hub?.type === INSIDE_DHAKA);
+  }, [allOrders]);
 
-  if(isLoading || isProductLoading){
-    return <Loader />
+  const orderGroups = useMemo(() => {
+    const pending = insideDhakaOrders.filter((order) => order.orderStatus === 'Pending');
+    const delivered = insideDhakaOrders.filter((order) => order.orderStatus === 'Delivered');
+    const cancelled = insideDhakaOrders.filter((order) => order.orderStatus === 'Cancelled');
+    const offline = insideDhakaOrders.filter((order) => order.orderStatus === 'Offline Delivery');
+    const verified = insideDhakaOrders.filter((order) => order.verifyStatus === 'Verified');
+
+    return { pending, delivered, cancelled, offline, verified };
+  }, [insideDhakaOrders]);
+
+  const itemSummary = useMemo(() => {
+    return buildItemSummary(insideDhakaOrders, products);
+  }, [insideDhakaOrders, products]);
+
+  const totalDeliveryCharge = useMemo(() => {
+    return sumDeliveryCharge(insideDhakaOrders);
+  }, [insideDhakaOrders]);
+
+  if (isLoading || isProductLoading) {
+    return <Loader />;
   }
 
-  if(isError){
-    console.log("error:", error)
+  if (isError) {
+    console.log('Orders error:', error);
   }
-
-  console.log("Orders data",data)
-
-  const insidOrders = data.orders.filter(order => order.hub.type == 'insideDhaka')
-
-  const orders = insidOrders;
-
-  const pendingOrders = orders.filter(order => order.orderStatus == 'Pending')
-  const deliveredOrders = orders.filter(order => order.orderStatus == 'Delivered')
-  const cancelledOrders = orders.filter(order => order.orderStatus == 'Cancelled')
-  const offlineOrders = orders.filter(order => order.orderStatus == 'Offline Delivery')
-  const verfiedOrders = orders.filter(order => order.verifyStatus == 'Verified')
-  // const totalBallRequired = orders.reduce((prev,cur) => prev.)
-
-  const getItemPrice = (itemName) => {
-    const prodItem =  productData.products.filter(product => product.name == itemName  )[0];
-    if(prodItem) return prodItem.price;
-    return 0;
- }
-
- let ballPrice = getItemPrice('Chicken Ball');
- let nuggetsPrice = getItemPrice('Chicken Nuggets');
- let sausagePrice = getItemPrice('Chicken Sausage');
- let porotaPrice = getItemPrice('Chicken Porota');
- let mayonnaisePrice = getItemPrice('Supreme Mayonnaise');
- let salamiPrice = getItemPrice('Salami');
- let samuchaPrice = getItemPrice('Samucha');
- let merinationPrice = getItemPrice('Chicken Merination');
- let burgerPettyPrice = getItemPrice('Burger Petty');
- let springRollPrice = getItemPrice('Spring Roll');
- let chickenChaapPrice = getItemPrice('Chicken Chaap');
- let friedChickenPrice = getItemPrice('Fried Chicken');
- let momoPrice = getItemPrice('Momo');
- let karagiChickenPrice = getItemPrice('Karagi Chicken');
- let botiKababPrice = getItemPrice('Boti Kabab');
- let mojorellaCheesePrice = getItemPrice('Mojorella Cheese');
- let rutiPrice = getItemPrice('Atar ruti');
- let frenchFryPrice = getItemPrice('French fry');
- let pizzaSaucePrice = getItemPrice('Pizza Sauce');
- let cheeseBallPrice = getItemPrice('Cheese ball');
- let chickenPopcornPrice = getItemPrice('Chicken popcorn');
- let chickenStripesPrice = getItemPrice('Chicken stripes');
- let vegetableSpringRollPrice = getItemPrice('Vegetable Spring Roll');
- let teturChatniPrice = getItemPrice('Tetul Chatni');
-
-
-
-
-
-
-  const totalChickenBallQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken Ball");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalChickenNuggetsQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken Nuggets");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalChickenSausageQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken Sausage");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalChickenParotaQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken Porota");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-
-  const totalSupremeMayonnaiseQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Supreme Mayonnaise");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-
-  const totalSalamiQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Salami");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-
-  const totalSamuchaQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Samucha");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalChickenMerinationQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken Merination");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalBurgerPettyQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Burger Petty");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-
-  const totalSpringRollQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Spring Roll");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalChickenChaapQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken Chaap");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-
-  const totalFriedChickenQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Fried Chicken");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalMomoQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Momo");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalKaragiChickenQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Karagi Chicken");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-
-  const totalBotiKababQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Boti Kabab");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-
-
-  const totalMojorellaCheeseQuantity = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Mojorella Cheese");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalAtarRuti20piece = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Atar Ruti 20 piece");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalAtarruti = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Atar ruti");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalFrenchFry = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "French fry");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalPizzaSauce = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Pizza Sauce");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalCheeseBall = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Cheese ball");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-  const totalChickenPopcorn = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken popcorn");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-  const totalChickenStripes = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Chicken stripes");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalVegetableSpringRoll = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Vegetable Spring Roll");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-  const totalTetulChatni = orders.reduce((total, order) => {
-    const chickenBallItem = order.orderItems.find(item => item.name === "Tetul Chatni");
-    return total + (chickenBallItem ? chickenBallItem.quantity : 0);
-  }, 0);
-
-
-
-
-  const totalOrderedItems = totalChickenBallQuantity + totalChickenNuggetsQuantity + totalChickenSausageQuantity + totalChickenParotaQuantity + totalSupremeMayonnaiseQuantity + totalSalamiQuantity + totalSamuchaQuantity + totalChickenMerinationQuantity + totalBurgerPettyQuantity + totalSpringRollQuantity +  totalChickenChaapQuantity + totalFriedChickenQuantity + totalMomoQuantity + totalKaragiChickenQuantity +  totalBotiKababQuantity + totalMojorellaCheeseQuantity + totalAtarruti + totalFrenchFry + totalPizzaSauce + totalCheeseBall + totalChickenPopcorn + totalChickenStripes + totalVegetableSpringRoll + totalTetulChatni; 
-
-  const totalOrderedPrice = totalChickenBallQuantity * ballPrice  + totalChickenNuggetsQuantity *  nuggetsPrice + totalChickenSausageQuantity * sausagePrice  + totalChickenParotaQuantity * porotaPrice  + totalSupremeMayonnaiseQuantity * mayonnaisePrice  + totalSalamiQuantity * salamiPrice  + totalSamuchaQuantity * samuchaPrice  + totalChickenMerinationQuantity * merinationPrice + totalBurgerPettyQuantity * burgerPettyPrice  + totalSpringRollQuantity * springRollPrice  +  totalChickenChaapQuantity * chickenChaapPrice  + totalFriedChickenQuantity * friedChickenPrice  + totalMomoQuantity * momoPrice  + totalKaragiChickenQuantity * karagiChickenPrice +  totalBotiKababQuantity * botiKababPrice + totalMojorellaCheeseQuantity * mojorellaCheesePrice + totalAtarruti * rutiPrice + totalFrenchFry * frenchFryPrice + totalPizzaSauce * pizzaSaucePrice + totalCheeseBall * cheeseBallPrice + totalChickenPopcorn * chickenPopcornPrice + totalChickenStripes * chickenStripesPrice  + totalVegetableSpringRoll * vegetableSpringRollPrice + totalTetulChatni * teturChatniPrice ;
-
-  const getDeliveryCharge = (orders) => {
-    return orders.reduce((prev, cur) => prev + cur.deliveryCharge ,0)
-  };
-
-  const totalOrderDeliveryCharge = getDeliveryCharge(orders);
-
 
   return (
-    <div className='bg-gray-800 text-white min-h-[95vh] py-14'>
+    <div className="bg-gray-800 text-white min-h-[95vh] py-14">
       <div className="container">
+        <div className="flex gap-2 items-center mb-6">
+          <p className="mb-2">Date:</p>
+          <DatePicker
+            className="date_input mb-6 h-11 flex items-center border border-gray-500 rounded px-4"
+            selected={deliveryDate}
+            onChange={setDeliveryDate}
+            dateFormat="dd/MM/yyyy"
+          />
+        </div>
 
-          <div className="flex gap-2 items-center mb-6">
-            <p className='mb-2'>Date:</p>
-            <DatePicker className='date_input mb-6 h-11 flex items-center border border-gray-500 rounded px-4' selected={deliveryDate} onChange={(date) => setDeliveryDate(date)} dateFormat="dd/MM/yyyy" />
-          </div>
-
-          {orders.length > 0 ? <>
-
+        {insideDhakaOrders.length > 0 ? (
           <div className="hubOrderInfo my-4 text-lg">
-
             <div className="hubTypeSwitch mb-10">
-              {hubType == 'insideDhaka' ? <Link to="/sub-orders" className="rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold">Show Sub Dhaka</Link> : <button className="rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold">Show Inside Dhaka</button> }
+              <Link
+                to="/sub-orders"
+                className="rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold"
+              >
+                Show Sub Dhaka
+              </Link>
             </div>
 
+            <p className="section_title text-xl font-bold mb-2">Inside Dhaka:</p>
+            <p className="section_title text-lg font-semibold">Total Orders Summary:</p>
 
+            <p>Total Orders : {insideDhakaOrders.length}</p>
+            <p>Total Verified : {orderGroups.verified.length}</p>
+            <p>Total Pending: {orderGroups.pending.length}</p>
+            <p>Online Delivery: {orderGroups.delivered.length}</p>
+            <p>Offline Delivery: {orderGroups.offline.length}</p>
+            <p>Total Cancelled: {orderGroups.cancelled.length}</p>
 
-              <p className="section_title text-xl font-bold mb-2">Inside Dhaka:</p>
-              <p className="section_title text-lg font-semibold">Total Orders Summary:</p>
-              
-              <p className=''>Total Orders : {orders.length}</p>
-              <p className=''>Total Verfied : {verfiedOrders.length}</p>
-              {/* <p className=''>Total Bill : {orders.reduce((prev,cur) => prev + cur.finalPrice,0)}</p> */}
-              
-              <p className="t">Total Pending: {pendingOrders.length}</p>
-              <p className="t">Online Delivery: {deliveredOrders.length}</p>
-              <p className="t">Offline Delivery: {offlineOrders.length}</p>
-              <p className="t">Total Cancelled: {cancelledOrders.length}</p>
-              
-              <p className="section_title text-lg font-semibold mt-6">Orders Items:</p>
-              {totalChickenBallQuantity > 0 ? <p className="mb-1">Chicken Ball: {totalChickenBallQuantity}</p> : ""}
-              {totalChickenNuggetsQuantity > 0 ? <p className="mb-1">Chicken Nuggets: {totalChickenNuggetsQuantity}</p> : ""}
-              {totalChickenSausageQuantity > 0 ? <p className="mb-1">Chicken Sausage: {totalChickenSausageQuantity}</p> : ""}
-              {totalChickenParotaQuantity > 0 ? <p className="mb-1">Chicken Parota: {totalChickenParotaQuantity}</p> : ""}
-              {totalSupremeMayonnaiseQuantity > 0 ? <p className="mb-1">Supreme Mayonnaise: {totalSupremeMayonnaiseQuantity}</p> : ""}
-              {totalSalamiQuantity > 0 ? <p className="mb-1">Salami: {totalSalamiQuantity}</p> : ""}
-              {totalSamuchaQuantity > 0 ? <p className="mb-1">Samucha: {totalSamuchaQuantity}</p> : ""}
-              {totalChickenMerinationQuantity > 0 ? <p className="mb-1">Chicken Merination: {totalChickenMerinationQuantity}</p> : ""}
-              {totalBurgerPettyQuantity > 0 ? <p className="mb-1">Burger Petty: {totalBurgerPettyQuantity}</p> : ""}
-              {totalSpringRollQuantity > 0 ? <p className="mb-1">Spring Roll: {totalSpringRollQuantity}</p> : ""}
-              {totalChickenChaapQuantity > 0 ? <p className="mb-1">Chicken Chaap: {totalChickenChaapQuantity}</p> : ""}
-              {totalFriedChickenQuantity > 0 ? <p className="mb-1">Fried Chicken: {totalFriedChickenQuantity}</p> : ""}
-              {totalMomoQuantity > 0 ? <p className="mb-1">Momo: {totalMomoQuantity}</p> : ""}
-              {totalKaragiChickenQuantity > 0 ? <p className="mb-1">Karagi Chicken: {totalKaragiChickenQuantity}</p> : ""}
-              {totalBotiKababQuantity > 0 ? <p className="mb-1">Boti Kabab: {totalBotiKababQuantity}</p> : ""}
-              
-              {totalMojorellaCheeseQuantity > 0 ? <p className="mb-1">Mojorella Cheese: {totalMojorellaCheeseQuantity}</p> : ""}
-
-              {totalAtarRuti20piece > 0 ? <p className="mb-1">Atar Ruti 20 piece: {totalAtarRuti20piece}</p> : ""}
-
-              {totalAtarruti > 0 ? <p className="mb-1">Atar ruti: {totalAtarruti}</p> : ""}
-
-              {totalFrenchFry > 0 ? <p className="mb-1">French Fry: {totalFrenchFry}</p> : ""}
-              {totalPizzaSauce > 0 ? <p className="mb-1">Pizza Sauce: {totalPizzaSauce}</p> : ""}
-              {totalCheeseBall > 0 ? <p className="mb-1">Cheese Ball: {totalCheeseBall}</p> : ""}
-              {totalChickenPopcorn > 0 ? <p className="mb-1">Chicken popcorn: {totalChickenPopcorn}</p> : ""}
-              {totalChickenStripes > 0 ? <p className="mb-1">Chicken stripes: {totalChickenStripes}</p> : ""}
-              {totalVegetableSpringRoll > 0 ? <p className="mb-1">Vegetable Spring Roll: {totalVegetableSpringRoll}</p> : ""}
-              {totalTetulChatni > 0 ? <p className="mb-1">Tetul Chatni: {totalTetulChatni}</p> : ""}
-
-              <div className='mt-4 '>
-                {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Ordered Items: {totalOrderedItems} kg</p> : ""}
-                {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Ordered Price: {totalOrderedPrice}</p> : ""}
-                {userRole == 'admin' || userRole == 'superAdmin' ? <p>Total Delivery Charge: {totalOrderDeliveryCharge}</p> : ""}
-              </div>
-
-
-
-            </div>
-
-
-
-          
-          
-          </> : "No order found for the date"}
-
-
-
+            <OrdersItemSummary
+              items={itemSummary}
+              showAdminTotals={showAdminTotals}
+              deliveryCharge={totalDeliveryCharge}
+            />
+          </div>
+        ) : (
+          'No order found for the date'
+        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Orders
+export default Orders;

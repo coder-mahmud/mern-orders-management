@@ -2,7 +2,7 @@ import React from "react"
 import dayjs from 'dayjs'
 
 const ActivityLogItem = ({ logs = [] }) => {
-  console.log("Logs", logs)
+  // console.log("Logs", logs)
 
   return (
     <>

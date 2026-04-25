@@ -90,6 +90,7 @@ const EditOrder = () => {
       customerDetails,
       phoneNumber,
       deliveryDate,
+      deliveryCharge,
       orderType,
       editor:curUser
 
@@ -146,11 +147,12 @@ const EditOrder = () => {
             className="border rounded border-gray-500 h-11 px-4"
           >
             <option value="70">70tk</option>
+            <option value="90">90tk</option>
             <option value="120">120tk</option>
           </select>
         </div>
         <div className="single_input flex flex-col gap-2 mb-2">
-          <label htmlFor="deliveryCharge">Discount:</label>
+          <label htmlFor="discount">Discount:</label>
           <input className='border border-gray-500 rounded p-4' type="text" value={discount} onChange={(e) => setDiscount( e.target.value)} />
         </div>
 

@@ -103,7 +103,7 @@ const Home =  () => {
     return <Loader />
   }
 
-  // console.log('Data', data)
+  // console.log('Products Data', data)
   // console.log('hubData', hubData)
 
   const refinedProducts = data.products.filter(product => product.name !=='Atar Ruti 20 piece')

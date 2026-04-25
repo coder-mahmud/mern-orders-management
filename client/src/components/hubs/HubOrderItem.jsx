@@ -264,7 +264,7 @@ const HubOrderItem = ({ order, users, index }) => {
           ? 'Mod: '+order?.statusChangedBy?.firstName +
             '-' +
             dayjs(order?.statusChangeTime).format('DD MMM, hh:mm a') + 
-            ' Rider: '+ order.rider.firstName
+            ' Rider: '+ order?.rider?.firstName
           : ''}
       </p>
 
