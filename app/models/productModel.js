@@ -7,7 +7,12 @@ const productSchema = new mongoose.Schema(
     price: { type: Number, required: true, default: 0 },
     category: { type: String, },
     active: { type: Boolean, default:true },
-    //stock: { type: Number, default: 0 },
+    sortOrder: {
+      type: Number,
+      required: true,
+      default: 0,
+      index: true,
+    },
   },
   { timestamps: true }
 );
