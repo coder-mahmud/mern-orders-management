@@ -315,7 +315,7 @@ const HubOrderItem = ({ order, users, index }) => {
                 View Details
               </Link>
 
-              {userRole !== 'user' && userRole !== 'userAdmin' && (
+              {(userRole ==='admin' || userRole === 'superAdmin') && (
                 <Link
                   to={`/order/edit/${order._id}`}
                   className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer '

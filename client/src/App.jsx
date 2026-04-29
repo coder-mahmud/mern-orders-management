@@ -34,6 +34,7 @@ import RiderList from './pages/Riders'
 import RiderStockDetails from './pages/RiderStockDetails'
 import AllRidersSummary from './pages/AllRidersSummary'
 import EditRiderStockPage from './pages/EditRiderStockPage'
+import AllUsers from './pages/AllUsers'
 
 
 
@@ -70,6 +71,7 @@ function App() {
             <Route path="order/edit/:id" element={<EditOrder />} />
             <Route path="/activity" element={<ActivityLog />} />
             <Route path="/search" element={<SearchOrders />} />
+            <Route path="/allusers" element={<AllUsers />} />
           </Route>
 
           <Route path="/login" element={<Login />} />

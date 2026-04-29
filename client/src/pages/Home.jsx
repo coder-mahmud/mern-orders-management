@@ -83,7 +83,7 @@ const Home =  () => {
 
   useEffect(() => {
     const forceLogoutIfNeeded = async () => {
-      if (userId && (userTokenVersion === undefined || userTokenVersion === null || userTokenVersion !== 1)) {
+      if (userId && (userTokenVersion === undefined || userTokenVersion === null || userTokenVersion !== 3)) {
         try {
           await logout({}).unwrap();
         } catch (error) {
