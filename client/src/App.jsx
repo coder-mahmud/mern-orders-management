@@ -35,6 +35,8 @@ import RiderStockDetails from './pages/RiderStockDetails'
 import AllRidersSummary from './pages/AllRidersSummary'
 import EditRiderStockPage from './pages/EditRiderStockPage'
 import AllUsers from './pages/AllUsers'
+import RiderEntryPage from './pages/RiderEntry'
+import AllRiderProductComparison from './pages/riderComparison'
 
 
 
@@ -57,6 +59,8 @@ function App() {
             <Route path="internal-report" element={<InternalReport />} />
             <Route path="rider-report" element={<RiderOrder />} />
             <Route path="riders" element={<RiderList />} />
+            <Route path="rider-entry" element={<RiderEntryPage />} />
+            <Route path="rider-compare" element={<AllRiderProductComparison />} />
             <Route path="allriders" element={<AllRidersSummary />} />
             <Route path="riders/:riderId" element={<RiderStockDetails />} />
             <Route path="/riders/:riderId/edit" element={<EditRiderStockPage />} />

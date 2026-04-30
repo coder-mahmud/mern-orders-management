@@ -16,6 +16,8 @@ import "./cron/recordStockHistory.js";
 import riderReportRoutes from './routes/riderReportRoutes.js';
 import internalReportRoutes from './routes/internalReportsRoutes.js';
 import riderStockReportRoutes from './routes/riderStockRoutes.js';
+import riderInputRouter from './routes/riderInputRoute.js';
+import riderComparisonRouter from './routes/riderComparisonRoutes.js';
 
 
 dotenv.config();
@@ -63,6 +65,8 @@ app.use('/internalreport', internalReportRoutes);
 app.use('/calculation', calculationRoutes);
 app.use('/activity', activityRoutes);
 app.use('/riderstock', riderStockReportRoutes);
+app.use('/riderinput', riderInputRouter);
+app.use('/ridercomparison', riderComparisonRouter);
 
 
 
