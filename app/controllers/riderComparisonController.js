@@ -132,6 +132,7 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           rider: stock.rider,
           date: startDate,
           hasRiderInput: Boolean(riderInput),
+          riderInputId: riderInput?._id || null,
           hasMismatch: items.some((item) => !item.isMatched),
           totalAssignedQty,
           totalSystemDeliveredQty,

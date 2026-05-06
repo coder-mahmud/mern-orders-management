@@ -22,6 +22,8 @@ const RiderList = () => {
     return <Loader />;
   }
 
+  console.log("Rider errror:", error)
+
   if (error) {
     return (
       <div className='bg-gray-800 text-white min-h-[95vh] py-14'>

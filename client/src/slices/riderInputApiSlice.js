@@ -35,6 +35,16 @@ export const riderInputApiSlice = apiSlice.injectEndpoints({
     }),
 
 
+    updateRiderInputByAdmin: builder.mutation({
+      query: ({ id, items }) => ({
+        url: `${RIDER_INPUT_URL}/${id}`,
+        method: "PUT",
+        body: { items },
+      }),
+      invalidatesTags: ["RiderInput"],
+    }),
+
+
 
 
   }),
@@ -45,4 +55,5 @@ export const {
   useGetMyRiderInputByDateQuery,
   useGetAllRiderInputsByDateQuery,
   useGetAllRiderInputComparisonByDateQuery,
+  useUpdateRiderInputByAdminMutation,
 } = riderInputApiSlice;

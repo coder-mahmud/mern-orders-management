@@ -20,7 +20,7 @@ const RiderProductInput = () => {
 
   const { data, isLoading } = useGetAllProductQuery();
   const userInfo = useSelector((state) => state?.auth?.userInfo);
-  console.log("userinfo: ", userInfo)
+  // console.log("userinfo: ", userInfo)
 
   const {
     data: myInput,
@@ -31,6 +31,8 @@ const RiderProductInput = () => {
     createOrUpdateRiderInput,
     { isLoading: isSubmitting },
   ] = useCreateOrUpdateRiderInputMutation();
+
+  const hasSubmittedForDate = Boolean(myInput?._id);
 
   useEffect(() => {
     if (data?.products) {
@@ -49,6 +51,7 @@ const RiderProductInput = () => {
     }
   }, [data, myInput]);
 
+  /*
   const handleQuantityChange = (productId, newQuantity) => {
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
@@ -61,6 +64,24 @@ const RiderProductInput = () => {
       )
     );
   };
+  */
+  const handleQuantityChange = (productId, newQuantity) => {
+    if (hasSubmittedForDate) return;
+  
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product._id === productId
+          ? {
+              ...product,
+              quantity: Math.max(0, Number(newQuantity)),
+            }
+          : product
+      )
+    );
+  };
+
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -116,6 +137,13 @@ const RiderProductInput = () => {
           </div>
         </div>
 
+        {hasSubmittedForDate && (
+          <div className="bg-yellow-600 text-white rounded p-4 mb-6">
+            You already submitted delivery input for this date. You cannot edit or submit again.
+          </div>
+        )}
+
+
         <form onSubmit={handleSubmit}>
           <div className="bg-gray-700 rounded p-6">
             <h2 className="text-xl font-semibold mb-6">
@@ -149,7 +177,8 @@ const RiderProductInput = () => {
                   <input
                     type="number"
                     min="0"
-                    step="1"
+                    // placeholder="0"
+                    step="0.5"
                     value={product.quantity}
                     onChange={(e) =>
                       handleQuantityChange(product._id, e.target.value)
@@ -176,10 +205,14 @@ const RiderProductInput = () => {
 
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || hasSubmittedForDate}
               className="mt-6 px-6 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 disabled:bg-blue-300"
             >
-              {isSubmitting ? "Saving..." : "Save Input"}
+              {hasSubmittedForDate
+                ? "Already Submitted"
+                : isSubmitting
+                ? "Saving..."
+                : "Save Input"}
             </button>
           </div>
         </form>
