@@ -183,7 +183,7 @@ export const getAllRiderInputsByDate = asyncHandler(async (req, res) => {
 
 export const updateRiderInputByAdmin = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { items } = req.body;
+  const { items, extraNote } = req.body;
 
   const riderInput = await RiderInput.findById(id);
 
@@ -223,6 +223,7 @@ export const updateRiderInputByAdmin = asyncHandler(async (req, res) => {
   }
 
   riderInput.items = cleanedItems;
+  riderInput.extraNote = extraNote || "";
 
   const updatedInput = await riderInput.save();
 

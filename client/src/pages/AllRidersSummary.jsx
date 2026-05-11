@@ -15,6 +15,7 @@ const AllRidersSummary = () => {
     isLoading,
     error,
   } = useGetAllRidersSummaryByDateQuery({ date: formattedDate });
+  
   console.log("data:",data, isLoading, error)
 
   const riders = data?.riders || [];

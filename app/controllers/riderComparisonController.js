@@ -139,6 +139,8 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           totalRiderInputQty,
           totalDifference: totalRiderInputQty - totalSystemDeliveredQty,
           items,
+          totalDeliveredOrders: deliveredOrders.length,
+          extraNote: riderInput?.extraNote || "",
         };
       })
     );

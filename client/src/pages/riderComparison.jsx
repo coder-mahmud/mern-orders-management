@@ -15,6 +15,7 @@ const AllRiderProductComparison = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [editingReport, setEditingReport] = useState(null);
   const [editItems, setEditItems] = useState([]);
+  const [editExtraNote, setEditExtraNote] = useState("");
 
   const userRole = useSelector((state) => state?.auth?.userInfo?.role);
 
@@ -33,6 +34,7 @@ const AllRiderProductComparison = () => {
     }
 
     setEditingReport(riderReport);
+    setEditExtraNote(riderReport.extraNote || "");
 
     setEditItems(
       riderReport.items.map((item) => ({
@@ -46,6 +48,7 @@ const AllRiderProductComparison = () => {
   const closeEditModal = () => {
     setEditingReport(null);
     setEditItems([]);
+    setEditExtraNote("");
   };
 
   const handleEditQuantityChange = (productId, value) => {
@@ -70,6 +73,7 @@ const AllRiderProductComparison = () => {
       await updateRiderInputByAdmin({
         id: editingReport.riderInputId,
         items: editItems,
+        extraNote: editExtraNote,
       }).unwrap();
 
       toast.success("Rider input updated successfully!");
@@ -82,6 +86,8 @@ const AllRiderProductComparison = () => {
   if (isLoading) {
     return <Loader />;
   }
+
+  console.log("Data:",data)
 
   return (
     <div className="bg-gray-800 text-white min-h-[95vh] py-14">
@@ -147,7 +153,7 @@ const AllRiderProductComparison = () => {
                     </div>
 
                     <p className="text-gray-300">
-                      Phone: {rider?.phone || "N/A"}
+                      Delivered Orders: {riderReport?.totalDeliveredOrders || "N/A"}
                     </p>
                   </div>
 
@@ -252,6 +258,16 @@ const AllRiderProductComparison = () => {
                     </tbody>
                   </table>
                 </div>
+
+                {riderReport.extraNote && (
+                  <div className="bg-gray-800 rounded p-3 mb-4">
+                    <span className="font-semibold">Admin Note:</span>{" "}
+                    {riderReport.extraNote}
+                  </div>
+                )}
+
+
+
               </div>
             );
           })}
@@ -297,6 +313,19 @@ const AllRiderProductComparison = () => {
                     </div>
                   ))}
                 </div>
+
+                <div className="mt-5">
+                  <label className="block mb-2 font-semibold">Admin Extra Note</label>
+                  <textarea
+                    value={editExtraNote}
+                    onChange={(e) => setEditExtraNote(e.target.value)}
+                    rows="4"
+                    placeholder="Write admin note here..."
+                    className="w-full border border-gray-500 rounded px-3 py-2 bg-gray-800 text-white"
+                  />
+                </div>
+
+
 
                 <div className="flex gap-3 justify-end mt-6">
                   <button

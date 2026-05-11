@@ -36,6 +36,10 @@ const riderInputSchema = new mongoose.Schema(
       index: true,
     },
     items: [riderInputItemSchema],
+    extraNote: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

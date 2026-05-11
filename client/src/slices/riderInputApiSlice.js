@@ -36,10 +36,10 @@ export const riderInputApiSlice = apiSlice.injectEndpoints({
 
 
     updateRiderInputByAdmin: builder.mutation({
-      query: ({ id, items }) => ({
+      query: ({ id, items, extraNote  }) => ({
         url: `${RIDER_INPUT_URL}/${id}`,
         method: "PUT",
-        body: { items },
+        body: { items, extraNote  },
       }),
       invalidatesTags: ["RiderInput"],
     }),
