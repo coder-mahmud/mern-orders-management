@@ -1,3 +1,5 @@
+// this is model for rider's own input
+
 import mongoose from "mongoose";
 
 const riderInputItemSchema = new mongoose.Schema(
