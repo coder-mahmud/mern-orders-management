@@ -6,7 +6,7 @@ import Loader from './Loader'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearCredential } from '../../slices/authSlice'
-import Logo from '../../assets/images/PremiumLogo.svg'
+import Logo from '../../assets/images/logo.jpg'
 import UserImage from '../../assets/images/User.svg'
 import useOutsideClick from '../OutsideClick'
 

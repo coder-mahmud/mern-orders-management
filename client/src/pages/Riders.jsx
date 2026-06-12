@@ -49,9 +49,9 @@ const RiderList = () => {
         <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
           <h1 className='text-xl font-semibold '>All Riders</h1>
           <div className="flex gap-2 flex-wrap">
-          {(userRole === 'rider' ) ? (
+          {/* {(userRole === 'rider' ) ? (
             <Link to="/rider-entry" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Add delivery report</Link>
-          ) : ''}
+          ) : ''} */}
           {(userRole === 'staff' || userRole === 'admin' || userRole === 'superAdmin') ? (
             <Link to="/rider-compare" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Compare Report</Link>
           ) : ''}
@@ -60,6 +60,9 @@ const RiderList = () => {
           ) : ''}
           {(userRole === 'staff' || userRole === 'admin' || userRole === 'superAdmin') ? (
             <Link to="/riders/addstock" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Add Rider Stock</Link>
+          ) : ''}
+          {( userRole === 'admin' || userRole === 'superAdmin') ? (
+            <Link to="/riders/delivery-entry" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Add Rider Delivery</Link>
           ) : ''}
           </div>
           

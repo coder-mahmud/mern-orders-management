@@ -9,14 +9,20 @@ import Loader from '../components/shared/Loader';
 import { toast } from 'react-toastify';
 import { clearCredential } from '../slices/authSlice';
 import { Navigate } from 'react-router-dom';
+import { useLogoutMutation } from '../slices/userApiSlice';
+
 
 
 const Layout = () => {
 
   const [appLoading, setAppLoading] = useState(false)
   const [searchParams] = useSearchParams();
+  const [logout,{isLoading:logOutLoading}] = useLogoutMutation();
 
+
+  const userId = useSelector(state =>  state?.auth?.userInfo?.id);
   const userEmail = useSelector(state => state.auth?.userInfo?.email)
+  const userTokenVersion = useSelector(state => state?.auth?.userInfo?.tokenVersion);
   // console.log("userEmail", userEmail)
 
   if(!userEmail){
@@ -59,6 +65,28 @@ const Layout = () => {
     
 
   },[])
+
+
+  useEffect(() => {
+    const forceLogoutIfNeeded = async () => {
+      if (userId && (userTokenVersion === undefined || userTokenVersion === null || userTokenVersion !== 7)) {
+        try {
+          await logout({}).unwrap();
+        } catch (error) {
+          console.log('Logout api failed:', error);
+        } finally {
+          dispatch(clearCredential());
+          toast.error('Session expired. Please login again.');
+          navigate('/login');
+        }
+      }
+    };
+
+    forceLogoutIfNeeded();
+  }, [userId, userTokenVersion, logout, dispatch, navigate]);
+
+
+
 
   if(appLoading){
     return <Loader />

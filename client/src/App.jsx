@@ -37,6 +37,7 @@ import EditRiderStockPage from './pages/EditRiderStockPage'
 import AllUsers from './pages/AllUsers'
 import RiderEntryPage from './pages/RiderEntry'
 import AllRiderProductComparison from './pages/riderComparison'
+import AddDelivery from './pages/AddRiderDeliveryPage'
 
 
 
@@ -59,12 +60,17 @@ function App() {
             <Route path="internal-report" element={<InternalReport />} />
             <Route path="rider-report" element={<RiderOrder />} />
             <Route path="riders" element={<RiderList />} />
-            <Route path="rider-entry" element={<RiderEntryPage />} />
+
+            {/* Old rider delivery entry page */}
+            {/* <Route path="rider-entry" element={<RiderEntryPage />} /> */}
             <Route path="rider-compare" element={<AllRiderProductComparison />} />
             <Route path="allriders" element={<AllRidersSummary />} />
             <Route path="riders/:riderId" element={<RiderStockDetails />} />
             <Route path="/riders/:riderId/edit" element={<EditRiderStockPage />} />
             <Route path="riders/addstock" element={<AddRiderStockPage />} />
+            
+            {/* below page is delivery entry page for admins */}
+            <Route path="riders/delivery-entry" element={<AddDelivery />} />
             <Route path="hubs/:id" element={<SingleHubDetails />} />
             <Route path="hubs/:id/stock" element={<HubStock />} />
             <Route path="hubs/:id/calculation" element={<HubCalculation />} />
