@@ -81,9 +81,10 @@ const Home =  () => {
     
   }, [isHubLoading, selectedProducts,orderPrice, discount, hub, deliveryCharge]); 
 
+  /*
   useEffect(() => {
     const forceLogoutIfNeeded = async () => {
-      if (userId && (userTokenVersion === undefined || userTokenVersion === null || userTokenVersion !== 7)) {
+      if (userId && (userTokenVersion === undefined || userTokenVersion === null || userTokenVersion !== 8)) {
         try {
           await logout({}).unwrap();
         } catch (error) {
@@ -98,7 +99,7 @@ const Home =  () => {
 
     forceLogoutIfNeeded();
   }, [userId, userTokenVersion, logout, dispatch, navigate]);
-
+*/
   if(isLoading || isHubLoading ){
     return <Loader />
   }
