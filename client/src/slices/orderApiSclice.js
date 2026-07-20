@@ -106,6 +106,28 @@ export const orderApiSlice = apiSlice.injectEndpoints({
     }),
 
 
+    updateRiderStatus: builder.mutation({
+      query: (data) => ({
+        url: `${ORDER_URL}/${data.orderId}/rider-status`,
+        method: 'PUT',
+        body: { deliveryStatusByRider: data.deliveryStatusByRider },
+      }),
+      invalidatesTags: ['Order'], // Matches your slice's cache tags
+    }),
+    // Add this mutation inside your injectEndpoints block in orderApiSlice.js
+    updateRiderStatus: builder.mutation({
+      query: (data) => ({
+        url: `${ORDER_URL}/rider-status`,
+        method: 'POST',
+        body: { 
+          orderId: data.orderId, 
+          deliveryStatusByRider: data.deliveryStatusByRider 
+        },
+      }),
+      invalidatesTags: ['Order'], 
+    }),
+
+
 
 
 
@@ -114,4 +136,4 @@ export const orderApiSlice = apiSlice.injectEndpoints({
 })
 
 
-export const { useCreateOrderMutation, useGetHubOrderQuery, useGetOrderByIdQuery, useOrderStatusMutation, useEditOrderMutation, useGetAllOrdersByDateQuery, useDeleteOrderMutation, useOrderVerifyStatusMutation, useLazySearchOrdersQuery  } = orderApiSlice;
+export const { useCreateOrderMutation, useGetHubOrderQuery, useGetOrderByIdQuery, useOrderStatusMutation, useEditOrderMutation, useGetAllOrdersByDateQuery, useDeleteOrderMutation, useOrderVerifyStatusMutation, useLazySearchOrdersQuery, useUpdateRiderStatusMutation  } = orderApiSlice;

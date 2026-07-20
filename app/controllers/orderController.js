@@ -592,6 +592,31 @@ const searchOrders = async (req, res) => {
   
 }
 
+const changeRiderDeliveryStatus = async (req, res) => {
+  const { orderId, deliveryStatusByRider } = req.body;
+
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Update the newly added field
+    order.deliveryStatusByRider = deliveryStatusByRider;
+
+    await order.save();
+
+    res.status(200).json({ 
+      message: "Rider delivery status updated successfully!", 
+      order 
+    });
+  } catch (error) {
+    console.error("Error updating rider status:", error);
+    res.status(500).json({ message: "Failed!", error: error.message });
+  }
+};
 
 
-export { getOrders, createOrder, editOrder, deleteOrder, getHubOrder,getOrderById, changeOrderStatus, getOrderByDate,changeVerifyStatus, searchOrders }
+
+export { getOrders, createOrder, editOrder, deleteOrder, getHubOrder,getOrderById, changeOrderStatus, getOrderByDate,changeVerifyStatus, searchOrders, changeRiderDeliveryStatus }

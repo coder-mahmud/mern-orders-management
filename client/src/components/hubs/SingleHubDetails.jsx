@@ -196,6 +196,7 @@ const SingleHubDetails = () => {
     saveAs(csvBlob, 'orders.csv');
   };
 
+
   const generatePDF = () => {
     const doc = new jsPDF();
 
@@ -227,6 +228,8 @@ const SingleHubDetails = () => {
   if (isLoading || isProductLoading || isHubOrderLoading || isUsersLoading) {
     return <Loader />;
   }
+
+  console.log("Hub Orders:", orders)
 
   return (
     <div className="bg-gray-800 text-white min-h-[95vh] py-14">

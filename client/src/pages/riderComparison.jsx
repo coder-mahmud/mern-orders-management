@@ -87,7 +87,7 @@ const AllRiderProductComparison = () => {
     return <Loader />;
   }
 
-  console.log("Data:",data)
+  console.log("Data:", data);
 
   return (
     <div className="bg-gray-800 text-white min-h-[95vh] py-14">
@@ -157,18 +157,33 @@ const AllRiderProductComparison = () => {
                     </p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-3">
+                  {/* SUMMARY BOX PANEL */}
+                  <div className="flex flex-wrap gap-3 items-center">
                     <div className="bg-gray-800 rounded px-4 py-2 flex items-center">
-                      System Total:{" "}
-                      <span className="font-semibold">
-                        {riderReport.totalSystemDeliveredQty}
+                      System Orders:{" "}
+                      <span className="font-semibold ml-1 text-blue-400">
+                        {riderReport.totalSystemOrders || 0}
                       </span>
                     </div>
 
                     <div className="bg-gray-800 rounded px-4 py-2 flex items-center">
-                      Rider Input Total:{" "}
-                      <span className="font-semibold">
-                        {riderReport.totalRiderInputQty}
+                      Rider Orders:{" "}
+                      <span className="font-semibold ml-1 text-blue-400">
+                        {riderReport.totalRiderOrders || 0}
+                      </span>
+                    </div>
+
+                    <div className="bg-gray-800 rounded px-4 py-2 flex items-center">
+                      System Qty Total:{" "}
+                      <span className="font-semibold ml-1 text-amber-400">
+                        {riderReport.totalSystemDeliveredQty || 0}
+                      </span>
+                    </div>
+
+                    <div className="bg-gray-800 rounded px-4 py-2 flex items-center">
+                      Rider Qty Total:{" "}
+                      <span className="font-semibold ml-1 text-amber-400">
+                        {riderReport.totalRiderInputQty || 0}
                       </span>
                     </div>
 
@@ -191,7 +206,7 @@ const AllRiderProductComparison = () => {
                 )}
 
                 <div className="overflow-x-auto">
-                  <table className="w-full border-collapse min-w-[520px] md:min-w-[800px]">
+                  <table className="w-full border-collapse min-w-[600px] md:min-w-[900px]">
                     <thead>
                       <tr className="bg-gray-900">
                         <th className="border border-gray-500 p-2 md:p-3 text-left">
@@ -204,6 +219,11 @@ const AllRiderProductComparison = () => {
 
                         <th className="border border-gray-500 p-2 md:p-3 text-center">
                           System Delivered
+                        </th>
+
+                        {/* NEW TABLE HEADER */}
+                        <th className="border border-gray-500 p-2 md:p-3 text-center">
+                          Rider Delivered
                         </th>
 
                         <th className="border border-gray-500 p-2 md:p-3 text-center">
@@ -242,6 +262,11 @@ const AllRiderProductComparison = () => {
                             {item.systemDeliveredQty}
                           </td>
 
+                          {/* NEW TABLE CELL DATA */}
+                          <td className="border border-gray-500 p-2 md:p-3 text-center font-semibold text-blue-300">
+                            {item.riderDeliveredQty || 0}
+                          </td>
+
                           <td className="border border-gray-500 p-2 md:p-3 text-center font-semibold">
                             {item.riderInputQty}
                           </td>
@@ -265,9 +290,6 @@ const AllRiderProductComparison = () => {
                     {riderReport.extraNote}
                   </div>
                 )}
-
-
-
               </div>
             );
           })}
@@ -324,8 +346,6 @@ const AllRiderProductComparison = () => {
                     className="w-full border border-gray-500 rounded px-3 py-2 bg-gray-800 text-white"
                   />
                 </div>
-
-
 
                 <div className="flex gap-3 justify-end mt-6">
                   <button

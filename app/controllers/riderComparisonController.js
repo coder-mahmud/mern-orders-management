@@ -25,7 +25,6 @@ const getProductId = (value) => {
 // @access  Private/Admin/Controller
 const getAllRiderProductComparisonByDate = async (req, res) => {
   const { date } = req.params;
-  // console.log("Get all rider comparision route in api. Recieved date:", date)
 
   try {
     const { startDate, endDate } = getDateRange(date);
@@ -45,15 +44,24 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           deliveryDate: { $gte: startDate, $lte: endDate },
         });
 
+        // 1. Fetch system marked delivered orders
         const deliveredOrders = await Order.find({
           rider: riderId,
           isDelivered: true,
           deliveryDate: { $gte: startDate, $lte: endDate },
         }).populate("orderItems.productId", "name");
 
+        // 2. Fetch rider marked delivered orders via dropdown actions
+        const riderDeliveredOrders = await Order.find({
+          rider: riderId,
+          deliveryStatusByRider: "Delivered",
+          deliveryDate: { $gte: startDate, $lte: endDate },
+        }).populate("orderItems.productId", "name");
+
         const stockMap = {};
         const riderInputMap = {};
         const systemDeliveredMap = {};
+        const riderDeliveredMap = {};
         const productNameMap = {};
 
         stock.items.forEach((item) => {
@@ -90,26 +98,48 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           });
         });
 
+        // Map rider delivered order items quantities
+        riderDeliveredOrders.forEach((order) => {
+          order.orderItems?.forEach((item) => {
+            const productId = getProductId(item.productId);
+            if (!productId) return;
+
+            riderDeliveredMap[productId] =
+              Number(riderDeliveredMap[productId] || 0) +
+              Number(item.quantity || 0);
+
+            productNameMap[productId] =
+              item.productId?.name ||
+              item.name ||
+              productNameMap[productId] ||
+              "";
+          });
+        });
+
         const allProductIds = new Set([
           ...Object.keys(stockMap),
           ...Object.keys(riderInputMap),
           ...Object.keys(systemDeliveredMap),
+          ...Object.keys(riderDeliveredMap),
         ]);
 
         const items = Array.from(allProductIds).map((productId) => {
           const assignedQty = Number(stockMap[productId] || 0);
           const riderInputQty = Number(riderInputMap[productId] || 0);
           const systemDeliveredQty = Number(systemDeliveredMap[productId] || 0);
+          const riderDeliveredQty = Number(riderDeliveredMap[productId] || 0);
 
           return {
             productId,
             productName: productNameMap[productId] || "Unknown Product",
             assignedQty,
             systemDeliveredQty,
+            riderDeliveredQty,
             riderInputQty,
-            difference: riderInputQty - systemDeliveredQty,
+            difference: riderDeliveredQty - systemDeliveredQty,
             remainingQty: assignedQty - systemDeliveredQty,
-            isMatched: riderInputQty === systemDeliveredQty,
+            // UPDATED LOGIC: Comparing System Delivered vs Rider Delivered
+            isMatched: systemDeliveredQty === riderDeliveredQty,
           };
         });
 
@@ -123,21 +153,32 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           0
         );
 
+        const totalRiderDeliveredQty = items.reduce(
+          (sum, item) => sum + item.riderDeliveredQty,
+          0
+        );
+
         const totalRiderInputQty = items.reduce(
           (sum, item) => sum + item.riderInputQty,
           0
         );
+
+        // UPDATED LOGIC: Set overall mismatch if any product item fails to match
+        const hasMismatch = items.some((item) => !item.isMatched);
 
         return {
           rider: stock.rider,
           date: startDate,
           hasRiderInput: Boolean(riderInput),
           riderInputId: riderInput?._id || null,
-          hasMismatch: items.some((item) => !item.isMatched),
+          hasMismatch,
+          totalSystemOrders: deliveredOrders.length,
+          totalRiderOrders: riderDeliveredOrders.length,
           totalAssignedQty,
           totalSystemDeliveredQty,
+          totalRiderDeliveredQty,
           totalRiderInputQty,
-          totalDifference: totalRiderInputQty - totalSystemDeliveredQty,
+          totalDifference: totalRiderDeliveredQty - totalSystemDeliveredQty,
           items,
           totalDeliveredOrders: deliveredOrders.length,
           extraNote: riderInput?.extraNote || "",
