@@ -144,8 +144,8 @@ const AllRiderProductComparison = () => {
                         <button
                           type="button"
                           onClick={() => openEditModal(riderReport)}
-                          disabled={!riderReport.hasRiderInput}
-                          className="rounded px-4 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-500 disabled:cursor-not-allowed text-sm font-semibold"
+                          // disabled={!riderReport.hasRiderInput}
+                          className="rounded cursor-pointer px-4 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-500 disabled:cursor-not-allowed text-sm font-semibold"
                         >
                           Edit Rider Input
                         </button>

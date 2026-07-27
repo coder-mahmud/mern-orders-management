@@ -200,10 +200,11 @@ const HubOrderItem = ({ order, users, index }) => {
     try {
       await updateRiderStatus({
         orderId: order._id,
-        deliveryStatusByRider: pendingRiderStatus
+        deliveryStatusByRider: pendingRiderStatus,
       }).unwrap();
       toast.success(`Order status updated to ${pendingRiderStatus}!`);
     } catch (error) {
+      console.log("Rider status change error:", error)
       toast.error(error?.data?.message || 'Something went wrong!');
     } finally {
       document.body.style.overflow = 'auto';
@@ -213,12 +214,24 @@ const HubOrderItem = ({ order, users, index }) => {
     }
   };
 
+  let extraClasses = ''
+  if(userRole === 'rider' && order.deliveryStatusByRider === 'Delivered'){
+    extraClasses = 'opacity-90 text-green-500'
+  }
+  let orderStatusText = '';
+  if(userRole === 'rider' && order.deliveryStatusByRider === 'Delivered'){
+    orderStatusText = 'Delivered'
+  }else if(order.orderStatus !== 'Pending'){
+    orderStatusText = 'Mod: '+order?.statusChangedBy?.firstName + '-' + dayjs(order?.statusChangeTime).format('DD MMM, hh:mm a') + ' Rider: '+ order?.rider?.firstName
+  }else{
+    orderStatusText = 'Pending'
+  }
   return (
-    <div className='flex flex-col md:flex-row justify-between gap-4 py-4 border-b border-gray-500 lg:items-center '>
+    <div className={`flex flex-col md:flex-row justify-between gap-4 py-4 border-b border-gray-500 lg:items-center ${extraClasses} `}>
       {(showLoader || isLoading || deleteLoading || verifyLoading || riderUpdateLoading) && <Loader />}
-
+      
       <p className='w-[50px]'>{index + 1}.</p>
-      <p className='flex-2'><span className='inline-block md:hidden'>Customer Details :</span> {order.customerDetails}</p>
+      <p className='flex-[1.5]'><span className='inline-block md:hidden'>Customer Details :</span> {order.customerDetails}</p>
       <p className='flex-1'><span className='inline-block md:hidden'>Phone Number :</span> {order.phoneNumber}</p>
       <p className='flex-[1.5]'>
         <span className='inline-block md:hidden'>Order Details :</span>
@@ -227,12 +240,13 @@ const HubOrderItem = ({ order, users, index }) => {
         ))}
         {order.finalPrice}tk
       </p>
-      <p className='flex-[.75]'><span className='inline-block md:hidden'>Type : </span> {order.orderType}</p>
+      {/* <p className='flex-[.75]'><span className='inline-block md:hidden'>Type : </span> {order.orderType}</p> */}
       <p className='flex-[.75]'>
-        <span className='inline-block md:hidden'>Status :</span> {order.orderStatus}{' '}
-        {order.orderStatus !== 'Pending'
+        <span className='inline-block md:hidden'>Status :</span> {orderStatusText}
+        {/* {order.orderStatus !== 'Pending'
           ? 'Mod: '+order?.statusChangedBy?.firstName + '-' + dayjs(order?.statusChangeTime).format('DD MMM, hh:mm a') + ' Rider: '+ order?.rider?.firstName
-          : ''}
+          : ''} */}
+          
       </p>
 
       <p className='flex-[.75]'>
@@ -240,10 +254,10 @@ const HubOrderItem = ({ order, users, index }) => {
         {order.verifyStatus == 'Verified' && order?.verifiedBy?.firstName ? '-' + order?.verifiedBy?.firstName : ''}{' '}
         {order.verifyTime ? '-' + dayjs(order?.verifyTime).format('DD MMM, hh:mm a') : ''}
       </p>
-      <p className='flex-[.9]'>
+      {/* <p className='flex-[.9]'>
         <span className='inline-block md:hidden'>Rider :</span>{' '}
         {order?.rider?.firstName ? `${order.rider.firstName} ${order?.rider?.lastName || ''}` : '-'}
-      </p>
+      </p> */}
       <div className='flex-1 flex justify-start'>
         <span className='inline-block md:hidden'>Created By: &nbsp;</span>
         <div className="flex gap-2">

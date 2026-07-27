@@ -107,6 +107,8 @@ const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryC
 // console.log("orderChargeTotal: ", orderChargeTotal)
 // console.log("currentStock",currentStock)
 
+console.log("currentData:", currentData)
+
   return (
     <div className='bg-gray-800 text-white min-h-[95vh] py-14'>
       <div className='container'>
@@ -339,10 +341,8 @@ const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryC
                     <p className='flex-2'>Customer Details</p>
                     <p className='flex-1'>Phone Number</p>
                     <p className='flex-[1.5]'>Order Details</p>
-                    <p className='flex-[.75]'>Type</p>
-                    <p className='flex-[.75]'>Status</p>
-                    <p className='flex-[.75]'>Verified</p>
                     <p className='flex-1 flex justify-start'>Created By</p>
+                    <p className='flex-1 flex justify-start'>Link</p>
                   </div>
 
                   {filteredDeliveredOrders.map((order, index) => (
@@ -377,32 +377,14 @@ const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryC
                         | {Number(order?.finalPrice || 0).toFixed(2)}tk
                       </p>
 
-                      <p className='flex-[.75]'>
-                        <span className='inline-block md:hidden'>Type :</span>{' '}
-                        {order?.orderType || '-'}
-                      </p>
-
-                      <p className='flex-[.75]'>
-                        <span className='inline-block md:hidden'>Status :</span>{' '}
-                        {order?.orderStatus || (order?.isDelivered ? 'Delivered' : '-')}
-                      </p>
-
-                      <p className='flex-[.75]'>
-                        <span className='inline-block md:hidden'>Verified :</span>{' '}
-                        {order?.verifyStatus || '-'}
-                        {order?.verifyStatus === 'Verified' && order?.verifiedBy?.firstName
-                          ? ` - ${order.verifiedBy.firstName}`
-                          : ''}
-                        {order?.verifyTime
-                          ? ` - ${dayjs(order.verifyTime).format('DD MMM, hh:mm a')}`
-                          : ''}
-                      </p>
-
                       <p className='flex-1 flex justify-start'>
                         <span className='inline-block md:hidden'>Created By: </span>
                         {order?.user?.firstName
                           ? `${order.user.firstName} - ${dayjs(order.createdAt).format('DD MMM, hh:mm a')}`
                           : dayjs(order.createdAt).format('DD MMM, hh:mm a')}
+                      </p>
+                      <p className='flex-1 flex justify-start'>
+                        <Link to={`/order/${order._id}`}>Details</Link>
                       </p>
                     </div>
                   ))}

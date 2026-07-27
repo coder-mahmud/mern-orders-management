@@ -372,6 +372,10 @@ const getRiderRemainingStock = async (req, res) => {
 const getRiderRemainingStock = async (req, res) => {
   const { riderId, date } = req.params;
 
+
+  // console.log("User role at backend:", req.user?.role)
+  console.log("getRiderRemainingStock invoked!")
+
   try {
     const targetDate = new Date(date);
 
@@ -384,6 +388,7 @@ const getRiderRemainingStock = async (req, res) => {
     const rider = await User.findById(riderId).select(
       "firstName lastName username role phone"
     );
+    const isRiderView = req.user?.role === "rider";
 
     if (!rider) {
       return res.status(404).json({
@@ -404,11 +409,27 @@ const getRiderRemainingStock = async (req, res) => {
       });
     }
 
-    const deliveredOrders = await Order.find({
-      rider: riderId,
-      isDelivered: true,
+    // const deliveredOrders = await Order.find({
+    //   rider: riderId,
+    //   isDelivered: true,
+    //   deliveryDate: { $gte: startDate, $lte: endDate },
+    // }).populate("orderItems.productId", "name");
+
+    const orderFilter = {
       deliveryDate: { $gte: startDate, $lte: endDate },
-    }).populate("orderItems.productId", "name");
+    };
+    
+    if (isRiderView) {
+      orderFilter.deliveryStatusByRider = "Delivered";
+      orderFilter.riderDeliveredBy = riderId;
+    } else {
+      orderFilter.isDelivered = true;
+    }
+    
+    const deliveredOrders = await Order.find(orderFilter)
+      .populate("orderItems.productId", "name");    
+
+    // console.log("Delivered Orders from remaining stock fn:",deliveredOrders )
 
     const deliveredMap = {};
     const deliveredNameMap = {};
@@ -423,7 +444,7 @@ const getRiderRemainingStock = async (req, res) => {
     const totalOrderPriceCalculated = deliveredOrders.reduce((acc,cur)=>acc+cur.orderPrice,0)
     // console.log("totalOrderPriceCalculated",totalOrderPriceCalculated)
     for(const order of deliveredOrders){
-      console.log("Price:", order.orderPrice)
+      // console.log("Price:", order.orderPrice)
     }
 
     for (const order of deliveredOrders) {
@@ -543,6 +564,9 @@ const getRiderRemainingStock = async (req, res) => {
 const getRiderDeliverySummary = async (req, res) => {
   const { riderId, date } = req.params;
   // console.log("/summary/:riderId/:date:", date)
+  const isRiderView = req.user?.role === "rider";
+
+  // console.log("User role on backend:", req.user?.role)
 
   try {
     const targetDate = new Date(date);
@@ -558,22 +582,72 @@ const getRiderDeliverySummary = async (req, res) => {
     // console.log("startDate:", startDate.toISOString());
     // console.log("endDate:", endDate.toISOString());
 
-    const deliveredOrders = await Order.find({
-      rider: riderId,
-      isDelivered: true,
+    // const deliveredOrders = await Order.find({
+    //   rider: riderId,
+    //   isDelivered: true,
+    //   deliveryDate: {
+    //     $gte: startDate,
+    //     $lte: endDate,
+    //   },
+    // })
+    //   .populate("rider", "firstName lastName")
+    //   .populate("orderItems.productId", "name")
+    //   .populate("hub", "name");
+
+    const orderFilter = {
+     
       deliveryDate: {
         $gte: startDate,
         $lte: endDate,
-      },
-    })
+      }
+    };
+
+    // console.log("isRiderView", isRiderView)
+    
+    if (isRiderView) {
+      orderFilter.riderDeliveredBy = riderId
+      orderFilter.deliveryStatusByRider = "Delivered";
+    } else {
+      orderFilter.rider = riderId,
+      orderFilter.isDelivered = true;
+    }
+
+    // console.log("Order Filter:", JSON.stringify(orderFilter, null, 2));
+    
+    const deliveredOrders = await Order.find(orderFilter)
       .populate("rider", "firstName lastName")
       .populate("orderItems.productId", "name")
       .populate("hub", "name");
+
+      // console.log("Delivered orders on backend:", deliveredOrders)
+    
+      const orders = await Order.find({
+        riderDeliveredBy: riderId,
+        deliveryStatusByRider: "Delivered",
+      });
+      
+      // console.log("Rider Orders count:", orders);
+
+
+      // const ordersbyPhone = await Order.find({
+      //   phoneNumber: "01912239660",
+      // });
+      
+      // console.log("Phone orders",ordersbyPhone);
+      
+      // if (orders.length) {
+      //   console.log({
+      //     deliveryStatusByRider: orders[0].deliveryStatusByRider,
+      //     deliveryDate: orders[0].deliveryDate,
+      //     rider: orders[0].rider,
+      //   });
+      // }
 
     res.status(200).json({
       success: true,
       totalOrders: deliveredOrders.length,
       orders: deliveredOrders,
+      // orders,
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

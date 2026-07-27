@@ -62,6 +62,11 @@ const orderSchema = new mongoose.Schema(
       enum: ["Pending", "Delivered", "Cancelled"], 
       default: "Pending" 
     },
+    riderDeliveredBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    
   },
   { timestamps: true }
 );

@@ -593,7 +593,7 @@ const searchOrders = async (req, res) => {
 }
 
 const changeRiderDeliveryStatus = async (req, res) => {
-  const { orderId, deliveryStatusByRider } = req.body;
+  const { orderId, deliveryStatusByRider, } = req.body;
 
   try {
     const order = await Order.findById(orderId);
@@ -604,6 +604,12 @@ const changeRiderDeliveryStatus = async (req, res) => {
 
     // Update the newly added field
     order.deliveryStatusByRider = deliveryStatusByRider;
+    if (deliveryStatusByRider === "Delivered") {
+      order.riderDeliveredBy = req.user._id;
+  } else {
+      order.riderDeliveredBy = null;
+  }
+    
 
     await order.save();
 
