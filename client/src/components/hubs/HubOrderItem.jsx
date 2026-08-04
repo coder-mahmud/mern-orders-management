@@ -218,6 +218,9 @@ const HubOrderItem = ({ order, users, index }) => {
   if(userRole === 'rider' && order.deliveryStatusByRider === 'Delivered'){
     extraClasses = 'opacity-90 text-green-500'
   }
+  if(userRole === 'admin' && order.orderStatus === 'Delivered'){
+    extraClasses = 'opacity-90 text-green-500'
+  }
   let orderStatusText = '';
   if(userRole === 'rider' && order.deliveryStatusByRider === 'Delivered'){
     orderStatusText = 'Delivered'
@@ -226,6 +229,8 @@ const HubOrderItem = ({ order, users, index }) => {
   }else{
     orderStatusText = 'Pending'
   }
+
+
   return (
     <div className={`flex flex-col md:flex-row justify-between gap-4 py-4 border-b border-gray-500 lg:items-center ${extraClasses} `}>
       {(showLoader || isLoading || deleteLoading || verifyLoading || riderUpdateLoading) && <Loader />}

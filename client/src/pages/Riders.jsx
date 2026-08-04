@@ -61,9 +61,9 @@ const RiderList = () => {
           {(userRole === 'staff' || userRole === 'admin' || userRole === 'superAdmin') ? (
             <Link to="/riders/addstock" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Add Rider Stock</Link>
           ) : ''}
-          {( userRole === 'admin' || userRole === 'superAdmin') ? (
+          {/* {( userRole === 'admin' || userRole === 'superAdmin') ? (
             <Link to="/riders/delivery-entry" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Add Rider Delivery</Link>
-          ) : ''}
+          ) : ''} */}
           </div>
           
 

@@ -51,6 +51,7 @@ const Home =  () => {
   const [ showLoader, setShowLoader ] = useState(false)
   const [customerDetails, setCustomerDetails] = useState();
   const [phoneNumber, setPhoneNumber] = useState();
+  const [calculatedPrice, setCalculatedPrice] = useState();
   const [hub, setHub] = useState();
   const [selectedHub, setSelectedHub] = useState();
   const [deliveryCharge, setDeliveryCharge] = useState(70);
@@ -181,6 +182,15 @@ const Home =  () => {
       return;
     }
 
+    console.log(+calculatedPrice, finalPrice)
+
+    if(+calculatedPrice !== finalPrice ){
+      toast.error("Calculated Price and Total Price do not matched!")
+      setShowLoader(false)
+      return;
+    }
+
+    
 
 
     const data = {
@@ -191,6 +201,7 @@ const Home =  () => {
       deliveryCharge,
       discount,
       finalPrice,
+      calculatedPrice,
       // deliveryDate: dayjs(deliveryDate).format('DD-MM-YYYY'),
       deliveryDate: deliveryDate,
       user: userId,
@@ -203,8 +214,6 @@ const Home =  () => {
       const apiRes = await createOrder(data).unwrap();
       console.log(apiRes)
       toast.success("Order created!")
-      
-
     } catch (error) {
       console.log("error: ",error)
       toast.error('Failed, please try again.')
@@ -222,11 +231,6 @@ const Home =  () => {
       setDiscount(0)
       setFinalPrice(0)
       document.body.style.overflow= 'auto'
-
-
-
-
-
     }
   }
 
@@ -262,6 +266,11 @@ const Home =  () => {
             </div>
 
             <div className="form_row flex flex-col gap-2 mb-6">
+              <label htmlFor="">Calculated Price:</label>
+              <input type="number" placeholder='Calculated Total:' className='border rounded border-gray-500 py-3 px-4' value={calculatedPrice} onChange = {(e) => setCalculatedPrice(e.target.value)} required />
+            </div>
+
+            <div className="form_row flex flex-col gap-2 mb-6">
               <label htmlFor="">Delivery Charge:</label>
               <select className='border rounded border-gray-500 h-11 flex items-center px-4 ' name="" id="" value={deliveryCharge} onChange = {(e) => setDeliveryCharge(+(e.target.value))} >
                 <option value="70">70tk</option>
@@ -269,6 +278,8 @@ const Home =  () => {
                 <option value="120">120tk</option>
               </select>
             </div>
+
+
             <div className="form_row flex flex-col gap-2  relative w-xl max-w-[180px]">
               <label htmlFor="">Delivery Date:</label>
               <DatePicker className='date_input mb-6 h-11 flex items-center border border-gray-500 rounded px-4' selected={deliveryDate} onChange={(date) => setDeliveryDate(date)} dateFormat="dd/MM/yyyy" />

@@ -415,7 +415,7 @@ const getRiderRemainingStock = async (req, res) => {
     //   deliveryDate: { $gte: startDate, $lte: endDate },
     // }).populate("orderItems.productId", "name");
 
-    const orderFilter = {
+    const orderFilter = {      
       deliveryDate: { $gte: startDate, $lte: endDate },
     };
     
@@ -424,6 +424,7 @@ const getRiderRemainingStock = async (req, res) => {
       orderFilter.riderDeliveredBy = riderId;
     } else {
       orderFilter.isDelivered = true;
+      orderFilter.rider = riderId;
     }
     
     const deliveredOrders = await Order.find(orderFilter)

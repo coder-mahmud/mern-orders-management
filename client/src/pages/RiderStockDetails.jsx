@@ -196,12 +196,12 @@ console.log("currentData:", currentData)
               Total Discount: {Number(currentStock?.totalDiscount || 0).toFixed(2)} tk
             </p>
 
-            <p className='text-sm text-gray-300 mb-6'>
+            <p className='text-md text-gray-100 font-bold mb-6'>
               Grand Total Final Price: {Number(currentStock?.grandTotalFinalPrice || 0).toFixed(2)} tk
             </p>
 
             {/* DELIVERED ITEM TOTALS */}
-            <div className='border border-gray-700 rounded-lg p-4 mb-6'>
+            {/* <div className='border border-gray-700 rounded-lg p-4 mb-6'>
               <h3 className='text-lg font-semibold mb-3 text-green-400'>
                 Delivered Item Totals
               </h3>
@@ -229,10 +229,10 @@ console.log("currentData:", currentData)
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* REMAINING ITEM TOTALS */}
-            <div className='border border-gray-700 rounded-lg p-4 mb-6'>
+            {/* <div className='border border-gray-700 rounded-lg p-4 mb-6'>
               <h3 className='text-lg font-semibold mb-3 text-yellow-400'>
                 Remaining Item Totals
               </h3>
@@ -260,7 +260,7 @@ console.log("currentData:", currentData)
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* FULL DETAILS TABLE */}
             <div className='border border-gray-700 rounded-lg p-4 mb-6'>
@@ -273,7 +273,7 @@ console.log("currentData:", currentData)
                   <span className='w-[22%]'>Product</span>
                   <span className='w-[12%] text-center'>Assigned</span>
                   <span className='w-[12%] text-center'>Delivered</span>
-                  <span className='w-[16%] text-center'>Order Price</span>
+                  {/* <span className='w-[16%] text-center'>Order Price</span> */}
                   <span className='w-[12%] text-center'>Remaining</span>
                 </div>
 
@@ -297,10 +297,10 @@ console.log("currentData:", currentData)
                       {item.deliveredQty}
                     </span>
 
-                    <span className='w-full sm:w-[16%] text-left sm:text-center'>
+                    {/* <span className='w-full sm:w-[16%] text-left sm:text-center'>
                       <span className='sm:hidden font-semibold'>Order Price: </span>
                       ৳{Number(item.totalOrderPrice || 0).toFixed(2)}
-                    </span>
+                    </span> */}
 
                     <span className='w-full sm:w-[12%] text-left sm:text-center font-semibold'>
                       <span className='sm:hidden font-semibold'>Remaining: </span>

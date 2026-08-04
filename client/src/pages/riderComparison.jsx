@@ -183,7 +183,7 @@ const AllRiderProductComparison = () => {
                     <div className="bg-gray-800 rounded px-4 py-2 flex items-center">
                       Rider Qty Total:{" "}
                       <span className="font-semibold ml-1 text-amber-400">
-                        {riderReport.totalRiderInputQty || 0}
+                        {riderReport.totalRiderDeliveredQty  || 0}
                       </span>
                     </div>
 
@@ -199,11 +199,11 @@ const AllRiderProductComparison = () => {
                   </div>
                 </div>
 
-                {!riderReport.hasRiderInput && (
+                {/* {!riderReport.hasRiderInput && (
                   <div className="bg-yellow-600 text-white rounded p-3 mb-4">
                     This rider has not submitted product input for this date.
                   </div>
-                )}
+                )} */}
 
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse min-w-[600px] md:min-w-[900px]">
@@ -226,9 +226,7 @@ const AllRiderProductComparison = () => {
                           Rider Delivered
                         </th>
 
-                        <th className="border border-gray-500 p-2 md:p-3 text-center">
-                          Rider Input
-                        </th>
+
 
                         <th className="hidden md:table-cell border border-gray-500 p-3 text-center">
                           Remaining
@@ -265,10 +263,6 @@ const AllRiderProductComparison = () => {
                           {/* NEW TABLE CELL DATA */}
                           <td className="border border-gray-500 p-2 md:p-3 text-center font-semibold text-blue-300">
                             {item.riderDeliveredQty || 0}
-                          </td>
-
-                          <td className="border border-gray-500 p-2 md:p-3 text-center font-semibold">
-                            {item.riderInputQty}
                           </td>
 
                           <td className="hidden md:table-cell border border-gray-500 p-3 text-center">

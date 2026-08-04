@@ -44,6 +44,7 @@ const orderSchema = new mongoose.Schema(
     websiteOrderId: { type: Number, },
     discount: { type: Number },
     orderPrice: { type: Number, required: true },
+    adminPrice: { type: Number,default: 0 },
     deliveryCharge: { type: Number, required: true },
     finalPrice: { type: Number, required: true },
     isDelivered: { type: Boolean, default: false },

@@ -53,10 +53,12 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
 
         // 2. Fetch rider marked delivered orders via dropdown actions
         const riderDeliveredOrders = await Order.find({
-          rider: riderId,
+          riderDeliveredBy: riderId,
           deliveryStatusByRider: "Delivered",
           deliveryDate: { $gte: startDate, $lte: endDate },
         }).populate("orderItems.productId", "name");
+
+        // console.log("rider comparision controller - riderDeliveredOrders:", riderDeliveredOrders)
 
         const stockMap = {};
         const riderInputMap = {};
@@ -128,6 +130,8 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           const riderInputQty = Number(riderInputMap[productId] || 0);
           const systemDeliveredQty = Number(systemDeliveredMap[productId] || 0);
           const riderDeliveredQty = Number(riderDeliveredMap[productId] || 0);
+          // console.log("Inside rider comparision controller")
+          console.log("riderDeliveredQty:", riderDeliveredQty)
 
           return {
             productId,
