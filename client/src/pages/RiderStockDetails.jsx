@@ -263,7 +263,7 @@ console.log("currentData:", currentData)
             </div> */}
 
             {/* FULL DETAILS TABLE */}
-            <div className='border border-gray-700 rounded-lg p-4 mb-6'>
+            {/* <div className='border border-gray-700 rounded-lg p-4 mb-6'>
               <h3 className='text-lg font-semibold mb-3 text-blue-400'>
                 Full Stock Details
               </h3>
@@ -273,7 +273,7 @@ console.log("currentData:", currentData)
                   <span className='w-[22%]'>Product</span>
                   <span className='w-[12%] text-center'>Assigned</span>
                   <span className='w-[12%] text-center'>Delivered</span>
-                  {/* <span className='w-[16%] text-center'>Order Price</span> */}
+                  
                   <span className='w-[12%] text-center'>Remaining</span>
                 </div>
 
@@ -297,11 +297,6 @@ console.log("currentData:", currentData)
                       {item.deliveredQty}
                     </span>
 
-                    {/* <span className='w-full sm:w-[16%] text-left sm:text-center'>
-                      <span className='sm:hidden font-semibold'>Order Price: </span>
-                      ৳{Number(item.totalOrderPrice || 0).toFixed(2)}
-                    </span> */}
-
                     <span className='w-full sm:w-[12%] text-left sm:text-center font-semibold'>
                       <span className='sm:hidden font-semibold'>Remaining: </span>
                       {item.remainingQty}
@@ -309,7 +304,7 @@ console.log("currentData:", currentData)
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* DELIVERED ORDERS LIST - LAST SECTION */}
             <div className='border border-gray-700 rounded-lg p-4'>

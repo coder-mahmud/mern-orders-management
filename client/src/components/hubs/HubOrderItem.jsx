@@ -218,7 +218,7 @@ const HubOrderItem = ({ order, users, index }) => {
   if(userRole === 'rider' && order.deliveryStatusByRider === 'Delivered'){
     extraClasses = 'opacity-90 text-green-500'
   }
-  if(userRole === 'admin' && order.orderStatus === 'Delivered'){
+  if(userRole === 'admin' && (order.orderStatus === 'Delivered' || order.orderStatus === 'Offline Delivery')){
     extraClasses = 'opacity-90 text-green-500'
   }
   let orderStatusText = '';
@@ -325,7 +325,7 @@ const HubOrderItem = ({ order, users, index }) => {
                 </>
               )}
 
-              {userRole !== 'user' && userRole !== 'userAdmin' && userRole !== 'rider' && (
+              {userRole !== 'user' && userRole !== 'userAdmin' && userRole !== 'rider' && userRole !== 'staff' && (
                 <li onClick={showDeleteHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>
                   Delete Order
                 </li>

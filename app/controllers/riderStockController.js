@@ -720,11 +720,20 @@ const getAllRidersSummaryByDate = async (req, res) => {
       riderStocks.map(async (stock) => {
         const riderId = stock.rider?._id || stock.rider;
 
+        // Below code is commented out. Previously we were depend on admin delivery report. Now we are changing to rider's deliver report to generate this page data.
         const deliveredOrders = await Order.find({
           rider: riderId,
           isDelivered: true,
           deliveryDate: { $gte: startDate, $lte: endDate },
         });
+
+        // this was 2nd way to show rider summary based on rider report.
+        // const deliveredOrders = await Order.find({
+        //   riderDeliveredBy: riderId,
+        //   // isDelivered: true,
+        //   deliveryStatusByRider: 'Delivered',
+        //   deliveryDate: { $gte: startDate, $lte: endDate },
+        // });
 
         let grandTotalFinalPrice = 0;
         let totalDiscount = 0;
