@@ -4,16 +4,16 @@ import protect from '../middlewares/authMiddleware.js';
 
 const orderRoutes = express();
 
-orderRoutes.get("/", getOrders);
-orderRoutes.post("/create", createOrder);
-orderRoutes.post("/edit", editOrder);
-orderRoutes.post("/delete", deleteOrder);
-orderRoutes.post("/status", changeOrderStatus);
-orderRoutes.post("/verify", changeVerifyStatus);
-orderRoutes.get("/search", searchOrders);
-orderRoutes.get("/hub/:id/:date", getHubOrder);
-orderRoutes.get("/:id", getOrderById);
-orderRoutes.get("/date/:date", getOrderByDate);
+orderRoutes.get("/",protect, getOrders);
+orderRoutes.post("/create",protect, createOrder);
+orderRoutes.post("/edit",protect, editOrder);
+orderRoutes.post("/delete",protect, deleteOrder);
+orderRoutes.post("/status",protect, changeOrderStatus);
+orderRoutes.post("/verify",protect, changeVerifyStatus);
+orderRoutes.get("/search",protect, searchOrders);
+orderRoutes.get("/hub/:id/:date",protect, getHubOrder);
+orderRoutes.get("/:id",protect, getOrderById);
+orderRoutes.get("/date/:date",protect, getOrderByDate);
 orderRoutes.post("/rider-status",protect, changeRiderDeliveryStatus);
 
 export default orderRoutes;

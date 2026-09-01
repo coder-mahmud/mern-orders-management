@@ -11,7 +11,7 @@ import { useSelector,useDispatch } from 'react-redux';
 import { useCreateOrderMutation } from '../slices/orderApiSclice';
 import {toast} from 'react-toastify'
 import { Navigate } from 'react-router-dom';
-import { useLogoutMutation } from '../slices/userApiSlice';
+
 // import { clearCredential } from '../../slices/authSlice'
 import { clearCredential } from '../slices/authSlice';
 import { useNavigate } from 'react-router-dom'
@@ -21,7 +21,6 @@ import { useNavigate } from 'react-router-dom'
 
 
 const Home =  () => {
-  const [logout,{isLoading:logOutLoading}] = useLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -77,7 +76,7 @@ const Home =  () => {
     setOrderPrice(selectedProducts.reduce((prev, cur) => prev + cur.totalPrice, 0));
     setFinalPrice(orderPrice - discount + deliveryCharge)
     if(!isHubLoading){
-      setSelectedHub ( hubData.hubs.filter(hubItem => hubItem._id == hub))
+      setSelectedHub ( hubData?.hubs?.filter(hubItem => hubItem._id == hub))
     }
     
   }, [isHubLoading, selectedProducts,orderPrice, discount, hub, deliveryCharge]); 
@@ -260,7 +259,7 @@ const Home =  () => {
               <label htmlFor="">Select Hub:</label>
               <select className='border rounded border-gray-500 h-11 flex items-center px-4 ' name="" id="" value={hub} onChange = {(e) => setHub(e.target.value)}>
                 <option value="">Select one:</option>
-                {hubData.hubs.map(hub => <option key={hub._id} value={hub._id}>{hub.name}</option>)}
+                {hubData?.hubs?.map(hub => <option key={hub._id} value={hub._id}>{hub.name}</option>)}
                
               </select>
             </div>

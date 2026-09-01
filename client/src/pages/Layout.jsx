@@ -8,7 +8,7 @@ import Loader from '../components/shared/Loader';
 import { toast } from 'react-toastify';
 import { clearCredential } from '../slices/authSlice';
 
-const REQUIRED_TOKEN_VERSION = 9;
+const REQUIRED_TOKEN_VERSION = 10;
 
 const Layout = () => {
   const [appLoading, setAppLoading] = useState(false);
@@ -58,6 +58,7 @@ const Layout = () => {
     // verifyCurrentUser();
   }, [userEmail, verify, dispatch, navigate]);
 
+  
   useEffect(() => {
     const forceLogoutIfNeeded = async () => {
       if (!userId) return;
@@ -83,6 +84,7 @@ const Layout = () => {
 
     forceLogoutIfNeeded();
   }, [userId, userTokenVersion, logout, dispatch, navigate]);
+
 
   if (appLoading || logOutLoading) {
     return <Loader />;

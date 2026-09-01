@@ -25,6 +25,7 @@ const protect = asyncHandler(async (req, res, next) => {
 
     if (user.tokenVersion !== decoded.tokenVersion) {
       return res.status(401).json({
+        error: "TOKEN_VERSION_MISMATCH",
         message: "Session expired. Please login again.",
       });
     }

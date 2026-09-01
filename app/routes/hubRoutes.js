@@ -7,11 +7,11 @@ const hubRoutes = express();
 //   res.status(200).json({message:"user get route"})
 // })
 
-hubRoutes.get("/", getHubs)
-hubRoutes.get("/:id", getHubById)
-hubRoutes.post("/", createHub)
-hubRoutes.post("/edit", editHub)
-hubRoutes.post("/:id/addproduct", addProductToHub)
+hubRoutes.get("/",protect, getHubs)
+hubRoutes.get("/:id",protect, getHubById)
+hubRoutes.post("/",protect, createHub)
+hubRoutes.post("/edit",protect, editHub)
+hubRoutes.post("/:id/addproduct",protect, addProductToHub)
 
 // hubRoutes.post('/update-hubs-type', updateHubs);
 

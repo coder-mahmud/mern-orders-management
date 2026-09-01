@@ -7,9 +7,9 @@ const stockHistoryRoutes = express();
 //   res.status(200).json({message:"user get route"})
 // })
 
-stockHistoryRoutes.get("/createall", createInitialStocks)
-stockHistoryRoutes.get("/time", getServerTime)
-stockHistoryRoutes.get("/:hubId/:date", getStockForHub)
+stockHistoryRoutes.get("/createall",protect, createInitialStocks)
+stockHistoryRoutes.get("/time",protect, getServerTime)
+stockHistoryRoutes.get("/:hubId/:date",protect, getStockForHub)
 
 
 

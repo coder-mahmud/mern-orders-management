@@ -1,12 +1,13 @@
 import express from 'express'
 import { getRiderReports, createRiderReport, getRiderReportsByDate } from '../controllers/riderReportController.js';
+import protect from '../middlewares/authMiddleware.js';
 
 
 const riderReportRoutes = express();
 
-riderReportRoutes.get("/", getRiderReports);
-riderReportRoutes.post("/create", createRiderReport);
-riderReportRoutes.get("/getbydate/:date", getRiderReportsByDate);
+riderReportRoutes.get("/",protect, getRiderReports);
+riderReportRoutes.post("/create",protect, createRiderReport);
+riderReportRoutes.get("/getbydate/:date",protect, getRiderReportsByDate);
 
 /*
 orderRoutes.post("/create", createOrder);

@@ -23,16 +23,16 @@ riderStockReportRoutes.get('/',(req,res)=>{
 */
 
 
-riderStockReportRoutes.post("/", createOrUpdateRiderStock);
-riderStockReportRoutes.put("/", editRiderStock);
-riderStockReportRoutes.delete("/", deleteRiderStock);
+riderStockReportRoutes.post("/",protect, createOrUpdateRiderStock);
+riderStockReportRoutes.put("/",protect, editRiderStock);
+riderStockReportRoutes.delete("/",protect, deleteRiderStock);
 
-riderStockReportRoutes.get("/date/:riderId/:date", getRiderStockByDate);
+riderStockReportRoutes.get("/date/:riderId/:date",protect, getRiderStockByDate);
 riderStockReportRoutes.get("/remaining/:riderId/:date", protect, getRiderRemainingStock);
 riderStockReportRoutes.get("/summary/:riderId/:date",protect, getRiderDeliverySummary);
-riderStockReportRoutes.get("/:id", getRiderStockById);
-riderStockReportRoutes.get("/", getRiderStocks);
-riderStockReportRoutes.get('/all-riders-summary/:date', getAllRidersSummaryByDate);
+riderStockReportRoutes.get("/:id",protect, getRiderStockById);
+riderStockReportRoutes.get("/",protect, getRiderStocks);
+riderStockReportRoutes.get('/all-riders-summary/:date',protect, getAllRidersSummaryByDate);
 
 
 export default riderStockReportRoutes;
