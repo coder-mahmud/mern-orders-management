@@ -374,7 +374,7 @@ const getRiderRemainingStock = async (req, res) => {
 
 
   // console.log("User role at backend:", req.user?.role)
-  console.log("getRiderRemainingStock invoked!")
+  // console.log("getRiderRemainingStock invoked!")
 
   try {
     const targetDate = new Date(date);
@@ -549,7 +549,7 @@ const getRiderRemainingStock = async (req, res) => {
       remainingSummary,
     });
   } catch (error) {
-    console.log("Error", error);
+    // console.log("Error", error);
     return res.status(500).json({
       success: false,
       error: error.message,
@@ -781,6 +781,78 @@ const getAllRidersSummaryByDate = async (req, res) => {
 };
 
 
+// This controller for comparing both admin and rider orders
+const getComparedRiderOrders = async (req, res) => {
+  const { riderId, date } = req.params;
+
+  try {
+    const targetDate = new Date(date);
+    const startDate = new Date(targetDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(targetDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    const dateQuery = { deliveryDate: { $gte: startDate, $lte: endDate } };
+
+    const riderInfo = await User.findById(riderId).select("firstName lastName phone username role");
+    // console.log("riderInfo:", riderInfo)
+
+    // Fetch orders for Admin view and Rider view in parallel
+    const [adminOrders, riderOrders] = await Promise.all([
+      Order.find({ ...dateQuery, isDelivered: true, rider: riderId })
+        .populate("rider", "firstName lastName")
+        .populate("orderItems.productId", "name")
+        .populate("hub", "name")
+        .populate("user", "firstName lastName"),
+      Order.find({ ...dateQuery, deliveryStatusByRider: "Delivered", riderDeliveredBy: riderId })
+        .populate("rider", "firstName lastName")
+        .populate("orderItems.productId", "name")
+        .populate("hub", "name")
+        .populate("user", "firstName lastName"),
+    ]);
+
+    const adminMap = new Map(adminOrders.map((o) => [o._id.toString(), o]));
+    const riderMap = new Map(riderOrders.map((o) => [o._id.toString(), o]));
+    const allIds = new Set([...adminMap.keys(), ...riderMap.keys()]);
+
+    const comparedOrders = [];
+
+    allIds.forEach((id) => {
+      const inAdmin = adminMap.has(id);
+      const inRider = riderMap.has(id);
+      const orderDoc = adminMap.get(id) || riderMap.get(id);
+      const order = orderDoc.toObject ? orderDoc.toObject() : orderDoc;
+
+      let matchStatus = "MATCHED"; // In both Admin & Rider views
+      if (inRider && !inAdmin) {
+        matchStatus = "RIDER_ONLY"; // Only in Rider view
+      } else if (inAdmin && !inRider) {
+        matchStatus = "ADMIN_ONLY"; // Only in Admin view
+      }
+
+      comparedOrders.push({
+        ...order,
+        matchStatus,
+        inAdminView: inAdmin,
+        inRiderView: inRider,
+      });
+    });
+
+    res.status(200).json({
+      success: true,
+      totalOrders: comparedOrders.length,
+      matchedCount: comparedOrders.filter((o) => o.matchStatus === "MATCHED").length,
+      riderOnlyCount: comparedOrders.filter((o) => o.matchStatus === "RIDER_ONLY").length,
+      adminOnlyCount: comparedOrders.filter((o) => o.matchStatus === "ADMIN_ONLY").length,
+      orders: comparedOrders,
+      riderInfo,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 
 
 export {
@@ -792,5 +864,6 @@ export {
   getRiderStockByDate,
   getRiderRemainingStock,
   getRiderDeliverySummary,
-  getAllRidersSummaryByDate
+  getAllRidersSummaryByDate,
+  getComparedRiderOrders,
 };

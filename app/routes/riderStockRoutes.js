@@ -8,7 +8,10 @@ import { getRiderStocks,
   deleteRiderStock,
   getRiderStockByDate,
   getRiderRemainingStock,
-  getRiderDeliverySummary, getAllRidersSummaryByDate } from '../controllers/riderStockController.js';
+  getRiderDeliverySummary,
+  getAllRidersSummaryByDate,
+  getComparedRiderOrders, 
+} from '../controllers/riderStockController.js';
 
   
 
@@ -33,6 +36,7 @@ riderStockReportRoutes.get("/summary/:riderId/:date",protect, getRiderDeliverySu
 riderStockReportRoutes.get("/:id",protect, getRiderStockById);
 riderStockReportRoutes.get("/",protect, getRiderStocks);
 riderStockReportRoutes.get('/all-riders-summary/:date',protect, getAllRidersSummaryByDate);
+riderStockReportRoutes.get("/compare/:riderId/:date", protect, getComparedRiderOrders);
 
 
 export default riderStockReportRoutes;

@@ -38,6 +38,7 @@ import AllUsers from './pages/AllUsers'
 import RiderEntryPage from './pages/RiderEntry'
 import AllRiderProductComparison from './pages/riderComparison'
 import AddDelivery from './pages/AddRiderDeliveryPage'
+import RiderOrderComparison from './pages/RiderOrderComparison'
 
 
 
@@ -64,6 +65,8 @@ function App() {
             {/* Old rider delivery entry page */}
             {/* <Route path="rider-entry" element={<RiderEntryPage />} /> */}
             <Route path="rider-compare" element={<AllRiderProductComparison />} />
+            <Route path="rider-compare-details/:riderId" element={<RiderOrderComparison />} />
+            
             <Route path="allriders" element={<AllRidersSummary />} />
             <Route path="riders/:riderId" element={<RiderStockDetails />} />
             <Route path="/riders/:riderId/edit" element={<EditRiderStockPage />} />

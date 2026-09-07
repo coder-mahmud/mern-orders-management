@@ -4,6 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 import Loader from "../components/shared/Loader";
 import {
@@ -140,7 +141,7 @@ const AllRiderProductComparison = () => {
                         {rider?.firstName} {rider?.lastName}
                       </h2>
 
-                      {userRole === "admin" && (
+                      {/* {userRole === "admin" && (
                         <button
                           type="button"
                           onClick={() => openEditModal(riderReport)}
@@ -149,7 +150,7 @@ const AllRiderProductComparison = () => {
                         >
                           Edit Rider Input
                         </button>
-                      )}
+                      )} */}
                     </div>
 
                     <p className="text-gray-300">
@@ -195,7 +196,25 @@ const AllRiderProductComparison = () => {
                       }`}
                     >
                       {riderReport.hasMismatch ? "Mismatch" : "Matched"}
+                      
                     </div>
+                    
+                    {riderReport.hasMismatch ?(
+                      
+                      <Link to={`/rider-compare-details/${rider._id}?date=${formattedDate}`}
+                      
+                      className={`rounded px-4 py-2 font-semibold flex items-center ${
+                        riderReport.hasMismatch
+                          ? "bg-red-600"
+                          : "bg-green-600"
+                      }`}
+                      >
+                        See why
+                      </Link>
+                      
+                    ) : ""}
+
+
                   </div>
                 </div>
 

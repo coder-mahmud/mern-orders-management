@@ -2,16 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGetOrderByIdQuery, useEditOrderMutation } from '../../slices/orderApiSclice';
 import { useGetAllProductQuery } from '../../slices/productApiSlice';
+import { useGetAllHubQuery } from '../../slices/hubApiSlice';
 import Loader from '../shared/Loader';
 import Button from '../Button';
-import {toast} from 'react-toastify'
+import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useSelector } from 'react-redux';
-
-
-
-
 
 const EditOrder = () => {
   const params = useParams();
@@ -27,22 +24,31 @@ const EditOrder = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [deliveryDate, setDeliveryDate] = useState();
   const [orderType, setOrderType] = useState();
+  const [hub, setHub] = useState(''); // 1. Added hub state
 
   const { data, isLoading } = useGetOrderByIdQuery(orderId);
   const [editOrder, { isLoading: isEditOrderLoading }] = useEditOrderMutation();
-  const {data:productsData, isLoading:isProductLoading} = useGetAllProductQuery()
+  const { data: productsData, isLoading: isProductLoading } = useGetAllProductQuery();
+  const { data: hubsData, isLoading: isHubLoading } = useGetAllHubQuery(); // 2. Fetch hubs
 
   // Fetch order details & set initial state
   useEffect(() => {
-    if (data) {
+    if (data?.order) {
       setDeliveryCharge(data.order.deliveryCharge);
       setSelectedProducts(data.order.orderItems);
       setTotalBill(data.order.finalPrice);
-      setDiscount(data.order.discount)
-      setCustomerDetails(data.order.customerDetails)
-      setPhoneNumber(data.order.phoneNumber)
-      setDeliveryDate(data.order.deliveryDate)
-      setOrderType(data.order.orderType)
+      setDiscount(data.order.discount);
+      setCustomerDetails(data.order.customerDetails);
+      setPhoneNumber(data.order.phoneNumber);
+      setDeliveryDate(data.order.deliveryDate);
+      setOrderType(data.order.orderType);
+      
+      // Handle hub if it's populated as object or string ID
+      if (data.order.hub?._id) {
+        setHub(data.order.hub._id);
+      } else if (data.order.hub) {
+        setHub(data.order.hub);
+      }
     }
   }, [data]);
 
@@ -50,7 +56,7 @@ const EditOrder = () => {
   useEffect(() => {
     const selectedItemsPrice = selectedProducts.reduce((prev, cur) => cur.totalPrice + prev, 0);
     setTotalBill(Number(selectedItemsPrice) + Number(deliveryCharge || 0) - Number(discount));
-  }, [selectedProducts, deliveryCharge,discount]);
+  }, [selectedProducts, deliveryCharge, discount]);
 
   const handleQuantityChange = (itemId, newQuantity) => {
     if (Number(newQuantity) < 0.5) return;
@@ -68,73 +74,78 @@ const EditOrder = () => {
     setSelectedProducts(prevItems => prevItems.filter(item => item._id !== itemId));
   };
 
-  if (isLoading || isProductLoading) return <Loader />;
+  if (isLoading || isProductLoading || isHubLoading) return <Loader />;
 
-  console.log("Orders data",data)
-  // console.log("productsData",productsData)
-  const allProducts = productsData.products;
-  const orderProducts = data.order.orderItems.map(item => item.name);
-  // console.log("orderProducts",orderProducts)
-  // console.log("allProducts",allProducts)
-  //const toAddProducts = allProducts.filter(product => product.name !=="")
-  // const toAddProducts = allProducts.filter(item => !orderProducts.includes(item.name));
-  // console.log("toAddProducts",toAddProducts)
+  const allProducts = productsData?.products || [];
+  const allHubs = hubsData?.hubs || hubsData || [];
 
   const updateOrderHandler = async () => {
-    
     const UpdateOrderdata = {
       orderId: data.order._id,
+      hub, // 3. Included hub in payload
       orderItems: selectedProducts,
-      finalPrice:totalBill,
+      finalPrice: totalBill,
       discount,
       customerDetails,
       phoneNumber,
       deliveryDate,
       deliveryCharge,
       orderType,
-      editor:curUser
-
+      editor: curUser
     };
-    // console.log("Updated Order Data:", data);
-    
+
     try {
-      const apiRes = await editOrder(UpdateOrderdata).unwrap();
-      // console.log("apiRes data:", apiRes)
-      toast.success("Order updated successfully!")
-
+      await editOrder(UpdateOrderdata).unwrap();
+      toast.success("Order updated successfully!");
     } catch (error) {
-      // console.log("Error:", error)
-      toast.error("Something went wrong! Plese try again.")
+      toast.error("Something went wrong! Please try again.");
     }
-
-    
-
-
-
   };
 
-  const handleCheckboxChange = (e,productName,price) => {
+  const handleCheckboxChange = (e, productName, price) => {
     const { value, checked } = e.target;
-    
+
     if (checked) {
-      setSelectedProducts([...selectedProducts, {name:productName, productId:value, quantity:1, price, totalPrice:(1 * price)}])
+      setSelectedProducts([...selectedProducts, { name: productName, productId: value, quantity: 1, price, totalPrice: (1 * price) }]);
     } else {
-      setSelectedProducts(selectedProducts.filter(item => item.productId !== value ));
+      setSelectedProducts(selectedProducts.filter(item => item.productId !== value));
     }
   };
-
 
   return (
     <div className='bg-gray-800 text-white min-h-[95vh] py-14'>
       {isEditOrderLoading && <Loader />}
 
       <div className="container">
-        <p className='mb-4'><label className='mb-1 block'>Customer Details: </label>
-        <textarea className='w-full border border-gray-500 rounded p-4 min-h-32' name="" id="" value={customerDetails} onChange={(e) => setCustomerDetails(e.target.value)} ></textarea>
+        {/* Hub Select Input */}
+        <div className="single_input flex flex-col gap-2 mb-4">
+          <label htmlFor="hub">Select Hub:</label>
+          <select
+            name="hub"
+            id="hub"
+            value={hub}
+            onChange={(e) => setHub(e.target.value)}
+            className="border rounded border-gray-500 h-11 px-4 bg-gray-800 text-white"
+          >
+            <option value="">Select a Hub</option>
+            {allHubs.map((h) => (
+              <option key={h._id} value={h._id}>
+                {h.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <p className='mb-4'>
+          <label className='mb-1 block'>Customer Details: </label>
+          <textarea className='w-full border border-gray-500 rounded p-4 min-h-32' value={customerDetails} onChange={(e) => setCustomerDetails(e.target.value)}></textarea>
         </p>
-        <p className='mb-4'><label className='mb-1 block'>Phone Number: </label>
-        <input className='w-full border border-gray-500 rounded p-4' name="" id="" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} ></input>
+
+        <p className='mb-4'>
+          <label className='mb-1 block'>Phone Number: </label>
+          <input className='w-full border border-gray-500 rounded p-4' value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
         </p>
+
         <p className='mb-2'><b>Bill: </b>{totalBill}</p>
 
         <div className="single_input flex flex-col gap-2 mb-2">
@@ -144,31 +155,32 @@ const EditOrder = () => {
             id="deliveryCharge"
             value={deliveryCharge}
             onChange={(e) => setDeliveryCharge(e.target.value)}
-            className="border rounded border-gray-500 h-11 px-4"
+            className="border rounded border-gray-500 h-11 px-4 bg-gray-800 text-white"
           >
             <option value="70">70tk</option>
             <option value="90">90tk</option>
             <option value="120">120tk</option>
           </select>
         </div>
+
         <div className="single_input flex flex-col gap-2 mb-2">
           <label htmlFor="discount">Discount:</label>
-          <input className='border border-gray-500 rounded p-4' type="text" value={discount} onChange={(e) => setDiscount( e.target.value)} />
+          <input className='border border-gray-500 rounded p-4 bg-gray-800 text-white' type="text" value={discount} onChange={(e) => setDiscount(e.target.value)} />
         </div>
 
         <div className="single_input flex flex-col gap-2 mb-2">
-          <label htmlFor="deliveryCharge">Delivery Date:</label>
-          <DatePicker className='date_input mb-6 h-11 flex items-center border border-gray-500 rounded px-4' selected={deliveryDate} onChange={(date) => setDeliveryDate(date)} dateFormat="dd/MM/yyyy" />
+          <label>Delivery Date:</label>
+          <DatePicker className='date_input mb-6 h-11 flex items-center border border-gray-500 rounded px-4 bg-gray-800 text-white' selected={deliveryDate} onChange={(date) => setDeliveryDate(date)} dateFormat="dd/MM/yyyy" />
         </div>
 
         <div className="single_input flex flex-col gap-2 mb-2">
-          <label htmlFor="deliveryCharge">Order Type:</label>
+          <label htmlFor="orderType">Order Type:</label>
           <select
             name="orderType"
             id="orderType"
             value={orderType}
             onChange={(e) => setOrderType(e.target.value)}
-            className="border rounded border-gray-500 h-11 px-4"
+            className="border rounded border-gray-500 h-11 px-4 bg-gray-800 text-white"
           >
             <option value="New">New</option>
             <option value="Pending">Pending</option>
@@ -177,7 +189,7 @@ const EditOrder = () => {
 
         {selectedProducts.length > 0 ? (
           <>
-            <p className="mb-2 mt-6 ">Products:</p>
+            <p className="mb-2 mt-6">Products:</p>
             <ul>
               {selectedProducts.map((item, index) => (
                 <li key={item._id} className='flex flex-col md:flex-row gap-3 items-center py-4 border-b border-gray-500 '>
@@ -188,8 +200,8 @@ const EditOrder = () => {
                     <span className='w-14 text-center'>{item.quantity.toFixed(1)}</span>
                     <button onClick={() => handleQuantityChange(item._id, item.quantity + 0.5)} className="px-2 py-1 bg-gray-300 rounded text-black">+</button>
                   </div>
-                  <div><span className="inline-block md:hidden">Unit Price: </span>  {item.price}</div>
-                  <div><span className="inline-block md:hidden">Total: </span>  {item.totalPrice}</div>
+                  <div><span className="inline-block md:hidden">Unit Price: </span> {item.price}</div>
+                  <div><span className="inline-block md:hidden">Total: </span> {item.totalPrice}</div>
                   <div onClick={() => removeItemHandler(item._id)}><Button text="Remove" /></div>
                 </li>
               ))}
@@ -197,19 +209,21 @@ const EditOrder = () => {
           </>
         ) : "No product found for this order!"}
 
-            <div className="form_row flex flex-col gap-2 mb-6 mt-6">
-              <label htmlFor="">Add Products:</label>
-              <div className="products_wrap flex flex-col sm:flex-row gap-4 flex-wrap">
-                
-                {allProducts.map(product => <div className='single_prodcut_select flex gap-1' key={product._id}>
-                  <input  type="checkbox" value={product._id} id={product.name} checked={selectedProducts.some(item => item.productId === product._id)} onChange={(e) => handleCheckboxChange(e,product.name, product.price)} /> 
-                  <label htmlFor={product.name}>{product.name}</label>
-                </div> )}
-                
+        <div className="form_row flex flex-col gap-2 mb-6 mt-6">
+          <label>Add Products:</label>
+          <div className="products_wrap flex flex-col sm:flex-row gap-4 flex-wrap">
+            {allProducts.map(product => (
+              <div className='single_prodcut_select flex gap-1' key={product._id}>
+                <input type="checkbox" value={product._id} id={product.name} checked={selectedProducts.some(item => item.productId === product._id)} onChange={(e) => handleCheckboxChange(e, product.name, product.price)} />
+                <label htmlFor={product.name}>{product.name}</label>
               </div>
-            </div> 
+            ))}
+          </div>
+        </div>
 
-        <div onClick={updateOrderHandler} className='my-10 max-w-[250px] mx-auto md:mr-auto'><Button classNames="text-center" text="Update Order" /></div>
+        <div onClick={updateOrderHandler} className='my-10 max-w-[250px] mx-auto md:mr-auto'>
+          <Button classNames="text-center" text="Update Order" />
+        </div>
       </div>
     </div>
   );

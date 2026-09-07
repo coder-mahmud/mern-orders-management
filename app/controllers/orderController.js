@@ -15,7 +15,7 @@ const getOrderById = async (req, res) => {
 
   try {
 
-    const order = await Order.findById(id);
+    const order = await Order.findById(id).populate("hub", "name");
     res.status(200).json({message:"success", order})
   } catch (error) {
     res.status(200).json({message:"failed", error})
@@ -345,38 +345,7 @@ const changeVerifyStatus = async (req, res) => {
 
 /*
 const editOrder = async (req, res) => {
-  console.log("editOrder route!")
-  const {orderId,orderItems,finalPrice,discount, customerDetails,phoneNumber, deliveryDate,orderType, editor  } = req.body;
-  // console.log("Body data:", orderId,orderItems,finalPrice,discount)
 
-  try {
-    const order = await Order.findById(orderId);
-    if(!order){
-      throw new Error("Order not found!")
-    }
-
-    order.orderItems = orderItems || order.orderItems
-    order.finalPrice = finalPrice || order.finalPrice
-    order.discount = discount || order.discount
-    order.customerDetails = customerDetails || order.customerDetails
-    order.phoneNumber = phoneNumber || order.phoneNumber
-    order.deliveryDate = deliveryDate || order.deliveryDate
-    order.orderType = orderType || order.orderType
-    order.editor = editor || order.editor
-
-    const updatedOrder = await order.save();
-
-    res.status(200).json({success:true, order: updatedOrder})
-  } catch (error) {
-    res.status(500).json({success:false, error: error.message})
-  }
-
-
-  
-}
-*/
-const editOrder = async (req, res) => {
-  console.log("editOrder route!");
 
   const {
     orderId,
@@ -450,7 +419,85 @@ const editOrder = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+*/
 
+const editOrder = async (req, res) => {
+  const {
+    orderId,
+    hub, // 1. Extract hub from request body
+    orderItems,
+    discount,
+    customerDetails,
+    phoneNumber,
+    deliveryDate,
+    orderType,
+    editor,
+    deliveryCharge,
+  } = req.body;
+
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ success: false, error: "Order not found!" });
+    }
+
+    // Keep existing items if new items are not provided
+    const sourceOrderItems = Array.isArray(orderItems) && orderItems.length > 0
+      ? orderItems
+      : order.orderItems;
+
+    const normalizedOrderItems = sourceOrderItems.map((item) => {
+      const quantity = Number(item.quantity) || 0;
+      const price = Number(item.price) || 0;
+      const totalPrice = quantity * price;
+
+      return {
+        ...item,
+        quantity,
+        price,
+        totalPrice,
+      };
+    });
+
+    const calculatedOrderPrice = normalizedOrderItems.reduce(
+      (sum, item) => sum + item.totalPrice,
+      0
+    );
+
+    const numericDiscount =
+      discount !== undefined ? Number(discount) || 0 : Number(order.discount) || 0;
+
+    const numericDeliveryCharge =
+      deliveryCharge !== undefined
+        ? Number(deliveryCharge) || 0
+        : Number(order.deliveryCharge) || 0;
+
+    const calculatedFinalPrice =
+      calculatedOrderPrice + numericDeliveryCharge - numericDiscount;
+
+    order.orderItems = normalizedOrderItems;
+    order.orderPrice = calculatedOrderPrice;
+    order.discount = numericDiscount;
+    order.deliveryCharge = numericDeliveryCharge;
+    order.finalPrice = calculatedFinalPrice;
+
+    // 2. Update hub field if provided
+    if (hub !== undefined && hub !== '') order.hub = hub;
+
+    if (customerDetails !== undefined) order.customerDetails = customerDetails;
+    if (phoneNumber !== undefined) order.phoneNumber = phoneNumber;
+    if (deliveryDate !== undefined) order.deliveryDate = deliveryDate;
+    if (orderType !== undefined) order.orderType = orderType;
+    if (editor !== undefined) order.editor = editor;
+
+    const updatedOrder = await order.save();
+
+    res.status(200).json({ success: true, order: updatedOrder });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
 
 
 const deleteOrder = async (req, res) => {

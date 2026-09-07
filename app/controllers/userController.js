@@ -52,6 +52,7 @@ const userLogin = async (req,res) => {
 
   try {
     const user = await User.findOne({username});
+    console.log("USER FROM DB:", user ? user.username : "USER NOT FOUND");
     if(user && await user.matchPassword(password)){
       generateToken(res, user._id, user.tokenVersion)
       res.status(200).json({
@@ -71,6 +72,7 @@ const userLogin = async (req,res) => {
       throw new Error('Invalid email or password')
     }
   } catch (error) {
+    console.log("Something went wrong!")
     res.status(401).json({"message":error.message})
   }
   

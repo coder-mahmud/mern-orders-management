@@ -9,6 +9,7 @@ import {
   useGetRiderRemainingStockQuery,
   useGetRiderDeliverySummaryQuery,
 } from '../slices/riderStockApiSlice';
+import { useGetUserByIdQuery } from '../slices/userApiSlice';
 import { useSelector } from 'react-redux';
 import { Navigate, Link } from 'react-router-dom';
 
@@ -69,12 +70,21 @@ const RiderStockDetails = () => {
       date: formattedDate,
     }
   );
+  const {
+    data: riderData,
+    isLoading: riderDataLoading,
+    error: riderDataError,
+  } = useGetUserByIdQuery(
+    {
+      userId:riderId,
+    }
+  );
 
   const isLoading =
-    assignedLoading || currentLoading || deliverySummaryLoading;
+    assignedLoading || currentLoading || deliverySummaryLoading || riderDataLoading;
 
   const error =
-    assignedError || currentError || deliverySummaryError;
+    assignedError || currentError || deliverySummaryError || riderDataError;
 
   const riderStock = assignedData?.riderStock;
   const currentStock = currentData;
@@ -96,7 +106,7 @@ const RiderStockDetails = () => {
   }, [deliveredOrders, phoneSearch]);
 
 // console.log("assignedData",assignedData)
-console.log("deliveredOrders",deliveredOrders)
+// console.log("deliveredOrders",deliveredOrders)
 const orderProductTotal = deliveredOrders.reduce((acc,cur) => acc + cur.orderPrice ,0)
 const orderFinalTotal = deliveredOrders.reduce((acc,cur) => acc + cur.finalPrice ,0)
 const orderDiscountTotal = deliveredOrders.reduce((acc,cur) => acc + cur.discount ,0)
@@ -107,12 +117,14 @@ const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryC
 // console.log("orderChargeTotal: ", orderChargeTotal)
 // console.log("currentStock",currentStock)
 
-console.log("currentData:", currentData)
+// console.log("currentData:", currentData)
+// console.log("riderData:", riderData)
 
   return (
     <div className='bg-gray-800 text-white min-h-[95vh] py-14'>
       <div className='container'>
-        <h1 className='text-xl font-semibold mb-6'>Rider Stock Details</h1>
+        <h1 className='text-xl font-semibold '>Rider Stock Details</h1>
+        <h2 className="text-xl mb-6">Rider: {riderData.user.firstName} {riderData.user.lastName}</h2>
 
         <div className="flex justify-between">
           <div className="form_row flex flex-col gap-2 relative w-xl max-w-[180px] mb-6">
