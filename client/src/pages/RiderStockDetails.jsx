@@ -124,7 +124,7 @@ const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryC
     <div className='bg-gray-800 text-white min-h-[95vh] py-14'>
       <div className='container'>
         <h1 className='text-xl font-semibold '>Rider Stock Details</h1>
-        <h2 className="text-xl mb-6">Rider: {riderData.user.firstName} {riderData.user.lastName}</h2>
+        <h2 className="text-xl mb-6">Rider: {riderData?.user.firstName} {riderData?.user.lastName}</h2>
 
         <div className="flex justify-between">
           <div className="form_row flex flex-col gap-2 relative w-xl max-w-[180px] mb-6">
