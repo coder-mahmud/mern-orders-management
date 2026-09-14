@@ -282,7 +282,7 @@ const HubOrderItem = ({ order, users, index }) => {
                 View Details
               </Link>
 
-              {(userRole === 'admin' || userRole === 'superAdmin') && (
+              {(userRole === 'admin' || userRole === 'superAdmin' || userRole === 'userAdmin') && (
                 <Link to={`/order/edit/${order._id}`} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer '>
                   Edit Order
                 </Link>
@@ -307,7 +307,7 @@ const HubOrderItem = ({ order, users, index }) => {
                 </>
               )}
 
-              {(userRole === 'admin' || userRole === 'superAdmin' || userRole === 'staff') && (
+              {(userRole === 'admin' || userRole === 'superAdmin' || userRole === 'staff' || userRole === 'userAdmin') && (
                 <>
                   {order.orderStatus === 'Delivered' ? (
                     <li className='block border-b border-gray-700 py-2 px-4 text-center cursor-not-allowed'>Already Delivered</li>
@@ -325,7 +325,7 @@ const HubOrderItem = ({ order, users, index }) => {
                 </>
               )}
 
-              {userRole !== 'user' && userRole !== 'userAdmin' && userRole !== 'rider' && userRole !== 'staff' && (
+              {userRole !== 'user' && userRole !== 'rider' && userRole !== 'staff' && (
                 <li onClick={showDeleteHandler} className='block border-b border-gray-700 py-2 px-4 text-center cursor-pointer'>
                   Delete Order
                 </li>

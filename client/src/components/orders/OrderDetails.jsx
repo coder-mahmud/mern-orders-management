@@ -49,7 +49,7 @@ const OrderDetails = () => {
         {/* Header Navigation */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4 border-b border-gray-700 pb-4">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-3 flex flex-col md:flex-row gap-3">
+            <h1 className="text-2xl font-bold  items-center flex flex-col md:flex-row gap-3">
               Order #{order.websiteOrderId || order._id}
               <span
                 className={`text-xs px-2.5 py-1 rounded-full border uppercase tracking-wider font-semibold ${getStatusBadge(

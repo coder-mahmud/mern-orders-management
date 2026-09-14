@@ -37,7 +37,7 @@ const Home =  () => {
   const userTokenVersion = useSelector(state => state?.auth?.userInfo?.tokenVersion);
   // console.log("Role", userRole)
 
-  if(userRole == 'user' || userRole == 'userAdmin' || userRole == 'rider'){
+  if(userRole == 'user' || userRole == 'rider'){
     return <Navigate to="/hubs" replace />;
   }
 
