@@ -19,7 +19,7 @@ const AddRiderStockPage = () => {
     return <Navigate to="/login" replace />;
   }
 
-  if (userRole === 'user' || userRole === 'userAdmin' || userRole === 'rider') {
+  if (userRole === 'user' || userRole === 'rider') {
     return <Navigate to="/hubs" replace />;
   }
 

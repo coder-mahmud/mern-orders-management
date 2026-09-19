@@ -12,7 +12,7 @@ const RiderList = () => {
     return <Navigate to="/login" replace />;
   }
 
-  if (userRole === 'user' || userRole === 'userAdmin') {
+  if (userRole === 'user') {
     return <Navigate to="/hubs" replace />;
   }
 
@@ -52,13 +52,13 @@ const RiderList = () => {
           {/* {(userRole === 'rider' ) ? (
             <Link to="/rider-entry" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Add delivery report</Link>
           ) : ''} */}
-          {(userRole === 'staff' || userRole === 'admin' || userRole === 'superAdmin') ? (
+          {(userRole === 'staff' || userRole === 'userAdmin' || userRole === 'admin' || userRole === 'superAdmin') ? (
             <Link to="/rider-compare" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Compare Report</Link>
           ) : ''}
-          {(userRole === 'staff' || userRole === 'admin' || userRole === 'superAdmin') ? (
+          {(userRole === 'staff' || userRole === 'userAdmin' || userRole === 'admin' || userRole === 'superAdmin') ? (
             <Link to="/allriders" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>All riders Stock</Link>
           ) : ''}
-          {(userRole === 'staff' || userRole === 'admin' || userRole === 'superAdmin') ? (
+          {(userRole === 'staff' || userRole === 'userAdmin' || userRole === 'admin' || userRole === 'superAdmin') ? (
             <Link to="/riders/addstock" className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Add Rider Stock</Link>
           ) : ''}
           {/* {( userRole === 'admin' || userRole === 'superAdmin') ? (

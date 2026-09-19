@@ -7,7 +7,7 @@ const riderComparisonRouter = express.Router();
 riderComparisonRouter.get(
   "/:date",
   protect,
-  authorizeRoles("admin", "superAdmin", "staff"),
+  authorizeRoles("admin", "superAdmin", "staff","userAdmin"),
   getAllRiderProductComparisonByDate
 );
 

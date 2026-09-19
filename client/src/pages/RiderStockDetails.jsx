@@ -31,7 +31,7 @@ const RiderStockDetails = () => {
     return <Navigate to="/login" replace />;
   }
 
-  if (userRole === 'user' || userRole === 'userAdmin') {
+  if (userRole === 'user') {
     return <Navigate to="/hubs" replace />;
   }  
 
