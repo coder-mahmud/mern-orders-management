@@ -255,51 +255,60 @@ const SingleHubDetails = () => {
           </Link>
         </div>
 
-        {orders.length > 0 && (
+        {/* {orders.length > 0 && (
           <button className="border rounded border-gray-500 p-4 cursor-pointer" onClick={generatePDF}>
             Download Report
           </button>
-        )}
+        )} */}
 
         {orders.length === 0 ? (
           'No order for selected day yet!'
         ) : (
+
           <div className="mb-20">
-            <div className="hubOrderInfo my-4 text-lg">
-              <p className="section_title text-lg font-semibold">Hub Orders Summary:</p>
-              <p>Total Orders : {orders.length}</p>
-              <p>Verified Orders : {orderGroups.verified.length}</p>
-              <p>Total Pending: {orderGroups.pending.length}</p>
-              <p>Total Delivered: {orderGroups.delivered.length}</p>
-              <p>Offline Delivery: {orderGroups.offline.length}</p>
-              <p>Total Cancelled: {orderGroups.cancelled.length}</p>
+            
+                <div className="hubOrderInfo my-4 text-lg">
+                  <p className="section_title text-lg font-semibold">Hub Orders Summary:</p>
+                  <p>Total Orders : {orders.length}</p>
+                  <p>Verified Orders : {orderGroups.verified.length}</p>
+                  <p>Total Pending: {orderGroups.pending.length}</p>
+                  <p>Total Delivered: {orderGroups.delivered.length}</p>
+                  <p>Offline Delivery: {orderGroups.offline.length}</p>
+                  <p>Total Cancelled: {orderGroups.cancelled.length}</p>
 
-              <div className="products_count_wrap">
-                <SummaryList
-                  title="Orders Items:"
-                  items={itemSummaries.all}
-                  emptyText="No ordered product found."
-                  showAdminTotals={showAdminTotals}
-                  deliveryCharge={sumDeliveryCharge(orders)}
-                />
+                  <div className="products_count_wrap">
+                    <SummaryList
+                      title="Orders Items:"
+                      items={itemSummaries.all}
+                      emptyText="No ordered product found."
+                      showAdminTotals={showAdminTotals}
+                      deliveryCharge={sumDeliveryCharge(orders)}
+                    />
 
-                <SummaryList
-                  title="Delivered Items:"
-                  items={itemSummaries.delivered}
-                  emptyText="No delivered product found."
-                  showAdminTotals={showAdminTotals}
-                  deliveryCharge={sumDeliveryCharge(orderGroups.delivered)}
-                />
+                    { userRole !=='rider' && (
+                      <>
+                        <SummaryList
+                          title="Delivered Items:"
+                          items={itemSummaries.delivered}
+                          emptyText="No delivered product found."
+                          showAdminTotals={showAdminTotals}
+                          deliveryCharge={sumDeliveryCharge(orderGroups.delivered)}
+                        />
+                        
 
-                <SummaryList
-                  title="Pending Items:"
-                  items={itemSummaries.pending}
-                  emptyText="No pending product found."
-                  showAdminTotals={showAdminTotals}
-                  deliveryCharge={sumDeliveryCharge(orderGroups.pending)}
-                />
-              </div>
-            </div>
+                        <SummaryList
+                          title="Pending Items:"
+                          items={itemSummaries.pending}
+                          emptyText="No pending product found."
+                          showAdminTotals={showAdminTotals}
+                          deliveryCharge={sumDeliveryCharge(orderGroups.pending)}
+                        />
+                      </>
+                    )}
+                  </div>
+                </div>
+
+            
 
             <p className="text-xl font-semibold mt-10 border-b border-gray-500 mb-4">Orders:</p>
 

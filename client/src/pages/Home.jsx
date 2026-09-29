@@ -107,8 +107,12 @@ const Home =  () => {
   // console.log('Products Data', data)
   // console.log('hubData', hubData)
 
-  const refinedProducts = data.products.filter(product => product.name !=='Atar Ruti 20 piece')
+  // const refinedProducts = data.products.filter(product => product.name !=='Atar Ruti 20 piece')
+  let refinedProducts = data.products;
   // console.log("refinedProducts",refinedProducts)
+  refinedProducts = [...refinedProducts].sort(
+    (a, b) => a.name.localeCompare(b.name)
+  );
   
 
   const handleCheckboxChange = (e,productName,price) => {

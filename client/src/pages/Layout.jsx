@@ -26,8 +26,8 @@ const Layout = () => {
     (state) => state?.auth?.userInfo?.tokenVersion
   );
 
-  console.log("userEmail", userEmail)
-  console.log("userTokenVersion", userTokenVersion)
+  // console.log("userEmail", userEmail)
+  // console.log("userTokenVersion", userTokenVersion)
 
   useEffect(() => {
     const resetToken = searchParams.get('resetpass');

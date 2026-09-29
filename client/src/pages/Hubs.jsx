@@ -46,7 +46,7 @@ const Hubs = () => {
   useEffect(() => {
     
     if(!isGetHubLoading){
-      setAllHub(hubData.hubs)
+      setAllHub(hubData?.hubs)
     }
 
 
@@ -123,7 +123,7 @@ const Hubs = () => {
           </div>
 
           <div className="hubs_content py-6">
-            {allHub.map(hub => <SingleHub key={hub._id} hub={hub} /> )}
+            {allHub?.map(hub => <SingleHub key={hub._id} hub={hub} /> )}
 
             {/* <p className="text-xl">Hubs list will be here...</p> */}
 
