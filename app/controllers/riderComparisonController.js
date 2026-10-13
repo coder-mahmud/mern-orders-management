@@ -157,6 +157,8 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           0
         );
 
+        const totalRemainingQty = totalAssignedQty - totalSystemDeliveredQty;
+
         const totalRiderDeliveredQty = items.reduce(
           (sum, item) => sum + item.riderDeliveredQty,
           0
@@ -179,6 +181,7 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           totalSystemOrders: deliveredOrders.length,
           totalRiderOrders: riderDeliveredOrders.length,
           totalAssignedQty,
+          totalRemainingQty,
           totalSystemDeliveredQty,
           totalRiderDeliveredQty,
           totalRiderInputQty,
@@ -190,9 +193,26 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
       })
     );
 
+    const grandTotals = reports.reduce(
+      (acc, curr) => {
+        acc.totalAssigned += curr.totalAssignedQty;
+        acc.totalSystemDelivered += curr.totalSystemDeliveredQty;
+        acc.totalRemaining += curr.totalRemainingQty;
+        acc.totalRiderDelivered += curr.totalRiderDeliveredQty;
+        return acc;
+      },
+      {
+        totalAssigned: 0,
+        totalSystemDelivered: 0,
+        totalRemaining: 0,
+        totalRiderDelivered: 0,
+      }
+    );
+
     res.status(200).json({
       success: true,
       date: startDate,
+      grandTotals,
       riders: reports,
     });
   } catch (error) {

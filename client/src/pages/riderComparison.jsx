@@ -88,13 +88,20 @@ const AllRiderProductComparison = () => {
     return <Loader />;
   }
 
-  console.log("Data:", data);
+  const grandTotals = data?.grandTotals || {
+    totalAssigned: 0,
+    totalSystemDelivered: 0,
+    totalRemaining: 0,
+    totalRiderDelivered: 0,
+  };
+
+  // console.log("Data:", data);
 
   return (
     <div className="bg-gray-800 text-white min-h-[95vh] py-14">
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
-          <h1 className="text-3xl">All Riders Product Comparison</h1>
+          <h1 className="text-3xl">All Riders Comparison</h1>
 
           <div className="flex gap-2 items-center">
             <p>Date:</p>
@@ -106,6 +113,49 @@ const AllRiderProductComparison = () => {
             />
           </div>
         </div>
+
+
+        {/* --- GLOBAL GRAND TOTALS PANEL --- */}
+        {data?.riders?.length > 0 && (
+          <div className="bg-gray-900 border border-gray-700 rounded-lg p-5 mb-8 shadow-md">
+            <h2 className="text-xl font-semibold mb-3 text-gray-200">
+              Overall Summary for All Riders
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="bg-gray-800 rounded p-3">
+                <p className="text-sm text-gray-400">Total Assigned Qty</p>
+                <p className="text-xl font-bold text-amber-400">
+                  {grandTotals.totalAssigned}
+                </p>
+              </div>
+
+              <div className="bg-gray-800 rounded p-3">
+                <p className="text-sm text-gray-400">Total System Delivered</p>
+                <p className="text-xl font-bold text-blue-400">
+                  {grandTotals.totalSystemDelivered}
+                </p>
+              </div>
+
+              <div className="bg-gray-800 rounded p-3">
+                <p className="text-sm text-gray-400">Total Remaining Qty</p>
+                <p className="text-xl font-bold text-emerald-400">
+                  {grandTotals.totalRemaining}
+                </p>
+              </div>
+
+              <div className="bg-gray-800 rounded p-3">
+                <p className="text-sm text-gray-400">Total Rider Delivered</p>
+                <p className="text-xl font-bold text-purple-400">
+                  {grandTotals.totalRiderDelivered}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+
+
+
 
         {isError && (
           <div className="bg-red-700 text-white rounded p-4 mb-6">
@@ -135,7 +185,7 @@ const AllRiderProductComparison = () => {
                 }`}
               >
                 <div className="flex flex-col lg:flex-row justify-between gap-4 mb-6">
-                  <div>
+                  <div className="min-w-[180px]">
                     <div className="flex items-center gap-3 flex-wrap">
                       <h2 className="text-2xl font-semibold">
                         {rider?.firstName} {rider?.lastName}
@@ -153,9 +203,6 @@ const AllRiderProductComparison = () => {
                       )} */}
                     </div>
 
-                    <p className="text-gray-300">
-                      Delivered Orders: {riderReport?.totalDeliveredOrders || "N/A"}
-                    </p>
                   </div>
 
                   {/* SUMMARY BOX PANEL */}
@@ -175,11 +222,29 @@ const AllRiderProductComparison = () => {
                     </div>
 
                     <div className="bg-gray-800 rounded px-4 py-2 flex items-center">
+                      Assigned Stock:{" "}
+                      <span className="font-semibold ml-1 text-amber-400">
+                        {riderReport.totalAssignedQty || 0}
+                      </span>
+                    </div>
+
+
+
+                    <div className="bg-gray-800 rounded px-4 py-2 flex items-center">
                       System Qty Total:{" "}
                       <span className="font-semibold ml-1 text-amber-400">
                         {riderReport.totalSystemDeliveredQty || 0}
                       </span>
                     </div>
+
+                    <div className="bg-gray-800 rounded px-4 py-2 flex items-center">
+                      Remaining Stock:{" "}
+                      <span className="font-semibold ml-1 text-amber-400">
+                        {riderReport.totalRemainingQty || 0}
+                      </span>
+                    </div>
+
+
 
                     <div className="bg-gray-800 rounded px-4 py-2 flex items-center">
                       Rider Qty Total:{" "}
