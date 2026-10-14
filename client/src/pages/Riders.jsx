@@ -73,7 +73,6 @@ const RiderList = () => {
           <p>No riders found.</p>
         ) : (
          <>
-          {userRole !== 'rider' ? (
             <div className='flex flex-col gap-4'>
             {riders.map((rider) => (
               <div
@@ -126,7 +125,6 @@ const RiderList = () => {
               </div>
             ))}
           </div>
-          ) : 'No information to show here for you!'}
           
          
          </>

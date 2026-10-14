@@ -99,6 +99,7 @@ export const {
   useEditRiderStockMutation,
   useDeleteRiderStockMutation,
   useGetRiderStockByDateQuery,
+  useLazyGetRiderStockByDateQuery,
   useGetRiderRemainingStockQuery,
   useGetRiderDeliverySummaryQuery,
   useGetAllRidersSummaryByDateQuery,

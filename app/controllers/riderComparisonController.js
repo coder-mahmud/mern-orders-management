@@ -20,9 +20,6 @@ const getProductId = (value) => {
   return value.toString();
 };
 
-// @desc    Compare rider input with system delivered qty for all riders
-// @route   GET /api/rider-comparison/:date
-// @access  Private/Admin/Controller
 const getAllRiderProductComparisonByDate = async (req, res) => {
   const { date } = req.params;
 
@@ -58,9 +55,8 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           deliveryDate: { $gte: startDate, $lte: endDate },
         }).populate("orderItems.productId", "name");
 
-        // console.log("rider comparision controller - riderDeliveredOrders:", riderDeliveredOrders)
-
         const stockMap = {};
+        const riderStockRemainingMap = {}; // <--- Map to store stored remainingQty from RiderStock model
         const riderInputMap = {};
         const systemDeliveredMap = {};
         const riderDeliveredMap = {};
@@ -71,6 +67,7 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           if (!productId) return;
 
           stockMap[productId] = Number(item.assignedQty || 0);
+          riderStockRemainingMap[productId] = Number(item.remainingQty || 0); // <--- Extract remainingQty from stock schema
           productNameMap[productId] = item.productId?.name || "";
         });
 
@@ -100,7 +97,6 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           });
         });
 
-        // Map rider delivered order items quantities
         riderDeliveredOrders.forEach((order) => {
           order.orderItems?.forEach((item) => {
             const productId = getProductId(item.productId);
@@ -130,8 +126,16 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           const riderInputQty = Number(riderInputMap[productId] || 0);
           const systemDeliveredQty = Number(systemDeliveredMap[productId] || 0);
           const riderDeliveredQty = Number(riderDeliveredMap[productId] || 0);
-          // console.log("Inside rider comparision controller")
-          console.log("riderDeliveredQty:", riderDeliveredQty)
+
+          const systemRemainingQty = assignedQty - systemDeliveredQty;
+          
+          // Use the stored remainingQty value from the RiderStock document
+          const riderRemainingQty = Number(riderStockRemainingMap[productId] || 0);
+
+          // Compare system remaining vs rider remaining (or adjust condition based on your preference)
+          const isMatched =
+            systemDeliveredQty === riderDeliveredQty &&
+            systemRemainingQty === riderRemainingQty;
 
           return {
             productId,
@@ -141,9 +145,9 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
             riderDeliveredQty,
             riderInputQty,
             difference: riderDeliveredQty - systemDeliveredQty,
-            remainingQty: assignedQty - systemDeliveredQty,
-            // UPDATED LOGIC: Comparing System Delivered vs Rider Delivered
-            isMatched: systemDeliveredQty === riderDeliveredQty,
+            systemRemainingQty,
+            riderRemainingQty,
+            isMatched,
           };
         });
 
@@ -169,7 +173,6 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           0
         );
 
-        // UPDATED LOGIC: Set overall mismatch if any product item fails to match
         const hasMismatch = items.some((item) => !item.isMatched);
 
         return {
@@ -189,6 +192,7 @@ const getAllRiderProductComparisonByDate = async (req, res) => {
           items,
           totalDeliveredOrders: deliveredOrders.length,
           extraNote: riderInput?.extraNote || "",
+          exchangedProductsNote: stock.exchangedProductsNote || "",
         };
       })
     );

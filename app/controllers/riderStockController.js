@@ -73,6 +73,7 @@ const createOrUpdateRiderStock = async (req, res) => {
     const formattedItems = items.map((item) => ({
       productId: item.productId,
       assignedQty: Number(item.assignedQty || 0),
+      remainingQty: Number(item.remainingQty || 0),
     }));
 
     const existingStock = await RiderStock.findOne({

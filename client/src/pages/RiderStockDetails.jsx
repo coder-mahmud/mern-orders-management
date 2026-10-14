@@ -13,9 +13,6 @@ import { useGetUserByIdQuery } from '../slices/userApiSlice';
 import { useSelector } from 'react-redux';
 import { Navigate, Link } from 'react-router-dom';
 
-
-
-
 const RiderStockDetails = () => {
   const { riderId } = useParams();
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -70,13 +67,14 @@ const RiderStockDetails = () => {
       date: formattedDate,
     }
   );
+
   const {
     data: riderData,
     isLoading: riderDataLoading,
     error: riderDataError,
   } = useGetUserByIdQuery(
     {
-      userId:riderId,
+      userId: riderId,
     }
   );
 
@@ -105,20 +103,27 @@ const RiderStockDetails = () => {
     });
   }, [deliveredOrders, phoneSearch]);
 
-// console.log("assignedData",assignedData)
-// console.log("deliveredOrders",deliveredOrders)
-const orderProductTotal = deliveredOrders.reduce((acc,cur) => acc + cur.orderPrice ,0)
-const orderFinalTotal = deliveredOrders.reduce((acc,cur) => acc + cur.finalPrice ,0)
-const orderDiscountTotal = deliveredOrders.reduce((acc,cur) => acc + cur.discount ,0)
-const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryCharge ,0)
-// console.log("orderProductTotal: ",orderProductTotal)
-// console.log("orderFinalTotal: ", orderFinalTotal)
-// console.log("orderDiscountTotal: ", orderDiscountTotal)
-// console.log("orderChargeTotal: ", orderChargeTotal)
-// console.log("currentStock",currentStock)
+  // Calculate Total Assigned Quantity from currentStock or riderStock
+  const totalAssignedQty = useMemo(() => {
+    if (currentStock?.remainingItems?.length > 0) {
+      return currentStock.remainingItems.reduce((sum, item) => sum + Number(item.assignedQty || 0), 0);
+    }
+    if (riderStock?.items?.length > 0) {
+      return riderStock.items.reduce((sum, item) => sum + Number(item.assignedQty || 0), 0);
+    }
+    return 0;
+  }, [currentStock, riderStock]);
 
-// console.log("currentData:", currentData)
-// console.log("riderData:", riderData)
+  // Calculate Total Delivered by Rider Quantity from deliveredOrders summary
+  const totalRiderDeliveredQty = useMemo(() => {
+    return deliveredOrders.reduce((sum, order) => {
+      const orderQty = order.orderItems?.reduce((itemSum, item) => itemSum + Number(item.quantity || 0), 0) || 0;
+      return sum + orderQty;
+    }, 0);
+  }, [deliveredOrders]);
+
+  // Calculate Remaining Stock based on Rider's calculation (Assigned Qty - Rider Delivered Qty)
+  const totalRiderRemainingQty = totalAssignedQty - totalRiderDeliveredQty;
 
   return (
     <div className='bg-gray-800 text-white min-h-[95vh] py-14'>
@@ -137,39 +142,12 @@ const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryC
             />
           </div>
 
-          <div className="">
-          {(userRole === 'staff' || userRole === 'admin' || userRole === 'superAdmin') ? (
-            <Link to={`/riders/${riderId}/edit`} className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Edit riders Stock</Link>
-          ) : ''}
-          </div>
-
+          {/* <div className="">
+            {(userRole === 'staff' || userRole === 'admin' || userRole === 'superAdmin') ? (
+              <Link to={`/riders/${riderId}/edit`} className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'>Edit riders Stock</Link>
+            ) : ''}
+          </div> */}
         </div>
-
-        {/* 
-        <div className='flex gap-4 mb-6'>
-          <button
-            onClick={() => setViewMode('current')}
-            className={`rounded px-6 py-2 cursor-pointer font-semibold ${
-              viewMode === 'current'
-                ? 'bg-green-700 hover:bg-green-800'
-                : 'bg-gray-600 hover:bg-gray-700'
-            }`}
-          >
-            See Current Stock
-          </button>
-
-          <button
-            onClick={() => setViewMode('assigned')}
-            className={`rounded px-6 py-2 cursor-pointer font-semibold ${
-              viewMode === 'assigned'
-                ? 'bg-amber-700 hover:bg-amber-800'
-                : 'bg-gray-600 hover:bg-gray-700'
-            }`}
-          >
-            See Assigned Stock
-          </button>
-        </div>
-        */}
 
         {isLoading ? (
           <Loader />
@@ -196,86 +174,38 @@ const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryC
               Total Delivered Quantity: {currentStock?.totalDeliveredQty || 0} kg
             </p>
 
-            <p className='text-sm text-gray-300 mb-2'>
-              Total Product Price: {Number(currentStock?.totalOrderPrice || 0).toFixed(2)} tk
+            {/* NEW METRICS BASED ON RIDER CALCULATION */}
+            <p className='text-sm text-amber-300 mb-2 font-semibold'>
+              Total Assigned Quantity: {totalAssignedQty} kg
             </p>
 
-            <p className='text-sm text-gray-300 mb-2'>
-              Total Delivery Charge: {Number(currentStock?.totalDeliveryCharge || 0).toFixed(2)} tk
+            <p className='text-sm text-emerald-300 mb-2 font-semibold'>
+              Total Remaining Stock: {totalRiderRemainingQty} kg
             </p>
 
-            <p className='text-sm text-gray-300 mb-2'>
-              Total Discount: {Number(currentStock?.totalDiscount || 0).toFixed(2)} tk
-            </p>
+            {userRole != 'rider' && (
+              <>
+                <p className='text-sm text-gray-300 mb-2'>
+                  Total Product Price: {Number(currentStock?.totalOrderPrice || 0).toFixed(2)} tk
+                </p>
 
-            <p className='text-md text-gray-100 font-bold mb-6'>
-              Grand Total Final Price: {Number(currentStock?.grandTotalFinalPrice || 0).toFixed(2)} tk
-            </p>
+                <p className='text-sm text-gray-300 mb-2'>
+                  Total Delivery Charge: {Number(currentStock?.totalDeliveryCharge || 0).toFixed(2)} tk
+                </p>
 
-            {/* DELIVERED ITEM TOTALS */}
-            {/* <div className='border border-gray-700 rounded-lg p-4 mb-6'>
-              <h3 className='text-lg font-semibold mb-3 text-green-400'>
-                Delivered Item Totals
-              </h3>
+                <p className='text-sm text-gray-300 mb-2'>
+                  Total Discount: {Number(currentStock?.totalDiscount || 0).toFixed(2)} tk
+                </p>
 
-              <div className='flex flex-col gap-3'>
-                <div className='hidden sm:flex justify-between border-b border-gray-500 pb-2 font-semibold'>
-                  <span className='w-[70%]'>Product</span>
-                  <span className='w-[30%] text-center'>Delivered Qty</span>
-                </div>
+                <p className='text-md text-gray-100 font-bold mb-6'>
+                  Grand Total Final Price: {Number(currentStock?.grandTotalFinalPrice || 0).toFixed(2)} tk
+                </p>              
+              </>
+            )}
 
-                {currentStock?.deliveredSummary?.map((item) => (
-                  <div
-                    key={item.productId}
-                    className='flex flex-col sm:flex-row justify-between border-b border-gray-600 pb-2 gap-2'
-                  >
-                    <span className='w-full sm:w-[70%]'>
-                      <span className='sm:hidden font-semibold'>Product: </span>
-                      {item.productName}
-                    </span>
-
-                    <span className='w-full sm:w-[30%] text-left sm:text-center'>
-                      <span className='sm:hidden font-semibold'>Delivered Qty: </span>
-                      {item.qty}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div> */}
-
-            {/* REMAINING ITEM TOTALS */}
-            {/* <div className='border border-gray-700 rounded-lg p-4 mb-6'>
-              <h3 className='text-lg font-semibold mb-3 text-yellow-400'>
-                Remaining Item Totals
-              </h3>
-
-              <div className='flex flex-col gap-3'>
-                <div className='hidden sm:flex justify-between border-b border-gray-500 pb-2 font-semibold'>
-                  <span className='w-[70%]'>Product</span>
-                  <span className='w-[30%] text-center'>Remaining Qty</span>
-                </div>
-
-                {currentStock?.remainingSummary?.map((item) => (
-                  <div
-                    key={item.productId}
-                    className='flex flex-col sm:flex-row justify-between border-b border-gray-600 pb-2 gap-2'
-                  >
-                    <span className='w-full sm:w-[70%]'>
-                      <span className='sm:hidden font-semibold'>Product: </span>
-                      {item.productName}
-                    </span>
-
-                    <span className='w-full sm:w-[30%] text-left sm:text-center'>
-                      <span className='sm:hidden font-semibold'>Remaining Qty: </span>
-                      {item.qty}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div> */}
 
             {/* FULL DETAILS TABLE */}
-            {/* <div className='border border-gray-700 rounded-lg p-4 mb-6'>
+            <div className='border border-gray-700 rounded-lg p-4 mb-6'>
               <h3 className='text-lg font-semibold mb-3 text-blue-400'>
                 Full Stock Details
               </h3>
@@ -284,9 +214,13 @@ const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryC
                 <div className='hidden sm:flex justify-between border-b border-gray-500 pb-2 font-semibold'>
                   <span className='w-[22%]'>Product</span>
                   <span className='w-[12%] text-center'>Assigned</span>
-                  <span className='w-[12%] text-center'>Delivered</span>
+                  {userRole != 'rider' && (
+                    <>
+                      <span className='w-[12%] text-center'>Delivered</span>
+                      <span className='w-[12%] text-center'>Remaining</span> 
+                    </>
+                  )}
                   
-                  <span className='w-[12%] text-center'>Remaining</span>
                 </div>
 
                 {currentStock?.remainingItems?.map((item) => (
@@ -303,20 +237,27 @@ const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryC
                       <span className='sm:hidden font-semibold'>Assigned: </span>
                       {item.assignedQty}
                     </span>
+                    {userRole != 'rider' && (
+                      <>
+                        <span className='w-full sm:w-[12%] text-left sm:text-center'>
+                          <span className='sm:hidden font-semibold'>Delivered: </span>
+                          {item.deliveredQty}
+                        </span>
 
-                    <span className='w-full sm:w-[12%] text-left sm:text-center'>
-                      <span className='sm:hidden font-semibold'>Delivered: </span>
-                      {item.deliveredQty}
-                    </span>
+                        <span className='w-full sm:w-[12%] text-left sm:text-center font-semibold'>
+                          <span className='sm:hidden font-semibold'>Remaining: </span>
+                          {item.remainingQty}
+                        </span>                      
+                          </>
+                    )}
 
-                    <span className='w-full sm:w-[12%] text-left sm:text-center font-semibold'>
-                      <span className='sm:hidden font-semibold'>Remaining: </span>
-                      {item.remainingQty}
-                    </span>
+
+
+
                   </div>
                 ))}
               </div>
-            </div> */}
+            </div>
 
             {/* DELIVERED ORDERS LIST - LAST SECTION */}
             <div className='border border-gray-700 rounded-lg p-4'>
@@ -342,68 +283,65 @@ const orderChargeTotal = deliveredOrders.reduce((acc,cur) => acc + cur.deliveryC
                 </p>
               ) : (
                 <>
-                <div>
-                  <div className='hidden md:flex justify-between gap-4 py-4 border-b border-gray-500 font-semibold'>
-                    <p className='w-[50px]'>SL No.</p>
-                    <p className='flex-2'>Customer Details</p>
-                    <p className='flex-1'>Phone Number</p>
-                    <p className='flex-[1.5]'>Order Details</p>
-                    <p className='flex-1 flex justify-start'>Created By</p>
-                    <p className='flex-1 flex justify-start'>Link</p>
-                  </div>
-
-                  {filteredDeliveredOrders.map((order, index) => (
-                    <div
-                      key={order._id}
-                      className='flex flex-col md:flex-row justify-between gap-4 py-4 border-b border-gray-500 lg:items-center'
-                    >
-                      <p className='w-[50px]'>{index + 1}.</p>
-
-                      <p className='flex-2'>
-                        <span className='inline-block md:hidden'>Customer Details :</span>{' '}
-                        {order?.customerDetails ||
-                          order?.shippingAddress?.fullName ||
-                          'N/A'}
-                      </p>
-
-                      <p className='flex-1'>
-                        <span className='inline-block md:hidden'>Phone Number :</span>{' '}
-                        {order?.phoneNumber ||
-                          order?.shippingAddress?.phone ||
-                          'N/A'}
-                      </p>
-
-                      <p className='flex-[1.5]'>
-                        <span className='inline-block md:hidden'>Order Details :</span>{' '}
-                        {order?.orderItems?.map((item, itemIndex) => (
-                          <span key={item.productId?._id || item.productId || itemIndex}>
-                            {item.productId?.name || item.name} - {item.quantity}kg
-                            {itemIndex !== order.orderItems.length - 1 ? ', ' : ''}
-                          </span>
-                        ))}{' '}
-                        | {Number(order?.finalPrice || 0).toFixed(2)}tk
-                      </p>
-
-                      <p className='flex-1 flex justify-start'>
-                        <span className='inline-block md:hidden'>Created By: </span>
-                        {order?.user?.firstName
-                          ? `${order.user.firstName} - ${dayjs(order.createdAt).format('DD MMM, hh:mm a')}`
-                          : dayjs(order.createdAt).format('DD MMM, hh:mm a')}
-                      </p>
-                      <p className='flex-1 flex justify-start'>
-                        <Link to={`/order/${order._id}`}>Details</Link>
-                      </p>
+                  <div>
+                    <div className='hidden md:flex justify-between gap-4 py-4 border-b border-gray-500 font-semibold'>
+                      <p className='w-[50px]'>SL No.</p>
+                      <p className='flex-2'>Customer Details</p>
+                      <p className='flex-1'>Phone Number</p>
+                      <p className='flex-[1.5]'>Order Details</p>
+                      <p className='flex-1 flex justify-start'>Created By</p>
+                      <p className='flex-1 flex justify-start'>Link</p>
                     </div>
-                  ))}
-                </div>
-                <p className="text-sm text-gray-300 mt-4">
-                  <span className="font-semibold">Exchange Note:</span> {assignedData?.riderStock.exchangedProductsNote}
-                </p>
-                </>
-                
-              )}
 
-              
+                    {filteredDeliveredOrders.map((order, index) => (
+                      <div
+                        key={order._id}
+                        className='flex flex-col md:flex-row justify-between gap-4 py-4 border-b border-gray-500 lg:items-center'
+                      >
+                        <p className='w-[50px]'>{index + 1}.</p>
+
+                        <p className='flex-2'>
+                          <span className='inline-block md:hidden'>Customer Details :</span>{' '}
+                          {order?.customerDetails ||
+                            order?.shippingAddress?.fullName ||
+                            'N/A'}
+                        </p>
+
+                        <p className='flex-1'>
+                          <span className='inline-block md:hidden'>Phone Number :</span>{' '}
+                          {order?.phoneNumber ||
+                            order?.shippingAddress?.phone ||
+                            'N/A'}
+                        </p>
+
+                        <p className='flex-[1.5]'>
+                          <span className='inline-block md:hidden'>Order Details :</span>{' '}
+                          {order?.orderItems?.map((item, itemIndex) => (
+                            <span key={item.productId?._id || item.productId || itemIndex}>
+                              {item.productId?.name || item.name} - {item.quantity}kg
+                              {itemIndex !== order.orderItems.length - 1 ? ', ' : ''}
+                            </span>
+                          ))}{' '}
+                          | {Number(order?.finalPrice || 0).toFixed(2)}tk
+                        </p>
+
+                        <p className='flex-1 flex justify-start'>
+                          <span className='inline-block md:hidden'>Created By: </span>
+                          {order?.user?.firstName
+                            ? `${order.user.firstName} - ${dayjs(order.createdAt).format('DD MMM, hh:mm a')}`
+                            : dayjs(order.createdAt).format('DD MMM, hh:mm a')}
+                        </p>
+                        <p className='flex-1 flex justify-start'>
+                          <Link to={`/order/${order._id}`}>Details</Link>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-300 mt-4">
+                    <span className="font-semibold">Exchange Note:</span> {assignedData?.riderStock.exchangedProductsNote}
+                  </p>
+                </>
+              )}
             </div>
           </div>
         ) : viewMode === 'assigned' && riderStock ? (

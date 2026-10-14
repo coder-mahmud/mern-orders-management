@@ -289,78 +289,96 @@ const AllRiderProductComparison = () => {
                   </div>
                 )} */}
 
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse min-w-[600px] md:min-w-[900px]">
-                    <thead>
-                      <tr className="bg-gray-900">
-                        <th className="border border-gray-500 p-2 md:p-3 text-left">
-                          Product
-                        </th>
-
-                        <th className="hidden md:table-cell border border-gray-500 p-3 text-center">
-                          Assigned Stock
-                        </th>
-
-                        <th className="border border-gray-500 p-2 md:p-3 text-center">
-                          System Delivered
-                        </th>
-
-                        {/* NEW TABLE HEADER */}
-                        <th className="border border-gray-500 p-2 md:p-3 text-center">
-                          Rider Delivered
-                        </th>
 
 
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse min-w-[600px] md:min-w-[900px]">
+                  <thead>
+                    <tr className="bg-gray-900">
+                      <th className="border border-gray-500 p-2 md:p-3 text-left">
+                        Product
+                      </th>
 
-                        <th className="hidden md:table-cell border border-gray-500 p-3 text-center">
-                          Remaining
-                        </th>
+                      <th className="table-cell border border-gray-500 p-3 text-center">
+                        Assigned Stock
+                      </th>
 
-                        <th className="border border-gray-500 p-2 md:p-3 text-center">
-                          Status
-                        </th>
+                      <th className="border border-gray-500 p-2 md:p-3 text-center">
+                        System Delivered
+                      </th>
+
+                      <th className="border border-gray-500 p-2 md:p-3 text-center">
+                        Rider Delivered
+                      </th>
+
+                      {/* RENAMED COLUMN */}
+                      <th className="table-cell border border-gray-500 p-3 text-center">
+                        System Remaining
+                      </th>
+
+                      {/* NEW COLUMN */}
+                      <th className="table-cell border border-gray-500 p-3 text-center">
+                        Rider Remaining
+                      </th>
+
+                      <th className="border border-gray-500 p-2 md:p-3 text-center">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {riderReport.items.map((item) => (
+                      <tr
+                        key={item.productId}
+                        className={
+                          item.isMatched
+                            ? "bg-gray-700"
+                            : "bg-red-700 text-white"
+                        }
+                      >
+                        <td className="border border-gray-500 p-2 md:p-3 text-sm md:text-base">
+                          {item.productName}
+                        </td>
+
+                        <td className="table-cell border border-gray-500 p-3 text-center">
+                          {item.assignedQty}
+                        </td>
+
+                        <td className="border border-gray-500 p-2 md:p-3 text-center font-semibold">
+                          {item.systemDeliveredQty}
+                        </td>
+
+                        <td className="border border-gray-500 p-2 md:p-3 text-center font-semibold text-blue-300">
+                          {item.riderDeliveredQty || 0}
+                        </td>
+
+                        {/* SYSTEM REMAINING CELL */}
+                        <td className="table-cell border border-gray-500 p-3 text-center">
+                          {item.systemRemainingQty}
+                        </td>
+
+                        {/* RIDER REMAINING CELL */}
+                        <td className="table-cell border border-gray-500 p-3 text-center text-emerald-300 font-semibold">
+                          {item.riderRemainingQty}
+                        </td>
+
+                        <td className="border border-gray-500 p-2 md:p-3 text-center text-xs md:text-base font-semibold">
+                          {item.isMatched ? "Matched" : "Mismatch"}
+                        </td>
                       </tr>
-                    </thead>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-                    <tbody>
-                      {riderReport.items.map((item) => (
-                        <tr
-                          key={item.productId}
-                          className={
-                            item.isMatched
-                              ? "bg-gray-700"
-                              : "bg-red-700 text-white"
-                          }
-                        >
-                          <td className="border border-gray-500 p-2 md:p-3 text-sm md:text-base">
-                            {item.productName}
-                          </td>
 
-                          <td className="hidden md:table-cell border border-gray-500 p-3 text-center">
-                            {item.assignedQty}
-                          </td>
-
-                          <td className="border border-gray-500 p-2 md:p-3 text-center font-semibold">
-                            {item.systemDeliveredQty}
-                          </td>
-
-                          {/* NEW TABLE CELL DATA */}
-                          <td className="border border-gray-500 p-2 md:p-3 text-center font-semibold text-blue-300">
-                            {item.riderDeliveredQty || 0}
-                          </td>
-
-                          <td className="hidden md:table-cell border border-gray-500 p-3 text-center">
-                            {item.remainingQty}
-                          </td>
-
-                          <td className="border border-gray-500 p-2 md:p-3 text-center text-xs md:text-base">
-                            {item.isMatched ? "Matched" : "Mismatch"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              {riderReport.exchangedProductsNote && (
+                <div className="bg-gray-800 rounded p-3 mt-4">
+                  <span className="font-semibold text-amber-400">Products Note:</span>{" "}
+                  {riderReport.exchangedProductsNote}
                 </div>
+              )}
 
                 {riderReport.extraNote && (
                   <div className="bg-gray-800 rounded p-3 mb-4">

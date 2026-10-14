@@ -51,7 +51,8 @@ const Header = () => {
         <ul className='flex flex-wrap justify-center gap-2 font-semibold items-center'>
           {(userRole !=='user' && userRole !=='rider') ? <li><Link to="/products">Products</Link></li> : '' }
           <li><Link to="/hubs">Hubs</Link></li>
-          {userRole !=='rider' && (<li><Link to="/riders">Riders</Link></li>)}
+          {/* {userRole !=='rider' && (<li><Link to="/riders">Riders</Link></li>)} */}
+          <li><Link to="/riders">Riders</Link></li>
           
           {/* {userRole !=='user' ? <li><Link to="/internal-report">Report</Link></li> : '' } */}
           
