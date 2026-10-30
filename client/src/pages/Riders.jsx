@@ -94,7 +94,9 @@ const RiderList = () => {
                   </p>
                 </div>
 
-                <div>
+
+
+                {/* <div>
                   {(userRole !== "rider" || rider._id === userId) ? (
                     <Link
                       to={`/riders/${rider._id}`}
@@ -107,18 +109,18 @@ const RiderList = () => {
                       Not Allowed
                     </span>
                   )}
-                </div>
+                </div> */}
 
 
 
-                {/* <div>
+                <div>
                   <Link
                     to={`/riders/${rider._id}`}
                     className='inline-block rounded px-6 py-2 bg-amber-700 hover:bg-amber-800 cursor-pointer font-semibold'
                   >
                     See Stock Details
                   </Link>
-                </div> */}
+                </div>
 
 
 

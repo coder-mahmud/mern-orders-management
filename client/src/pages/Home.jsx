@@ -75,8 +75,8 @@ const Home =  () => {
 
     setOrderPrice(selectedProducts.reduce((prev, cur) => prev + cur.totalPrice, 0));
     setFinalPrice(orderPrice - discount + deliveryCharge)
-    if(!isHubLoading){
-      setSelectedHub ( hubData?.hubs?.filter(hubItem => hubItem._id == hub))
+    if (!isHubLoading && hubData?.hubs) {
+      setSelectedHub(hubData.hubs.filter(hubItem => hubItem._id == hub));
     }
     
   }, [isHubLoading, selectedProducts,orderPrice, discount, hub, deliveryCharge]); 
@@ -108,11 +108,15 @@ const Home =  () => {
   // console.log('hubData', hubData)
 
   // const refinedProducts = data.products.filter(product => product.name !=='Atar Ruti 20 piece')
-  let refinedProducts = data.products;
+  // let refinedProducts = data?.products;
+
+  let refinedProducts = data?.products ? [...data.products] : [];
+  
   // console.log("refinedProducts",refinedProducts)
-  refinedProducts = [...refinedProducts].sort(
-    (a, b) => a.name.localeCompare(b.name)
-  );
+  // refinedProducts = [...refinedProducts].sort(
+  //   (a, b) => a.name.localeCompare(b.name)
+  // );
+  refinedProducts.sort((a, b) => a.name.localeCompare(b.name));
   
 
   const handleCheckboxChange = (e,productName,price) => {
@@ -256,7 +260,7 @@ const Home =  () => {
             </div>               
             <div className="form_row flex flex-col gap-2 mb-6">
               <label htmlFor="">Customer Mobile:</label>
-              <input type="tel" placeholder='Customer Mobile:' className='border rounded border-gray-500 py-3 px-4' value={phoneNumber} onChange = {(e) => setPhoneNumber(e.target.value)} required />
+              <input type="tel" placeholder='Customer Mobile:' className='border rounded border-gray-500 py-3 px-4' value={phoneNumber} onChange = {(e) => setsListPhoneNumber(e.target.value)} required />
             </div>            
 
             <div className="form_row flex flex-col gap-2 mb-6">

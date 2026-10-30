@@ -12,6 +12,7 @@ const baseQuery = fetchBaseQuery({
   credentials: "include",
 });
 
+/*
 const baseQueryWithAuthCheck = async (args, api, extraOptions) => {
   const result = await baseQuery(args, api, extraOptions);
 
@@ -38,6 +39,40 @@ const baseQueryWithAuthCheck = async (args, api, extraOptions) => {
 
   return result;
 };
+*/
+
+const baseQueryWithAuthCheck = async (args, api, extraOptions) => {
+  const result = await baseQuery(args, api, extraOptions);
+
+  // Catch any 401 Unauthorized response from protected routes
+  if (result.error?.status === 401) {
+    try {
+      await baseQuery(
+        {
+          url: "/user/logout",
+          method: "POST",
+          credentials: "include",
+        },
+        api,
+        extraOptions
+      );
+    } catch (err) {
+      console.log("Logout API call failed:", err);
+    }
+
+    // Clear Redux authentication state
+    api.dispatch(clearCredential());
+
+    // Redirect to login safely
+    if (window.location.pathname !== "/login") {
+      window.location.replace("/login");
+    }
+  }
+
+  return result;
+};
+
+
 
 const apiSlice = createApi({
   reducerPath: "api",

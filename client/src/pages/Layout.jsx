@@ -77,6 +77,9 @@ const Layout = () => {
         console.log('Logout api failed:', error);
       } finally {
         dispatch(clearCredential());
+        // localStorage.removeItem('persist:root');
+        localStorage.removeItem('userInfo');
+        window.location.reload();
         toast.error('Session expired. Please login again.');
         navigate('/login', { replace: true });        
       }
@@ -84,6 +87,7 @@ const Layout = () => {
 
     forceLogoutIfNeeded();
   }, [userId, userTokenVersion, logout, dispatch, navigate]);
+
 
 
   if (appLoading || logOutLoading) {
