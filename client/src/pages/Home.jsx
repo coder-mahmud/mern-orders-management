@@ -260,7 +260,7 @@ const Home =  () => {
             </div>               
             <div className="form_row flex flex-col gap-2 mb-6">
               <label htmlFor="">Customer Mobile:</label>
-              <input type="tel" placeholder='Customer Mobile:' className='border rounded border-gray-500 py-3 px-4' value={phoneNumber} onChange = {(e) => setsListPhoneNumber(e.target.value)} required />
+              <input type="tel" placeholder='Customer Mobile:' className='border rounded border-gray-500 py-3 px-4' value={phoneNumber} onChange = {(e) => setPhoneNumber(e.target.value)} required />
             </div>            
 
             <div className="form_row flex flex-col gap-2 mb-6">
